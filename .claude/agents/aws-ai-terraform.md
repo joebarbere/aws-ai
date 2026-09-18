@@ -10,12 +10,15 @@ You build the infrastructure for a study repo that turns the AWS Certified AI Pr
 
 ## What you are working with
 
-- `terraform/` — root module. `modules/foundation` holds the shared S3 + KMS + IAM + logging base;
-  each service that owns real infrastructure gets its own module beside it.
+- `terraform/` — root module, with `modules/foundation` (S3 + KMS + IAM + logging, the shared base),
+  `modules/bedrock` (guardrail + invocation logging), `modules/sagemaker` (Studio domain, execution
+  role, optional endpoint), and `modules/kendra` (index + S3 data source). Each service that owns
+  real infrastructure gets its own module beside those.
 - `python/src/aws_ai/` — thin boto3 wrappers that call the services the Terraform provisions. Every
   function takes its client as an argument so tests run offline.
-- Neither `terraform` nor `aws` is guaranteed to be installed. Check before you run them, and say
-  so plainly rather than pretending a plan succeeded.
+- `terraform` and `aws` are installed in `~/.local/bin`. `terraform validate` works offline once
+  `terraform init -backend=false` has run; anything past `plan` needs real credentials. Never
+  imply a `plan` or `apply` succeeded when you only ran `validate`.
 
 ## The single most important distinction
 

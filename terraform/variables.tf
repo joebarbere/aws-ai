@@ -42,3 +42,21 @@ variable "enable_kendra" {
   type        = bool
   default     = false
 }
+
+variable "enable_sagemaker_endpoint" {
+  description = "Real-time inference endpoint inside the SageMaker module. Bills hourly with no traffic required (~$0.13/hr on ml.m5.large). Also requires sagemaker_model_image and sagemaker_model_data_url."
+  type        = bool
+  default     = false
+}
+
+variable "sagemaker_model_image" {
+  description = "ECR URI of the inference container. Null means no endpoint is created, whatever enable_sagemaker_endpoint says."
+  type        = string
+  default     = null
+}
+
+variable "sagemaker_model_data_url" {
+  description = "S3 URI of the model artifacts (model.tar.gz) to serve."
+  type        = string
+  default     = null
+}

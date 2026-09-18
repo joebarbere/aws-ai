@@ -4,6 +4,12 @@ region      = "us-east-1"
 name_prefix = "aws-ai-study"
 
 # Cost gates — see variables.tf for what each one bills.
+# Bedrock bills per use, so it is on by default. The rest bill by the hour.
 enable_bedrock          = true
-enable_sagemaker_domain = false
-enable_kendra           = false
+enable_sagemaker_domain = false # domain is free; apps inside it are ~$0.05/hr until shut down
+enable_kendra           = false # ~$810/month from creation — destroy the same day
+
+# An endpoint needs all three set, and bills ~$0.13/hr from create to delete.
+enable_sagemaker_endpoint = false
+# sagemaker_model_image    = "763104351884.dkr.ecr.us-east-1.amazonaws.com/..."
+# sagemaker_model_data_url = "s3://your-bucket/model.tar.gz"

@@ -22,6 +22,8 @@ terraform/
   modules/
     foundation/   S3 + KMS + IAM + CloudWatch: the shared base every AI service call needs
     bedrock/      Guardrails, model invocation logging, agent/KB execution roles
+    sagemaker/    Studio domain, user profile, execution role, optional endpoint  (gated)
+    kendra/       Index + S3 data source                                          (gated)
 python/
   src/aws_ai/     Thin, testable boto3 wrappers (clients are injected, so tests need no network)
   tests/          pytest, offline
@@ -31,20 +33,28 @@ python/
 
 ## Prerequisites
 
-Neither is installed on this machine yet:
+**Terraform 1.16.3** — installed to `~/.local/bin/terraform` from the official release zip. To
+reproduce elsewhere, or to use OpenTofu instead (Fedora packages it as `opentofu`):
 
 ```bash
-# Terraform (or OpenTofu)
-sudo dnf install -y terraform     # or: https://opentofu.org/docs/intro/install/
-# AWS CLI v2
-sudo dnf install -y awscli2
-aws configure sso                 # or any credential method you prefer
+curl -sLo tf.zip https://releases.hashicorp.com/terraform/1.16.3/terraform_1.16.3_linux_amd64.zip
+unzip tf.zip && mv terraform ~/.local/bin/
+```
+
+**AWS CLI** — `aws-cli/1.46.1` is installed via `uv tool install awscli`, and its botocore is
+current enough to carry every service here (`bedrock`, `bedrock-runtime`, `bedrock-agent`,
+`kendra`, `sagemaker`, `comprehend`, `rekognition`, `polly`, `transcribe`, `translate`,
+`textract`). v2 is the version AWS documents, and Fedora packages it:
+
+```bash
+sudo dnf install -y awscli2      # v2.36.0; replaces the v1 above
+aws configure sso                # or any credential method you prefer
 ```
 
 Python side:
 
 ```bash
-cd python && uv sync && uv run pytest
+cd python && uv sync --extra dev && uv run pytest
 ```
 
 ## Cost warning
