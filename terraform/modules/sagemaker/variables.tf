@@ -61,3 +61,40 @@ variable "endpoint_instance_type" {
   type        = string
   default     = "ml.m5.large"
 }
+
+variable "bucket_name" {
+  description = "Project bucket name, for the feature store's offline S3 location and monitor output."
+  type        = string
+}
+
+# ------------------------------------------------------------ MLOps extras
+
+variable "enable_feature_store" {
+  description = "Create a worked-example feature group. The offline (S3) store costs storage only."
+  type        = bool
+  default     = false
+}
+
+variable "enable_online_feature_store" {
+  description = "Also enable the online store: low-latency lookups billed per GB-month plus reads and writes. The offline store alone is the frugal default."
+  type        = bool
+  default     = false
+}
+
+variable "enable_model_monitor" {
+  description = "Schedule data-quality monitoring against the endpoint. Requires an endpoint and model_monitor_image_uri; each run is a processing job billed by the minute."
+  type        = bool
+  default     = false
+}
+
+variable "model_monitor_image_uri" {
+  description = "Region-specific model-monitor container image URI. There is no single public value — look up the analyzer image for your region. Null disables monitoring."
+  type        = string
+  default     = null
+}
+
+variable "monitor_schedule_expression" {
+  description = "How often the monitoring job runs. Hourly is the SageMaker minimum for a cron schedule."
+  type        = string
+  default     = "cron(0 * ? * * *)"
+}

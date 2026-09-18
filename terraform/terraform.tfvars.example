@@ -3,13 +3,56 @@
 region      = "us-east-1"
 name_prefix = "aws-ai-study"
 
-# Cost gates — see variables.tf for what each one bills.
-# Bedrock bills per use, so it is on by default. The rest bill by the hour.
-enable_bedrock          = true
-enable_sagemaker_domain = false # domain is free; apps inside it are ~$0.05/hr until shut down
-enable_kendra           = false # ~$810/month from creation — destroy the same day
+# --------------------------------------------------------------- free / per-use
+# On by default: nothing here bills hourly.
+enable_bedrock        = true
+enable_conversational = true
 
-# An endpoint needs all three set, and bills ~$0.13/hr from create to delete.
+# ------------------------------------------------------------------ near-free
+# Rekognition collection + Comprehend training roles; per-image and per-training-hour.
+enable_vision_nlp          = false
+enable_rekognition_project = false
+# Custom models need training data you supply; null means they are not created.
+# classifier_training_s3_uri = "s3://your-bucket/comprehend/train.csv"
+
+# Config + Macie + Audit Manager. Usage-billed, not hourly.
+enable_governance = false
+# The expensive knob: ~$0.003 per configuration item recorded.
+config_record_all_resource_types = false
+enable_macie                     = false
+enable_audit_manager             = false
+
+# Glue catalog + crawler are near-free at rest.
+enable_data_foundations = false
+enable_glue_job         = false
+
+# -------------------------------------------------------------------- hourly
+# Each of these bills whether or not you use it. Destroy with the same flags.
+
+# ~$43/month at the 0.5 ACU floor; does NOT scale to zero.
+enable_aurora              = false
+aurora_publicly_accessible = false
+# Your own address only — 0.0.0.0/0 is refused by a validation block.
+# allowed_cidr_blocks = ["203.0.113.4/32"]
+
+# Domain is free; a running JupyterLab app is ~$0.05/hr until you shut it down.
+enable_sagemaker_domain = false
+enable_feature_store    = false
+# Online store adds per-GB-month plus read/write charges.
+enable_online_feature_store = false
+
+# Endpoint needs all three, and bills ~$0.13/hr from create to delete.
 enable_sagemaker_endpoint = false
 # sagemaker_model_image    = "763104351884.dkr.ecr.us-east-1.amazonaws.com/..."
 # sagemaker_model_data_url = "s3://your-bucket/model.tar.gz"
+
+# Model Monitor needs an endpoint AND a region-specific analyzer image.
+enable_model_monitor = false
+# model_monitor_image_uri = "156813124566.dkr.ecr.us-east-1.amazonaws.com/sagemaker-model-monitor-analyzer"
+
+# ~$350/month. Three-step apply: see modules/knowledge_base/README.md.
+enable_knowledge_base = false
+kb_vector_index_ready = false
+
+# ~$810/month from creation. Destroy the same day.
+enable_kendra = false

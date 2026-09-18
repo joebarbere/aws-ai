@@ -22,3 +22,13 @@ output "endpoint_name" {
   description = "Endpoint name, or null when no endpoint was created."
   value       = local.create_endpoint ? aws_sagemaker_endpoint.this[0].name : null
 }
+
+output "feature_group_name" {
+  description = "Feature group name, or null when the feature store is disabled."
+  value       = var.enable_feature_store ? aws_sagemaker_feature_group.this[0].feature_group_name : null
+}
+
+output "monitoring_schedule_name" {
+  description = "Data-quality monitoring schedule, or null when monitoring is off or has no endpoint to watch."
+  value       = local.create_monitor ? aws_sagemaker_monitoring_schedule.this[0].name : null
+}

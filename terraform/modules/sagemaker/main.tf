@@ -148,3 +148,109 @@ resource "aws_sagemaker_endpoint" "this" {
   name                 = "${var.name_prefix}-endpoint"
   endpoint_config_name = aws_sagemaker_endpoint_configuration.this[0].name
 }
+
+# ----------------------------------------------------------- Feature Store
+#
+# The offline store is S3 (cheap, for training); the online store is a managed low-latency
+# key-value store billed per GB-month plus reads and writes. Enabling only the offline store
+# is the frugal default, and the online/offline split is itself an exam topic.
+
+resource "aws_sagemaker_feature_group" "this" {
+  count = var.enable_feature_store ? 1 : 0
+
+  feature_group_name             = "${var.name_prefix}-features"
+  record_identifier_feature_name = "record_id"
+  event_time_feature_name        = "event_time"
+  role_arn                       = aws_iam_role.execution.arn
+  description                    = "Worked example feature group for the AIF-C01 study stack"
+
+  feature_definition {
+    feature_name = "record_id"
+    feature_type = "String"
+  }
+
+  # Event time must be String (ISO-8601) or Fractional (epoch seconds) — there is no
+  # timestamp type, which surprises everyone once.
+  feature_definition {
+    feature_name = "event_time"
+    feature_type = "String"
+  }
+
+  feature_definition {
+    feature_name = "score"
+    feature_type = "Fractional"
+  }
+
+  online_store_config {
+    enable_online_store = var.enable_online_feature_store
+  }
+
+  offline_store_config {
+    s3_storage_config {
+      s3_uri     = "s3://${var.bucket_name}/feature-store/"
+      kms_key_id = var.kms_key_arn
+    }
+  }
+}
+
+# ------------------------------------------------------------ Model Monitor
+#
+# Monitoring only makes sense against a live endpoint, and it needs a region-specific
+# model-monitor container image — so it is gated on both. Each scheduled run is a processing
+# job billed by the minute, so an hourly schedule on ml.m5.large is not free.
+
+locals {
+  create_monitor = (
+    local.create_endpoint && var.enable_model_monitor && var.model_monitor_image_uri != null
+  )
+}
+
+resource "aws_sagemaker_data_quality_job_definition" "this" {
+  count = local.create_monitor ? 1 : 0
+
+  name     = "${var.name_prefix}-data-quality"
+  role_arn = aws_iam_role.execution.arn
+
+  data_quality_app_specification {
+    image_uri = var.model_monitor_image_uri
+  }
+
+  data_quality_job_input {
+    endpoint_input {
+      endpoint_name = aws_sagemaker_endpoint.this[0].name
+      local_path    = "/opt/ml/processing/input"
+    }
+  }
+
+  data_quality_job_output_config {
+    monitoring_outputs {
+      s3_output {
+        s3_uri     = "s3://${var.bucket_name}/model-monitor/"
+        local_path = "/opt/ml/processing/output"
+      }
+    }
+  }
+
+  job_resources {
+    cluster_config {
+      instance_count    = 1
+      instance_type     = "ml.m5.large"
+      volume_size_in_gb = 20
+    }
+  }
+}
+
+resource "aws_sagemaker_monitoring_schedule" "this" {
+  count = local.create_monitor ? 1 : 0
+
+  name = "${var.name_prefix}-data-quality"
+
+  monitoring_schedule_config {
+    monitoring_job_definition_name = aws_sagemaker_data_quality_job_definition.this[0].name
+    monitoring_type                = "DataQuality"
+
+    schedule_config {
+      schedule_expression = var.monitor_schedule_expression
+    }
+  }
+}

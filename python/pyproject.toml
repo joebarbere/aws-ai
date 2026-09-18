@@ -9,6 +9,8 @@ dependencies = ["boto3>=1.35"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.11", "boto3-stubs[bedrock-runtime,comprehend]>=1.35"]
+# Only scripts/enable_pgvector.py needs a Postgres driver; keep it out of the default install.
+db = ["psycopg[binary]>=3.2"]
 
 [build-system]
 requires = ["hatchling"]

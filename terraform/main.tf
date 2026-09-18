@@ -34,11 +34,64 @@ module "sagemaker" {
   name_prefix = var.name_prefix
   account_id  = data.aws_caller_identity.current.account_id
   bucket_arn  = module.foundation.bucket_arn
+  bucket_name = module.foundation.bucket_id
   kms_key_arn = module.foundation.kms_key_arn
 
   enable_endpoint = var.enable_sagemaker_endpoint
   model_image     = var.sagemaker_model_image
   model_data_url  = var.sagemaker_model_data_url
+
+  enable_feature_store        = var.enable_feature_store
+  enable_online_feature_store = var.enable_online_feature_store
+  enable_model_monitor        = var.enable_model_monitor
+  model_monitor_image_uri     = var.model_monitor_image_uri
+}
+
+module "data_foundations" {
+  source = "./modules/data_foundations"
+  count  = var.enable_data_foundations ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+  bucket_name = module.foundation.bucket_id
+  bucket_arn  = module.foundation.bucket_arn
+  kms_key_arn = module.foundation.kms_key_arn
+
+  enable_glue_job = var.enable_glue_job
+
+  enable_aurora              = var.enable_aurora
+  aurora_publicly_accessible = var.aurora_publicly_accessible
+  allowed_cidr_blocks        = var.allowed_cidr_blocks
+}
+
+module "governance" {
+  source = "./modules/governance"
+  count  = var.enable_governance ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+  bucket_name = module.foundation.bucket_id
+  bucket_arn  = module.foundation.bucket_arn
+  kms_key_arn = module.foundation.kms_key_arn
+
+  record_all_resource_types = var.config_record_all_resource_types
+  enable_macie              = var.enable_macie
+  enable_audit_manager      = var.enable_audit_manager
+}
+
+module "vision_nlp" {
+  source = "./modules/vision_nlp"
+  count  = var.enable_vision_nlp ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+  bucket_arn  = module.foundation.bucket_arn
+  kms_key_arn = module.foundation.kms_key_arn
+
+  enable_rekognition_project    = var.enable_rekognition_project
+  classifier_training_s3_uri    = var.classifier_training_s3_uri
+  recognizer_documents_s3_uri   = var.recognizer_documents_s3_uri
+  recognizer_entity_list_s3_uri = var.recognizer_entity_list_s3_uri
 }
 
 module "kendra" {

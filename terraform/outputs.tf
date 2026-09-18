@@ -77,3 +77,58 @@ output "lex_intent_name" {
   description = "Name of the worked example intent."
   value       = var.enable_conversational ? module.conversational[0].intent_name : null
 }
+
+output "feature_group_name" {
+  description = "SageMaker feature group, or null when disabled."
+  value       = var.enable_sagemaker_domain ? module.sagemaker[0].feature_group_name : null
+}
+
+output "monitoring_schedule_name" {
+  description = "Model Monitor schedule, or null when disabled."
+  value       = var.enable_sagemaker_domain ? module.sagemaker[0].monitoring_schedule_name : null
+}
+
+output "glue_database_name" {
+  description = "Glue Data Catalog database, or null when data foundations are disabled."
+  value       = var.enable_data_foundations ? module.data_foundations[0].glue_database_name : null
+}
+
+output "glue_crawler_name" {
+  description = "Glue crawler, or null when data foundations are disabled."
+  value       = var.enable_data_foundations ? module.data_foundations[0].glue_crawler_name : null
+}
+
+output "aurora_endpoint" {
+  description = "Aurora writer endpoint, or null when Aurora is disabled."
+  value       = var.enable_data_foundations ? module.data_foundations[0].aurora_endpoint : null
+}
+
+output "aurora_secret_arn" {
+  description = "Secrets Manager ARN for the Aurora master password — pass to enable_pgvector.py."
+  value       = var.enable_data_foundations ? module.data_foundations[0].aurora_secret_arn : null
+}
+
+output "config_rule_names" {
+  description = "AWS Config rule names, or null when governance is disabled."
+  value       = var.enable_governance ? module.governance[0].config_rule_names : null
+}
+
+output "macie_classification_job_id" {
+  description = "Macie one-time job id, or null when disabled."
+  value       = var.enable_governance ? module.governance[0].macie_classification_job_id : null
+}
+
+output "audit_manager_framework_id" {
+  description = "Audit Manager framework id, or null when disabled."
+  value       = var.enable_governance ? module.governance[0].audit_manager_framework_id : null
+}
+
+output "rekognition_collection_id" {
+  description = "Rekognition face collection, or null when vision_nlp is disabled."
+  value       = var.enable_vision_nlp ? module.vision_nlp[0].rekognition_collection_id : null
+}
+
+output "comprehend_classifier_arn" {
+  description = "Custom classifier ARN, or null when no training data was supplied."
+  value       = var.enable_vision_nlp ? module.vision_nlp[0].classifier_arn : null
+}

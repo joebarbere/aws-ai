@@ -78,3 +78,119 @@ variable "sagemaker_model_data_url" {
   type        = string
   default     = null
 }
+
+# --------------------------------------------------------------- MLOps
+
+variable "enable_feature_store" {
+  description = "Worked-example SageMaker feature group. Offline (S3) store costs storage only. Requires enable_sagemaker_domain."
+  type        = bool
+  default     = false
+}
+
+variable "enable_online_feature_store" {
+  description = "Also enable the online store: per GB-month plus reads and writes."
+  type        = bool
+  default     = false
+}
+
+variable "enable_model_monitor" {
+  description = "Data-quality monitoring schedule. Needs an endpoint AND model_monitor_image_uri; each run is a processing job billed by the minute."
+  type        = bool
+  default     = false
+}
+
+variable "model_monitor_image_uri" {
+  description = "Region-specific model-monitor analyzer image URI. No single public value exists — look it up for your region."
+  type        = string
+  default     = null
+}
+
+# ----------------------------------------------------- data foundations
+
+variable "enable_data_foundations" {
+  description = "Glue catalog and crawler (near-free at rest), plus the optional Aurora cluster."
+  type        = bool
+  default     = false
+}
+
+variable "enable_glue_job" {
+  description = "Example PySpark ETL job. Free to define; ~$0.44/DPU-hr while running."
+  type        = bool
+  default     = false
+}
+
+variable "enable_aurora" {
+  description = "Aurora PostgreSQL Serverless v2 for pgvector. ~$43/month at the 0.5 ACU floor — it does not scale to zero."
+  type        = bool
+  default     = false
+}
+
+variable "aurora_publicly_accessible" {
+  description = "Give the Aurora instance a public IP, so enable_pgvector.py can reach it from a laptop."
+  type        = bool
+  default     = false
+}
+
+variable "allowed_cidr_blocks" {
+  description = "CIDRs allowed to reach PostgreSQL on 5432. Empty means no ingress rule; 0.0.0.0/0 is refused."
+  type        = list(string)
+  default     = []
+}
+
+# --------------------------------------------------------- governance
+
+variable "enable_governance" {
+  description = "AWS Config recorder and rules, plus optional Macie and Audit Manager. Usage-billed, not hourly."
+  type        = bool
+  default     = false
+}
+
+variable "config_record_all_resource_types" {
+  description = "Record every supported resource type rather than a narrow list. Realistic for production; ~$0.003 per configuration item adds up fast."
+  type        = bool
+  default     = false
+}
+
+variable "enable_macie" {
+  description = "Enable Macie and run a one-time classification job over the project bucket (~$1.00/GB, first 50 GB)."
+  type        = bool
+  default     = false
+}
+
+variable "enable_audit_manager" {
+  description = "Register Audit Manager and create a minimal custom framework."
+  type        = bool
+  default     = false
+}
+
+# --------------------------------------------------------- vision / NLP
+
+variable "enable_vision_nlp" {
+  description = "Rekognition collection (free at rest) and the Comprehend custom-model training roles."
+  type        = bool
+  default     = false
+}
+
+variable "enable_rekognition_project" {
+  description = "Create a Custom Labels project."
+  type        = bool
+  default     = false
+}
+
+variable "classifier_training_s3_uri" {
+  description = "S3 URI of labeled CSV training data for a Comprehend custom classifier. Null means no classifier."
+  type        = string
+  default     = null
+}
+
+variable "recognizer_documents_s3_uri" {
+  description = "S3 URI of documents for a custom entity recognizer."
+  type        = string
+  default     = null
+}
+
+variable "recognizer_entity_list_s3_uri" {
+  description = "S3 URI of the entity list for a custom entity recognizer."
+  type        = string
+  default     = null
+}
