@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+
+region      = "us-east-1"
+name_prefix = "aws-ai-study"
+
+# Cost gates — see variables.tf for what each one bills.
+enable_bedrock          = true
+enable_sagemaker_domain = false
+enable_kendra           = false
