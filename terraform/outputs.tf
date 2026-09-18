@@ -52,3 +52,28 @@ output "kendra_data_source_id" {
   description = "Kendra S3 data source id, or null when enable_kendra is false."
   value       = var.enable_kendra ? module.kendra[0].data_source_id : null
 }
+
+output "kb_collection_endpoint" {
+  description = "OpenSearch Serverless endpoint — pass to create_vector_index.py."
+  value       = var.enable_knowledge_base ? module.knowledge_base[0].collection_endpoint : null
+}
+
+output "kb_knowledge_base_id" {
+  description = "Knowledge base id, or null until kb_vector_index_ready is true."
+  value       = var.enable_knowledge_base ? module.knowledge_base[0].knowledge_base_id : null
+}
+
+output "kb_data_source_id" {
+  description = "Knowledge base S3 data source id, or null until kb_vector_index_ready is true."
+  value       = var.enable_knowledge_base ? module.knowledge_base[0].data_source_id : null
+}
+
+output "lex_bot_id" {
+  description = "Lex V2 bot id, or null when enable_conversational is false."
+  value       = var.enable_conversational ? module.conversational[0].bot_id : null
+}
+
+output "lex_intent_name" {
+  description = "Name of the worked example intent."
+  value       = var.enable_conversational ? module.conversational[0].intent_name : null
+}

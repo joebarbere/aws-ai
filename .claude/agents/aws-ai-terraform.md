@@ -10,10 +10,15 @@ You build the infrastructure for a study repo that turns the AWS Certified AI Pr
 
 ## What you are working with
 
-- `terraform/` — root module, with `modules/foundation` (S3 + KMS + IAM + logging, the shared base),
-  `modules/bedrock` (guardrail + invocation logging), `modules/sagemaker` (Studio domain, execution
-  role, optional endpoint), and `modules/kendra` (index + S3 data source). Each service that owns
-  real infrastructure gets its own module beside those.
+- `terraform/` — root module, with six modules: `foundation` (S3 + KMS + IAM + logging, the shared
+  base), `bedrock` (guardrail + invocation logging), `conversational` (Lex V2 bot + Polly/Transcribe
+  IAM), `sagemaker` (Studio domain, execution role, optional endpoint), `knowledge_base`
+  (OpenSearch Serverless + Bedrock KB), and `kendra` (index + S3 data source). Each service that
+  owns real infrastructure gets its own module beside those.
+- Two modules apply in more than one pass. `knowledge_base` needs
+  `python/scripts/create_vector_index.py` run between applies, because OpenSearch Serverless index
+  creation is a signed HTTP call with no Terraform resource. Never paper over that with a
+  `local-exec` that assumes credentials — the gate variable is the honest form.
 - `python/src/aws_ai/` — thin boto3 wrappers that call the services the Terraform provisions. Every
   function takes its client as an argument so tests run offline.
 - `terraform` and `aws` are installed in `~/.local/bin`. `terraform validate` works offline once

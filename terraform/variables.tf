@@ -43,6 +43,24 @@ variable "enable_kendra" {
   default     = false
 }
 
+variable "enable_knowledge_base" {
+  description = "Bedrock knowledge base over an OpenSearch Serverless vector collection. The collection bills ~$0.24/OCU-hr with a 2-OCU floor — about $350/month from creation, query traffic or not."
+  type        = bool
+  default     = false
+}
+
+variable "kb_vector_index_ready" {
+  description = "Set true only after python/scripts/create_vector_index.py has created the index. Terraform cannot create an OpenSearch Serverless index, so the knowledge base is a second apply."
+  type        = bool
+  default     = false
+}
+
+variable "enable_conversational" {
+  description = "Lex V2 bot plus the Polly/Transcribe IAM. Per-request pricing with nothing hourly, so it is safe to leave on."
+  type        = bool
+  default     = true
+}
+
 variable "enable_sagemaker_endpoint" {
   description = "Real-time inference endpoint inside the SageMaker module. Bills hourly with no traffic required (~$0.13/hr on ml.m5.large). Also requires sagemaker_model_image and sagemaker_model_data_url."
   type        = bool

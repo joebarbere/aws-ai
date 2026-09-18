@@ -7,11 +7,17 @@ run offline and a caller can swap in a client configured for another region or p
 from aws_ai.bedrock import invoke_text_model
 from aws_ai.comprehend import detect_dominant_language, detect_sentiment
 from aws_ai.kendra import query_index, start_sync
+from aws_ai.lex import recognize_text
+from aws_ai.speech import get_transcription, start_transcription, synthesize_speech
 
 __all__ = [
     "detect_dominant_language",
     "detect_sentiment",
+    "get_transcription",
     "invoke_text_model",
     "query_index",
+    "recognize_text",
     "start_sync",
+    "start_transcription",
+    "synthesize_speech",
 ]

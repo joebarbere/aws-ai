@@ -52,3 +52,29 @@ module "kendra" {
   bucket_name = module.foundation.bucket_id
   bucket_arn  = module.foundation.bucket_arn
 }
+
+module "knowledge_base" {
+  source = "./modules/knowledge_base"
+  count  = var.enable_knowledge_base ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+  region      = data.aws_region.current.name
+  bucket_arn  = module.foundation.bucket_arn
+  kms_key_arn = module.foundation.kms_key_arn
+
+  # Held back until create_vector_index.py has run; see the module README.
+  vector_index_ready = var.kb_vector_index_ready
+
+  # You need collection data access too, or you cannot create the index in the first place.
+  additional_data_access_principals = [data.aws_caller_identity.current.arn]
+}
+
+# Per-request pricing, nothing hourly — on by default.
+module "conversational" {
+  source = "./modules/conversational"
+  count  = var.enable_conversational ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+}
