@@ -1,0 +1,43 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RegionLock",
+      "Effect": "Deny",
+      "NotAction": [
+        "iam:*",
+        "sts:*",
+        "organizations:*",
+        "route53:*",
+        "cloudfront:*",
+        "support:*",
+        "budgets:*",
+        "ce:*",
+        "account:*",
+        "health:*",
+        "sso:*",
+        "identitystore:*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "NoHourlyBilledResourcesWithoutEditingThisPolicy",
+      "Effect": "Deny",
+      "Action": [
+        "kendra:CreateIndex",
+        "aoss:CreateCollection",
+        "sagemaker:CreateEndpoint",
+        "rds:CreateDBCluster",
+        "rds:CreateDBInstance"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

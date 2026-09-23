@@ -130,8 +130,8 @@ curl -sLo tf.zip https://releases.hashicorp.com/terraform/1.16.3/terraform_1.16.
 unzip tf.zip && mv terraform ~/.local/bin/
 ```
 
-**AWS CLI** — `aws-cli/1.46.1` via `uv tool install awscli`. For v2:
-`sudo dnf install -y awscli2`, then `aws configure sso`.
+**AWS CLI v2** — `sudo dnf install -y awscli2` (v1 cannot do `aws configure sso`). Credentials,
+Identity Center setup, and the cost seatbelt policy are in **[`iam/`](iam/README.md)**.
 
 ```bash
 cd terraform
