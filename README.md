@@ -123,15 +123,23 @@ Two scripts do the things Terraform cannot:
 
 ## Getting started
 
-**Terraform 1.16.3** at `~/.local/bin/terraform`:
+**Terraform 1.16.4** at `~/.local/bin/terraform`:
 
 ```bash
-curl -sLo tf.zip https://releases.hashicorp.com/terraform/1.16.3/terraform_1.16.3_linux_amd64.zip
+curl -sLo tf.zip https://releases.hashicorp.com/terraform/1.16.4/terraform_1.16.4_linux_amd64.zip
 unzip tf.zip && mv terraform ~/.local/bin/
 ```
 
 **AWS CLI v2** — `sudo dnf install -y awscli2` (v1 cannot do `aws configure sso`). Credentials,
 Identity Center setup, and the cost seatbelt policy are in **[`iam/`](iam/README.md)**.
+
+Log in through Identity Center with the `joebarbere-admin` profile (first-time setup is in
+[`iam/`](iam/README.md#2-configure-the-cli)):
+
+1. `aws configure sso` — once; session `cloud`, profile `joebarbere-admin`, region `us-east-1`
+2. `aws sso login --profile joebarbere-admin` — each time the token expires
+3. `set -Ux AWS_PROFILE joebarbere-admin` — once (fish); bash/zsh: `export AWS_PROFILE=joebarbere-admin`
+4. `aws sts get-caller-identity` — confirm before any `apply`
 
 ```bash
 cd terraform

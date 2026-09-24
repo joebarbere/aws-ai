@@ -57,29 +57,48 @@ aws configure sso
 
 | Prompt | Answer |
 |---|---|
-| SSO session name | `aws-ai` |
+| SSO session name | `cloud` |
 | SSO start URL | your `d-xxxx.awsapps.com/start` URL |
 | SSO region | `us-east-1` |
 | SSO registration scopes | accept the default (`sso:account:access`) |
+| Account / role | your account, `AdministratorAccess` |
 | CLI default client region | `us-east-1` |
 | CLI default output format | `json` |
-| CLI profile name | `aws-ai` |
+| CLI profile name | `joebarbere-admin` |
 
 A browser opens to approve a device code. Nothing secret is written — just a cached token under
-`~/.aws/sso/cache/`.
+`~/.aws/sso/cache/`. The result in `~/.aws/config`:
+
+```ini
+[profile joebarbere-admin]
+sso_session = cloud
+sso_account_id = <account id>
+sso_role_name = AdministratorAccess
+region = us-east-1
+output = json
+
+[sso-session cloud]
+sso_start_url = https://d-xxxxxxxxxx.awsapps.com/start
+sso_region = us-east-1
+sso_registration_scopes = sso:account:access
+```
 
 ### 3. Use it
 
 ```fish
-aws sso login --profile aws-ai
-set -Ux AWS_PROFILE aws-ai      # fish universal var; bash/zsh: export AWS_PROFILE=aws-ai
-aws sts get-caller-identity
+aws sso login --profile joebarbere-admin     # opens a browser; token lasts the session duration
+set -Ux AWS_PROFILE joebarbere-admin         # fish universal var; bash/zsh: export AWS_PROFILE=joebarbere-admin
+aws sts get-caller-identity                  # confirm the account and AWSReservedSSO_AdministratorAccess role
 ```
 
 Terraform needs no changes: `providers.tf` hardcodes no profile, and the AWS provider resolves SSO
-tokens natively at `~> 5.70`. When the token expires, Terraform reports `ExpiredToken` or
-`SSOTokenProviderFailure` — that is just `aws sso login --profile aws-ai` again, not a broken
-setup.
+tokens natively at `~> 5.70`.
+
+| Symptom | Fix |
+|---|---|
+| `No valid credential sources found` | `AWS_PROFILE` is unset and there is no `default` profile — run the `set -Ux` above |
+| `ExpiredToken` / `SSOTokenProviderFailure` | the token expired — `aws sso login --profile joebarbere-admin` |
+| done for the day | `aws sso logout` clears the cached token |
 
 ## Attaching the seatbelt
 
