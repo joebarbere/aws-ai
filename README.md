@@ -132,6 +132,9 @@ unzip tf.zip && mv terraform ~/.local/bin/
 
 **AWS CLI v2** — `sudo dnf install -y awscli2` (v1 cannot do `aws configure sso`). Credentials,
 Identity Center setup, and the cost seatbelt policy are in **[`iam/`](iam/README.md)**.
+The seatbelt is shared with the sibling `jansky-research` repo (same account, `Project` tags),
+whose `infra/seatbelt.json` is the source of truth; `make -C ../jansky-research seatbelt-check`
+catches drift.
 
 Log in through Identity Center with the `joebarbere-admin` profile (first-time setup is in
 [`iam/`](iam/README.md#2-configure-the-cli)):
@@ -189,8 +192,10 @@ role.
 nothing is created. Skip `create_vector_index.py` and the knowledge base fails with an error that
 never mentions the index. Try `allowed_cidr_blocks = ["0.0.0.0/0"]` and Terraform refuses outright.
 
-**Set a billing alarm before enabling anything hourly.** A $10 budget alert is the difference
-between noticing a forgotten Kendra index on day one instead of day thirty.
+**Set a billing alarm before enabling anything hourly.** A budget alert is the difference
+between noticing a forgotten Kendra index on day one instead of day thirty. This account has had
+one since 2026-09-26 (`account-monthly-25`, plus a per-`Project` split and an anomaly monitor —
+see [`iam/`](iam/README.md#two-things-iam-will-not-do)).
 
 **Destroy with the same flags you applied with:**
 
