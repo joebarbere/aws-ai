@@ -132,9 +132,12 @@ unzip tf.zip && mv terraform ~/.local/bin/
 
 **AWS CLI v2** — `sudo dnf install -y awscli2` (v1 cannot do `aws configure sso`). Credentials,
 Identity Center setup, and the cost seatbelt policy are in **[`iam/`](iam/README.md)**.
-The seatbelt is shared with the sibling `jansky-research` repo (same account, `Project` tags),
-whose `infra/seatbelt.json` is the source of truth; `make -C ../jansky-research seatbelt-check`
-catches drift.
+Account-wide resources — the seatbelt, budgets, cost-allocation tags and the anomaly monitor —
+live in the sibling [`aws-cloud`](https://github.com/joebarbere/aws-cloud) repo, which owns
+everything shared by this repo and `jansky-research` in the one account. This repo's Terraform
+holds only the study modules. Its Bedrock invocation-logging configuration (and, when enabled,
+Config, Macie and Audit Manager) are one-per-account/region singletons that stay owned *here*,
+as study objects — `aws-cloud` must never also declare them.
 
 Log in through Identity Center with the `joebarbere-admin` profile (first-time setup is in
 [`iam/`](iam/README.md#2-configure-the-cli)):
@@ -194,8 +197,8 @@ never mentions the index. Try `allowed_cidr_blocks = ["0.0.0.0/0"]` and Terrafor
 
 **Set a billing alarm before enabling anything hourly.** A budget alert is the difference
 between noticing a forgotten Kendra index on day one instead of day thirty. This account has had
-one since 2026-09-26 (`account-monthly-25`, plus a per-`Project` split and an anomaly monitor —
-see [`iam/`](iam/README.md#two-things-iam-will-not-do)).
+one since 2026-09-26 (`account-monthly-25`, plus a per-`Project` split and an anomaly monitor),
+managed in [`aws-cloud`](https://github.com/joebarbere/aws-cloud).
 
 **Destroy with the same flags you applied with:**
 
