@@ -102,9 +102,36 @@ service, two shapes — which is exactly what `vision_nlp` exists to show.
 | knowledge_base | ~$0.48/hr | ~$350/month |
 | kendra | ~$1.125/hr | ~$810/month |
 
+## Local knowledge base — `local-kb/` · $0
+
+The `knowledge_base` module's RAG pipeline, rebuilt to run on your own machine. Documents go
+into a local S3 (RustFS), are embedded by a local model (LM Studio), and land in a local
+OpenSearch with **the same index layout, fields, ingestion counters, prompts and citations a real
+Bedrock knowledge base produces**. Stock boto3 talks to it through Bedrock's own REST routes.
+Faithfulness was measured against a real knowledge base, whose output is saved in
+`local-kb/fixtures/`.
+
+```mermaid
+flowchart LR
+    boto3["boto3 / local-kb CLI"] --> kb["local-kb<br/>Bedrock API :8099"]
+    rustfs[("RustFS<br/>s3://kb-data/kb/")] -->|bucket events| queue["kb-events"] --> kb
+    kb -->|parse · chunk| rustfs
+    kb -->|embed · generate| lms["LM Studio<br/>Qwen3 embedding + Qwen3.5-9B"]
+    kb -->|vectors · search| os[("OpenSearch")]
+    os --- dash["Dashboards<br/>x-amz-bedrock-kb-* fields"]
+```
+
+```bash
+make local-up && make local-models && make local-sample-docs && make local-serve
+```
+
+**[`local-kb/README.md`](local-kb/README.md)** covers the full architecture, every component and
+command, the Dashboards walkthrough for Bedrock's internal fields, and the evaluation results.
+**[`local-kb/PLAN.md`](local-kb/PLAN.md)** has the design and what each phase found.
+
 ## Python
 
-`python/src/aws_ai/` — every function takes its boto3 client as an argument, so the 25 tests run
+`python/src/aws_ai/` — every function takes its boto3 client as an argument, so the tests run
 offline with fakes.
 
 | Module | Functions |
@@ -114,12 +141,18 @@ offline with fakes.
 | `kendra` | `query_index`, `start_sync` |
 | `lex` | `recognize_text` |
 | `speech` | `synthesize_speech`, `start_transcription`, `get_transcription` |
+| `local_kb` | The local knowledge base and its `local-kb` command (`uv sync --extra local`) |
 
-Two scripts do the things Terraform cannot:
+Scripts for the things Terraform cannot do:
 
-- `scripts/create_vector_index.py` — creates the OpenSearch Serverless vector index (signed HTTP).
+- `scripts/create_vector_index.py` — creates the OpenSearch Serverless vector index (signed HTTP,
+  with the payload hash AOSS requires).
 - `scripts/enable_pgvector.py` — runs `CREATE EXTENSION vector` and builds an HNSW table
   (`uv sync --extra db`).
+- `scripts/capture_kb_fixtures.py` — records what a real knowledge base writes and returns into
+  `local-kb/fixtures/`.
+- `scripts/local_init.py`, `scripts/local_smoke.py` — set up and check the local knowledge base's
+  containers (`make local-init`, `make local-smoke`).
 
 ## Getting started
 
@@ -181,7 +214,8 @@ Macie questions turn on.
 **Run the two RAG stores against each other.** Same documents, same embedding model: OpenSearch
 Serverless (~$350/month, fully managed) versus Aurora + pgvector (~$43/month, you own the schema
 and index). A Bedrock knowledge base supports either, and the tradeoff only becomes real once
-you've paid both.
+you've paid both. Or pay neither: `local-kb/` runs the same pipeline locally, and
+`make local-eval` shows how semantic and hybrid search differ on the same questions.
 
 **Notice what is synchronous.** Polly hands you bytes; Transcribe hands you a job to poll. Same
 split for Textract and Comprehend batch — a favorite exam shape.
