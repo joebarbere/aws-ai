@@ -15,6 +15,12 @@ local-kb = "aws_ai.local_kb.cli:main"
 dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.11", "boto3-stubs[bedrock-runtime,comprehend]>=1.35"]
 # Only scripts/enable_pgvector.py needs a Postgres driver; keep it out of the default install.
 db = ["psycopg[binary]>=3.2"]
+local = [
+    "beautifulsoup4>=4.12",
+    "markdownify>=0.13",
+    "pypdf>=5",
+    "tokenizers>=0.20",
+]
 
 [build-system]
 requires = ["hatchling"]

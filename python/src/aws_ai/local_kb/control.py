@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS documents (
     uri           TEXT NOT NULL,
     etag          TEXT NOT NULL,
     metadata_etag TEXT,
+    embedding_prefix TEXT NOT NULL DEFAULT '',
     chunk_ids     TEXT NOT NULL,
     PRIMARY KEY (ds_id, uri)
 );
@@ -76,12 +77,15 @@ class DocumentRecord:
     """What the last sync saw of one source file: the ledger entry incremental sync diffs.
 
     ``metadata_etag`` is the ETag of the file's ``.metadata.json`` sidecar, or None without one.
+    ``embedding_prefix`` is the text its ``includeForEmbedding`` attributes put in front of each
+    chunk: a sidecar change that alters it needs re-embedding, any other is a metadata rewrite.
     """
 
     uri: str
     etag: str
     metadata_etag: str | None
     chunk_ids: tuple[str, ...]
+    embedding_prefix: str = ""
 
 
 def open_control_plane(state_dir: Path | None = None) -> ControlPlane:
@@ -352,6 +356,13 @@ class ControlPlane:
             )
         return _out(body)
 
+    def pending_jobs(self) -> list[dict[str, Any]]:
+        """STARTING jobs across every knowledge base, oldest first: the worker's queue."""
+        rows = self.db.execute(
+            "SELECT body FROM ingestion_jobs WHERE status = 'STARTING' ORDER BY started_at"
+        )
+        return [_out(json.loads(r[0])) for r in rows]
+
     def _refuse_if_syncing(self, knowledge_base_id: str, data_source_id: str | None = None) -> None:
         query = "SELECT id FROM ingestion_jobs WHERE kb_id = ? AND status IN (?, ?, ?)"
         args: tuple[str, ...] = (knowledge_base_id, *ACTIVE_JOB_STATUSES)
@@ -367,25 +378,28 @@ class ControlPlane:
 
     def documents(self, data_source_id: str) -> dict[str, DocumentRecord]:
         rows = self.db.execute(
-            "SELECT uri, etag, metadata_etag, chunk_ids FROM documents WHERE ds_id = ?",
+            "SELECT uri, etag, metadata_etag, chunk_ids, embedding_prefix FROM documents "
+            "WHERE ds_id = ?",
             (data_source_id,),
         )
         return {
-            uri: DocumentRecord(uri, etag, metadata_etag, tuple(json.loads(chunk_ids)))
-            for uri, etag, metadata_etag, chunk_ids in rows
+            uri: DocumentRecord(uri, etag, metadata_etag, tuple(json.loads(chunk_ids)), prefix)
+            for uri, etag, metadata_etag, chunk_ids, prefix in rows
         }
 
     def put_document(self, data_source_id: str, record: DocumentRecord) -> None:
         with self.db:
             self.db.execute(
-                "INSERT OR REPLACE INTO documents (ds_id, uri, etag, metadata_etag, chunk_ids) "
-                "VALUES (?, ?, ?, ?, ?)",
+                "INSERT OR REPLACE INTO documents "
+                "(ds_id, uri, etag, metadata_etag, chunk_ids, embedding_prefix) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
                 (
                     data_source_id,
                     record.uri,
                     record.etag,
                     record.metadata_etag,
                     json.dumps(list(record.chunk_ids)),
+                    record.embedding_prefix,
                 ),
             )
 

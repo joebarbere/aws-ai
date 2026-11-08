@@ -30,6 +30,23 @@ EMBEDDING_MODEL_ARN = f"arn:aws:bedrock:{REGION}::foundation-model/kb-embed"
 EMBEDDING_DIMENSIONS = 1024
 
 
+def env_file() -> Path:
+    """local-kb/.env, written by ``make local-up``: the stack's generated credentials."""
+    return default_state_dir().parent / ".env"
+
+
+def load_env(path: Path | None = None) -> dict[str, str]:
+    """``KEY=value`` lines, as compose reads them. Process environment variables win."""
+    target = path or env_file()
+    values: dict[str, str] = {}
+    if target.exists():
+        for line in target.read_text().splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                key, value = line.split("=", 1)
+                values[key.strip()] = value.strip()
+    return {**values, **{k: v for k, v in os.environ.items() if k in values}}
+
+
 def default_state_dir() -> Path:
     """``$LOCAL_KB_STATE_DIR``, else ``local-kb/.state`` in the enclosing checkout, else
     ``~/.local/state/local-kb``."""
