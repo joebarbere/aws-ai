@@ -228,24 +228,49 @@ class VectorStore(Protocol):
 - `psycopg[binary]` 3 is in the `local` extra.
 - A sync of an RDS knowledge base fails until P3 adds the store.
 
-**Phase P3: the pgvector store, ingest side.**
+**Phase P3: the pgvector store, ingest side** ✅ done 2026-11-08. `store_rds.py`.
 
-Write exactly what Phase 0b recorded:
+Every statement is one Bedrock ran in Phase 0b, with `$n` written as `%s`:
 
-- **Insert:** Bedrock's `INSERT … ON CONFLICT(id) DO UPDATE … RETURNING NULL`, one statement
-  per chunk. A multi-chunk document goes in inside one transaction. Each row has:
+- **Insert:** `INSERT … ON CONFLICT(id) DO UPDATE … RETURNING NULL`, one statement per chunk. A
+  document with several chunks goes in inside one `BEGIN`/`COMMIT`; a one-chunk document is a
+  lone, autocommitted `INSERT`. Each row has:
   - `id`: a uuid4;
   - `embedding`: the vector, as a `'[...]'::vector` literal;
   - `chunks`;
-  - `metadata`: `{"sourceUrl": uri}`, plus `parentText` for hierarchical chunking
+  - `metadata`: compact json `{"sourceUrl": uri}`, plus `parentText` for hierarchical chunking
     (`# GUESS`: not captured);
-  - `custom_metadata`: the sidecar attributes plus the `x-amz-bedrock-kb-*` fields, with
-    numbers as floats.
-- **Sidecar-only change:** read the rows, then upsert them under the same `id`, as Bedrock does.
-  A plain `UPDATE` would be simpler, but it is not what AWS does.
-- **Edited document:** `DELETE … WHERE id IN (…)`, then the inserts. These are separate
-  statements, as on AWS, so the change is not atomic.
-- Ingestion statistics come from `_Sync` and stay as they are.
+  - `custom_metadata`: the sidecar attributes with numbers as floats, plus the
+    `x-amz-bedrock-kb-*` fields, with the page number left an integer, as on Aurora.
+- **Sidecar-only change:** Bedrock's `SELECT id, embedding, chunks, metadata, custom_metadata …
+  WHERE id IN ('…')` with the ids inlined, then an upsert under the same `id`.
+- **Edited document:** parse and embed first, then `DELETE … WHERE id IN (…) RETURNING NULL`,
+  then the inserts, as separate statements. Not atomic, as on AWS.
+- **Removed documents are handled first,** before any changed document, as Bedrock's second sync
+  did. The reorder applies to both stores; OpenSearch's counters and results are unchanged.
+- **`ensure()` validates and never creates,** with Bedrock's own probe, `pg_attribute` and three
+  `pg_indexes LIKE` queries. A missing index or a wrong column type fails the sync. The error
+  wording is local-kb's, because the capture only saw checks that passed.
+- **Data source delete** (`# GUESS`, not captured): `DELETE … WHERE custom_metadata @> {ds id}`.
+- `Services.postgres` connects by database name as `bedrock_user`, in autocommit mode, as each
+  Data API call is.
+
+Verification:
+
+- **Offline**, a recording fake connection runs the Phase 0b sequence with Qwen's tokenizer:
+  - the 8 counters for both jobs match;
+  - every write statement matches the capture's text;
+  - the transaction groupings match job 1's;
+  - job 2's writes run `DELETE, SELECT, INSERT, DELETE, INSERT`, Bedrock's exact order;
+  - the 17 and 16 chunk texts match.
+- **Against the local Postgres,** the same sequence on a throwaway `vector(4)` copy of AWS's
+  table gives the same counters, texts and key sets. The test skips if Postgres is not up.
+- **Live, with LM Studio:** `pg-kb` synced the sample bucket into 17 rows of 1024-dim unit
+  vectors. Its rows have the same `metadata` and `custom_metadata` as Aurora's, apart from the
+  bucket name and data source id. A sidecar edit and revert each counted
+  `numberOfMetadataDocumentsModified = 1`, and the row kept its id.
+- Unlike OpenSearch, superseded row versions do not skew HYBRID: `ts_rank` scores a row on its
+  own, while BM25 uses statistics across the whole index.
 
 **Phase P4: the pgvector store, query side.**
 
@@ -496,7 +521,7 @@ These are hypotheses for P7 to confirm or overturn:
 | 0b ✅ | `fixtures/rds/` from a real Aurora knowledge base; plan updated with what it settles | done 2026-11-08 |
 | P1 ✅ | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged; live sync, sidecar rewrite and retrieve unchanged; eval 90/85/90 · 100/95/100 as before |
 | P2 ✅ | `postgres` service, `local_init.py pg`, RDS storage config accepted | `create-knowledge-base --store rds` works; schema identical to Aurora's; 149 tests pass |
-| P3 | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
+| P3 ✅ | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
 | P4 | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
 | P6 | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |

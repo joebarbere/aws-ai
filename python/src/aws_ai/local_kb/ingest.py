@@ -47,6 +47,8 @@ class Services:
     count_tokens: CountTokens
     # (system, user, inference settings) -> the model's reply; only RetrieveAndGenerate needs it.
     chat: Callable[[str, str, dict[str, Any]], str] | None = None
+    # database name -> a connection as bedrock_user; only RDS knowledge bases need it.
+    postgres: Callable[[str], Any] | None = None
 
 
 def run_pending(cp: ControlPlane, services: Services) -> list[dict[str, Any]]:
@@ -135,6 +137,13 @@ class _Sync:
         self.stats["numberOfMetadataDocumentsScanned"] = len(sidecars)
         ledger = self.cp.documents(self.ds_id)
 
+        # Removed documents first, as Bedrock's second Phase 0b sync did on Aurora.
+        for uri, record in ledger.items():
+            if uri.removeprefix(f"s3://{self.bucket}/") not in documents:
+                self.store.delete(list(record.chunk_ids))
+                self.cp.remove_document(self.ds_id, uri)
+                self.stats["numberOfDocumentsDeleted"] += 1
+
         for key, etag in sorted(documents.items()):
             if status() == "STOPPING":
                 return True
@@ -148,12 +157,6 @@ class _Sync:
             except ParseError as exc:
                 self.stats["numberOfDocumentsFailed"] += 1
                 self.failures.append(str(exc))
-
-        for uri, record in ledger.items():
-            if uri.removeprefix(f"s3://{self.bucket}/") not in documents:
-                self.store.delete(list(record.chunk_ids))
-                self.cp.remove_document(self.ds_id, uri)
-                self.stats["numberOfDocumentsDeleted"] += 1
         return False
 
     def _list(self) -> tuple[dict[str, str], dict[str, str]]:
@@ -183,9 +186,13 @@ class _Sync:
             chunk_ids = previous.chunk_ids
             self.stats["numberOfMetadataDocumentsModified"] += 1
         else:
-            chunk_ids = self._ingest(key, uri, sidecar)
+            # Parse and embed first, so a failure leaves the old chunks in place; then delete
+            # the old chunks and write the new ones, in that order, as Bedrock does on Aurora.
+            stored = self._prepare(key, uri, sidecar)
             if previous:
                 self.store.delete(list(previous.chunk_ids))
+            self.store.write(stored)
+            chunk_ids = tuple(c.id for c in stored)
             counter = (
                 "numberOfNewDocumentsIndexed"
                 if previous is None
@@ -200,7 +207,7 @@ class _Sync:
         body = self.services.s3.get_object(Bucket=self.bucket, Key=sidecar_key(key))["Body"]
         return parse_sidecar(sidecar_key(key), body.read())
 
-    def _ingest(self, key: str, uri: str, sidecar: Sidecar) -> tuple[str, ...]:
+    def _prepare(self, key: str, uri: str, sidecar: Sidecar) -> list[StoredChunk]:
         data = self.services.s3.get_object(Bucket=self.bucket, Key=key)["Body"].read()
         parsed = parse_document(key, data)
         chunks = chunk(parsed.text, self.chunking, self.services.count_tokens, self.embed)
@@ -222,8 +229,7 @@ class _Sync:
             )
             for piece, vector in zip(chunks, vectors, strict=True)
         ]
-        self.store.write(stored)
-        return tuple(c.id for c in stored)
+        return stored
 
 
 def _attributes(sidecar: Sidecar) -> dict[str, Any]:
