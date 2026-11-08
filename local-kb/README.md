@@ -317,16 +317,19 @@ local-kb/
   events/queue.py      kb-events, the bucket-event queue
   dashboards/          saved objects + Dev Tools queries
   eval/                qa.jsonl (20 questions) + report.json
-  fixtures/            what a real Bedrock KB wrote and returned (Phase 0)
+  fixtures/            what a real Bedrock KB wrote and returned (Phase 0; rds/ for Aurora)
   sample-docs/         the corpus used by Phase 0, the tests, and the evaluation
 python/src/aws_ai/local_kb/
   cli.py               the local-kb command
   server.py            Bedrock's REST routes (FastAPI)
   control.py           the control plane (SQLite)
   ingest.py            the ingestion job and its counters
-  parse.py, chunking.py, embed.py, index.py, opensearch.py
+  parse.py, chunking.py, embed.py
+  store.py             the vector-store seam: StoredChunk, Hit, store_for()
+  store_opensearch.py  the OpenSearch store: layout, k-NN, hybrid pipeline, result shape
+  index.py, opensearch.py, filters.py   OpenSearch index body, client, RetrievalFilter → query
   trigger.py           queue + ETag poll → ingestion jobs
-  filters.py, retrieve.py
+  retrieve.py          Retrieve: validation, embedding, HIERARCHICAL collapse
   generate.py, prompts/   RetrieveAndGenerate and Bedrock's six prompt templates
   evaluate.py          the evaluation harness
 ```

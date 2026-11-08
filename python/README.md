@@ -56,6 +56,8 @@ uv run local-kb serve --watch      # bedrock-agent + bedrock-agent-runtime for b
 | `parse` | The default parser, reproducing Bedrock's text normalization per file type; `.metadata.json` sidecars |
 | `chunking` | FIXED_SIZE (the default), HIERARCHICAL, SEMANTIC and NONE, sized in Titan-equivalent tokens |
 | `embed` | LM Studio embeddings (Titan-shaped) and chat (Converse-shaped) |
+| `store` | The vector-store seam: store-neutral chunks and hits, and `store_for()` by storage type |
+| `store_opensearch` | The OpenSearch store: Bedrock's document layout, k-NN and hybrid search, result shape |
 | `index`, `opensearch` | The vector index Bedrock expects, and a minimal OpenSearch client |
 | `trigger` | Bucket events and an ETag poll, debounced into ingestion jobs |
 | `filters`, `retrieve` | `RetrievalFilter` → OpenSearch, and Retrieve (SEMANTIC and HYBRID) |

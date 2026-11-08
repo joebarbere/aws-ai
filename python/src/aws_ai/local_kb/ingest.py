@@ -17,17 +17,13 @@ How each case is counted follows local-kb/fixtures/ingestion-job-*.json, not the
 
 from __future__ import annotations
 
-import json
-import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any
 
-from aws_ai.local_kb import index
-from aws_ai.local_kb.chunking import Chunk, CountTokens, Embed, chunk
+from aws_ai.local_kb.chunking import CountTokens, Embed, chunk
 from aws_ai.local_kb.control import STATISTICS, ControlPlane, DocumentRecord
-from aws_ai.local_kb.ids import chunk_id
 from aws_ai.local_kb.opensearch import OpenSearch
 from aws_ai.local_kb.parse import (
     ParseError,
@@ -37,6 +33,7 @@ from aws_ai.local_kb.parse import (
     parse_sidecar,
     sidecar_key,
 )
+from aws_ai.local_kb.store import StoredChunk, VectorStore, store_for
 
 
 @dataclass(frozen=True)
@@ -52,48 +49,6 @@ class Services:
     chat: Callable[[str, str, dict[str, Any]], str] | None = None
 
 
-@dataclass(frozen=True)
-class Target:
-    """Where a knowledge base keeps its vectors, read from its storageConfiguration."""
-
-    index: str
-    vector_field: str
-    text_field: str
-    metadata_field: str
-    dimensions: int
-
-    @classmethod
-    def of(cls, knowledge_base: dict[str, Any]) -> Target:
-        cluster = knowledge_base["storageConfiguration"]["opensearchManagedClusterConfiguration"]
-        fields = cluster["fieldMapping"]
-        vector = knowledge_base["knowledgeBaseConfiguration"]["vectorKnowledgeBaseConfiguration"]
-        dims = (
-            vector.get("embeddingModelConfiguration", {})
-            .get("bedrockEmbeddingModelConfiguration", {})
-            .get("dimensions", 1024)
-        )
-        return cls(
-            cluster["vectorIndexName"],
-            fields["vectorField"],
-            fields["textField"],
-            fields["metadataField"],
-            dims,
-        )
-
-    def own_fields(self) -> set[str]:
-        """Fields Bedrock writes itself; everything else on a chunk is a sidecar attribute."""
-        return {
-            self.vector_field,
-            self.text_field,
-            self.metadata_field,
-            index.SOURCE_URI,
-            index.DATA_SOURCE_ID,
-            index.PAGE_NUMBER,
-            index.MODALITY,
-            "id",
-        }
-
-
 def run_pending(cp: ControlPlane, services: Services) -> list[dict[str, Any]]:
     """Run every STARTING job, oldest first. Returns the finished jobs."""
     return [run_job(cp, job, services) for job in cp.pending_jobs()]
@@ -103,25 +58,19 @@ def run_job(cp: ControlPlane, job: dict[str, Any], services: Services) -> dict[s
     kb_id, ds_id, job_id = job["knowledgeBaseId"], job["dataSourceId"], job["ingestionJobId"]
     knowledge_base = cp.get_knowledge_base(kb_id)
     data_source = cp.get_data_source(kb_id, ds_id)
-    target = Target.of(knowledge_base)
+    store = store_for(knowledge_base, services)
     model = knowledge_base["knowledgeBaseConfiguration"]["vectorKnowledgeBaseConfiguration"]
     stats = dict.fromkeys(STATISTICS, 0)
     failures: list[str] = []
     cp.update_ingestion_job(job_id, status="IN_PROGRESS")
     try:
-        index.ensure_index(
-            services.opensearch,
-            target.index,
-            index.index_body(
-                target.dimensions, target.vector_field, target.text_field, target.metadata_field
-            ),
-        )
+        store.ensure()
         sync = _Sync(
             cp,
             services,
-            target,
+            store,
             data_source,
-            services.embedder(model["embeddingModelArn"], target.dimensions),
+            services.embedder(model["embeddingModelArn"], store.dimensions),
             stats,
             failures,
         )
@@ -163,14 +112,14 @@ class _Sync:
         self,
         cp: ControlPlane,
         services: Services,
-        target: Target,
+        store: VectorStore,
         data_source: dict[str, Any],
         embed: Embed,
         stats: dict[str, int],
         failures: list[str],
     ) -> None:
         s3_config = data_source["dataSourceConfiguration"]["s3Configuration"]
-        self.cp, self.services, self.target, self.embed = cp, services, target, embed
+        self.cp, self.services, self.store, self.embed = cp, services, store, embed
         self.stats, self.failures = stats, failures
         self.ds_id = data_source["dataSourceId"]
         self.bucket = s3_config["bucketArn"].split(":::", 1)[1]
@@ -202,7 +151,7 @@ class _Sync:
 
         for uri, record in ledger.items():
             if uri.removeprefix(f"s3://{self.bucket}/") not in documents:
-                self._delete(record.chunk_ids)
+                self.store.delete(list(record.chunk_ids))
                 self.cp.remove_document(self.ds_id, uri)
                 self.stats["numberOfDocumentsDeleted"] += 1
         return False
@@ -230,13 +179,13 @@ class _Sync:
         sidecar = self._sidecar(key) if meta_etag else Sidecar()
         prefix = sidecar.embedding_prefix()
         if previous and previous.etag == etag and previous.embedding_prefix == prefix:
-            self._rewrite_metadata(previous.chunk_ids, sidecar)
+            self.store.rewrite_attributes(list(previous.chunk_ids), _attributes(sidecar))
             chunk_ids = previous.chunk_ids
             self.stats["numberOfMetadataDocumentsModified"] += 1
         else:
             chunk_ids = self._ingest(key, uri, sidecar)
             if previous:
-                self._delete(previous.chunk_ids)
+                self.store.delete(list(previous.chunk_ids))
             counter = (
                 "numberOfNewDocumentsIndexed"
                 if previous is None
@@ -260,54 +209,22 @@ class _Sync:
         pages = PurePosixPath(key).suffix.lower() == ".pdf" and (
             (self.chunking or {}).get("chunkingStrategy") != "NONE"
         )
-        actions: list[dict[str, Any]] = []
-        ids = []
-        for piece, vector in zip(chunks, vectors, strict=True):
-            _id = chunk_id()
-            ids.append(_id)
-            page = parsed.page_at(piece.start) if pages else None
-            actions += [
-                {"index": {"_index": self.target.index, "_id": _id}},
-                self._source(piece, vector, uri, page, sidecar),
-            ]
-        self.services.opensearch.bulk(actions)
-        return tuple(ids)
+        stored = [
+            StoredChunk(
+                id=self.store.new_id(),
+                vector=vector,
+                text=piece.text,
+                source_uri=uri,
+                data_source_id=self.ds_id,
+                page=parsed.page_at(piece.start) if pages else None,
+                attributes=_attributes(sidecar),
+                parent_text=piece.parent_text,
+            )
+            for piece, vector in zip(chunks, vectors, strict=True)
+        ]
+        self.store.write(stored)
+        return tuple(c.id for c in stored)
 
-    def _source(
-        self, piece: Chunk, vector: list[float], uri: str, page: int | None, sidecar: Sidecar
-    ) -> dict[str, Any]:
-        """One stored chunk, shaped like local-kb/fixtures/index-documents.json."""
-        metadata: dict[str, Any] = {"source": uri}
-        if piece.parent_text is not None:
-            metadata["parentText"] = piece.parent_text
-        source: dict[str, Any] = {
-            self.target.vector_field: vector,
-            self.target.text_field: piece.text,
-            self.target.metadata_field: json.dumps(metadata, separators=(",", ":")),
-            index.SOURCE_URI: uri,
-            index.DATA_SOURCE_ID: self.ds_id,
-            index.MODALITY: "TEXT",
-            "id": str(uuid.uuid4()),
-        }
-        if page is not None:
-            source[index.PAGE_NUMBER] = page
-        source.update({name: a.value for name, a in sidecar.attributes.items()})
-        return source
 
-    def _rewrite_metadata(self, chunk_ids: tuple[str, ...], sidecar: Sidecar) -> None:
-        """Read the chunks back, vectors and all, swap their attributes, and write them under
-        the same ``_id`` — what the docs describe, and what Phase 0 showed (including ``id``
-        being overwritten with the ``_id``)."""
-        own = self.target.own_fields()
-        actions: list[dict[str, Any]] = []
-        for doc in index.get_chunks(self.services.opensearch, self.target.index, list(chunk_ids)):
-            source = {k: v for k, v in doc["_source"].items() if k in own}
-            source.update({name: a.value for name, a in sidecar.attributes.items()})
-            source["id"] = doc["_id"]
-            actions += [{"index": {"_index": self.target.index, "_id": doc["_id"]}}, source]
-        self.services.opensearch.bulk(actions)
-
-    def _delete(self, chunk_ids: tuple[str, ...]) -> None:
-        self.services.opensearch.bulk(
-            [{"delete": {"_index": self.target.index, "_id": _id}} for _id in chunk_ids]
-        )
+def _attributes(sidecar: Sidecar) -> dict[str, Any]:
+    return {name: a.value for name, a in sidecar.attributes.items()}
