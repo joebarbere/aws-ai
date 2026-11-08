@@ -40,3 +40,7 @@ credentials
 .idea/
 .vscode/
 *.swp
+
+# local-kb
+local-kb/.env
+local-kb/.state/
