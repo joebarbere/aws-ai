@@ -21,6 +21,7 @@ separate statements; a sidecar-only change read back and upserted under the same
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -28,6 +29,7 @@ from typing import Any
 
 from aws_ai.local_kb import index
 from aws_ai.local_kb.errors import ValidationException
+from aws_ai.local_kb.filters import to_sql
 from aws_ai.local_kb.store import Hit, StoredChunk, embedding_dimensions
 
 BEDROCK_FIELD_PREFIX = "x-amz-bedrock-kb-"
@@ -76,6 +78,10 @@ class RdsStore:
         self._db: Any = None
         self.target = target
         self.dimensions = target.dimensions
+        # Phase 0b: Bedrock returns an RDS store's SEMANTIC results worst-first, scored by
+        # cosine distance — to Retrieve and to RetrieveAndGenerate's prompt alike. Reproduced
+        # by default; LOCAL_KB_RDS_FIX_ORDER=1 returns them best-first.
+        self.semantic_worst_first = os.environ.get("LOCAL_KB_RDS_FIX_ORDER") != "1"
         t = target
         self._insert = (
             f"INSERT INTO {t.table} ({t.id}, {t.vector}, {t.text}, {t.metadata}, {t.custom}) "
@@ -206,13 +212,63 @@ class RdsStore:
     # ------------------------------------------------------------------- reads
 
     def compile_filter(self, retrieval_filter: dict[str, Any]) -> Any:
-        raise NotImplementedError("RDS retrieval arrives in PGVECTOR_PLAN.md phase P4")
+        return to_sql(retrieval_filter, self.target.custom)
 
     def semantic(self, vector: list[float], k: int, compiled_filter: Any) -> list[Hit]:
-        raise NotImplementedError("RDS retrieval arrives in PGVECTOR_PLAN.md phase P4")
+        """Bedrock's statement: the k nearest by cosine distance, best first. The score is
+        the distance itself; ``semantic_worst_first`` tells Retrieve to reverse the list."""
+        t = self.target
+        where, params = _where(compiled_filter)
+        rows = self.db.execute(
+            f"SELECT {t.text}, {t.metadata}, {t.vector} <=> %s::vector as score, {t.custom} "
+            f"FROM {t.table}{where} ORDER BY score LIMIT {int(k)};",
+            [_vector(vector), *params],
+        ).fetchall()
+        return [self._hit(*row) for row in rows]
 
     def hybrid(self, text: str, vector: list[float], k: int, compiled_filter: Any) -> list[Hit]:
-        raise NotImplementedError("RDS retrieval arrives in PGVECTOR_PLAN.md phase P4")
+        """Bedrock's reciprocal rank fusion, in one statement: each side ranks its top
+        ``2k`` (GUESS: the capture had k = 5 and LIMIT 10), and a row scores
+        ``Σ 1/(60 + rank) × 61/2``, so first on both sides is 1.0. Best first."""
+        t = self.target
+        where, params = _where(compiled_filter)  # GUESS: the capture had no filtered HYBRID
+        lexical_filter = f" AND ({compiled_filter[0]})" if compiled_filter else ""
+        q, pool = _vector(vector), 2 * int(k)
+        sql = (
+            "WITH hybrid AS (SELECT searches.id, "
+            "(sum(COALESCE(1.0 / (60 + searches.rank), 0.0)) * 61.0/2) AS score FROM ( "
+            f"( SELECT {t.id}, rank() OVER (ORDER BY {t.vector} <=> %s::vector) AS rank "
+            f"FROM {t.table}{where} ORDER BY {t.vector} <=> %s::vector LIMIT {pool} ) UNION ALL "
+            f"( SELECT {t.id}, rank() OVER (ORDER BY ts_rank(to_tsvector('simple', {t.text}), "
+            "plainto_tsquery('simple', %s)) DESC) AS rank "
+            f"FROM {t.table} WHERE plainto_tsquery('simple', %s) @@ to_tsvector('simple', "
+            f"{t.text}){lexical_filter} ORDER BY rank LIMIT {pool} )) searches "
+            f"GROUP BY searches.id ORDER BY score DESC LIMIT {int(k)}) "
+            f"SELECT m.{t.text}, m.{t.metadata}, hybrid.score, m.{t.custom} "
+            f"FROM {t.table} m JOIN hybrid ON m.{t.id} = hybrid.id ORDER by hybrid.score DESC"
+        )
+        rows = self.db.execute(sql, [q, *params, q, text, text, *params]).fetchall()
+        return [self._hit(*row) for row in rows]
+
+    def _hit(self, text: str, metadata: Any, score: Any, custom: dict[str, Any]) -> Hit:
+        """``metadata`` is the custom metadata column as stored, every number a float (the
+        page number too, ``1.0``), and no chunk id — as in fixtures/rds/retrieve-*.json."""
+        return Hit(
+            {
+                "content": {"text": text, "type": "TEXT"},
+                "location": {"s3Location": {"uri": custom[index.SOURCE_URI]}, "type": "S3"},
+                "metadata": {k: _floats(v) for k, v in custom.items()},
+                "score": float(score),
+            },
+            (metadata or {}).get("parentText"),
+        )
+
+
+def _where(compiled_filter: tuple[str, list[Any]] | None) -> tuple[str, list[Any]]:
+    if compiled_filter is None:
+        return "", []
+    sql, params = compiled_filter
+    return f" WHERE ({sql})", params
 
 
 def _vector(values: list[float]) -> str:

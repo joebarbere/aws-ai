@@ -300,6 +300,23 @@ Where it differs, on purpose or by necessity:
 - **Not built:** `RetrieveAndGenerateStream`, `IngestKnowledgeBaseDocuments`, reranking, implicit
   filters, and the foundation-model and Data Automation parsers.
 
+### The RDS (pgvector) store
+
+A knowledge base with `--store rds` keeps its chunks in the local Postgres, the way Bedrock keeps
+them in Aurora PostgreSQL, and runs the SQL Bedrock ran there in Phase 0b
+([fixtures/rds](fixtures/rds/README.md), [PGVECTOR_PLAN.md](PGVECTOR_PLAN.md)). Two behaviours
+come from AWS and are reproduced on purpose:
+
+- **SEMANTIC results come back worst-first, scored by cosine distance** (lower is better). The
+  set is the right one; Bedrock appears to sort distances as if they were similarities.
+  RetrieveAndGenerate's prompt gets the same reversed list. Set `LOCAL_KB_RDS_FIX_ORDER=1` for
+  best-first.
+- **HYBRID is reciprocal rank fusion with `plainto_tsquery`,** which needs every word of the
+  query in a chunk. An exact code like `ZX-4471` still ranks first, but a natural-language
+  question rarely matches lexically, so hybrid mostly returns the vector ranking. On the
+  20-question evaluation it scored 90/85/90, the same as SEMANTIC, where the OpenSearch store's
+  hybrid scores 100/95/100.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |

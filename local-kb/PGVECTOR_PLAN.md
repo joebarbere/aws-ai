@@ -272,51 +272,66 @@ Verification:
 - Unlike OpenSearch, superseded row versions do not skew HYBRID: `ts_rank` scores a row on its
   own, while BM25 uses statistics across the whole index.
 
-**Phase P4: the pgvector store, query side.**
+**Phase P4: the pgvector store, query side** ✅ done 2026-11-08.
 
-- **SEMANTIC:**
+- **SEMANTIC,** Bedrock's statement:
 
   ```sql
-  SELECT ..., embedding <=> $q AS d FROM t WHERE <filter> ORDER BY d LIMIT k
+  SELECT chunks, metadata, embedding <=> %s::vector as score, custom_metadata
+  FROM t [WHERE (<filter>)] ORDER BY score LIMIT k;
   ```
 
-  - With pgvector 0.8 `iterative_scan = relaxed_order`, a selective filter still returns k
-    rows, which is the equivalent of OpenSearch's efficient filtering.
-  - Without it, HNSW returns `ef_search` (40) candidates and then filters them, so a selective
-    filter can return fewer than k. Benchmark both settings, because this is pgvector's best
-    known pitfall.
-  - Score and order, as captured: `score` is the cosine distance, and the k rows are returned
-    **worst-first**. This is reproduced by default. A `LOCAL_KB_RDS_FIX_ORDER=1` switch returns
-    best-first instead, for anyone who wants usable output. The README calls out the bug.
-- **Filters → SQL over `custom_metadata`.** Use the captured forms verbatim:
-  - `equals` on a string: `( custom_metadata @> $1 or custom_metadata @> $2 )`, a scalar or a
-    one-element list;
-  - `equals` on a number or boolean: `@> $1`;
-  - `startsWith`: `(custom_metadata ->> $1) like $2`;
-  - ranges: `(custom_metadata ->> $k)::double precision >= <%f literal>`;
-  - `listContains`: `@> {"k": [v]}`;
-  - `andAll` maps to `( a and b )`.
-  - The forms that were not captured follow the same pattern and are marked `# GUESS`:
-    - `in` / `notIn` as or-ed / negated `@>`;
-    - `notEquals` as `NOT (… @> …)`, which also matches rows that lack the key;
-    - `stringContains` as `like '%v%'`;
-    - `orAll`.
-  - The four filter fixtures must give the RDS fixtures' chunk sets.
-- **HYBRID:** Bedrock's RRF statement, verbatim from the fixture:
-  - each side contributes its top `2k`; `# GUESS` for k ≠ 5;
-  - the fused score is `Σ 1/(60 + rank) × 61/2`;
-  - results come back best-first.
-  - **What this inherits from AWS:**
-    - `plainto_tsquery` ANDs every term, so a natural-language question rarely matches
-      lexically, and hybrid then reduces to the vector ranking.
-    - `ts_rank` has no IDF.
-    - Exact codes such as `ZX-4471` still match, which is the case hybrid search is for.
-  - **For the comparison**, the bench can switch the fusion: AWS's RRF on Postgres, against
-    this repo's min-max fusion on OpenSearch. That way "store" and "fusion" can be separated.
-    It can also try an OR'd `to_tsquery` as a non-faithful variant.
-  - ParadeDB `pg_search` and VectorChord-bm25 add BM25, and are noted as future options.
-- **Hierarchical chunking:** `parentText` lives in `metadata`, and the parent-collapse logic in
-  `retrieve.py` stays shared.
+  - The store returns the k rows best-first. Retrieve reverses them after trimming, because
+    the store sets `semantic_worst_first`; the score stays the distance.
+    `LOCAL_KB_RDS_FIX_ORDER=1` turns the reversal off.
+  - **RetrieveAndGenerate gets the reversed list too.** Phase 0b's invocation log shows the
+    same five passages as on OpenSearch Serverless, in exactly reverse order.
+  - Unfiltered, the planner uses the HNSW index, with `iterative_scan = relaxed_order`. With a
+    selective filter, it picks the GIN index on `custom_metadata` and sorts exactly. Benchmark
+    both, together with `iterative_scan = off`.
+- **Filters → SQL** (`filters.to_sql`). Validation is shared with OpenSearch's `to_query`, so
+  both stores refuse the same filters.
+  - The captured forms are used verbatim.
+  - The `# GUESS` forms are built from the same pieces:
+    - `notEquals` is `NOT (equals)`, which also matches rows without the key;
+    - `in` and `notIn` are or-ed equals, plain or negated;
+    - `stringContains` is `like` on the string or on any member of a string list;
+    - `orAll` is `( a or b )`.
+  - LIKE wildcards in a value are escaped (also a GUESS).
+- **HYBRID:** Bedrock's RRF statement, with the vector and query text bound rather than
+  inlined.
+  - Each side takes `LIMIT 2k` (`# GUESS` for k ≠ 5).
+  - A filter goes on both sides (`# GUESS`).
+  - Results come back best-first.
+- **Results:** `metadata` is the `custom_metadata` column with every number as a float (the page
+  number too) and no chunk id. RetrieveAndGenerate's de-duplication falls back to source plus
+  text when a result has no chunk id.
+
+Verification:
+
+- **Offline:**
+  - each of the 8 Retrieve fixture requests issues a statement identical to Bedrock's;
+  - the order is reversed by default, and kept with the switch;
+  - results have the fixture's shape.
+- **Against the local Postgres,** loaded with Phase 0b's 17 rows and their real
+  `custom_metadata`:
+  - 18 filters, covering every operator with the GUESS ones included, select exactly what a
+    Python reference of OpenSearch's semantics selects;
+  - SEMANTIC equals brute-force cosine order and distance;
+  - HYBRID scores equal `30.5/(60 + rank)` summed over both sides.
+- **Live `pg-kb` against the local OpenSearch `study-kb`,** on the 8 Aurora fixture queries:
+  - every SEMANTIC result set is identical to OpenSearch's, in exactly reverse order, which is
+    how Aurora relates to OpenSearch Serverless;
+  - the four filters return Aurora's chunk sets;
+  - `ZX-4471` ranks the dew heater guide first under HYBRID. It scores 0.9841, because Qwen
+    puts it third on the vector side where Titan put it first.
+- **The 20-question evaluation:**
+  - SEMANTIC scores 90/85/90, the same as OpenSearch.
+  - HYBRID scores 90/85/90, against OpenSearch's 100/95/100. With `plainto_tsquery`, neither
+    miss ("emergency stop", "raw frames kept") matches lexically, so hybrid falls back to the
+    vector ranking, as predicted.
+- RetrieveAndGenerate answers the fuse and strap questions correctly, citing the dew heater
+  guide.
 
 **Phase P5: API parity.**
 
@@ -522,7 +537,7 @@ These are hypotheses for P7 to confirm or overturn:
 | P1 ✅ | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged; live sync, sidecar rewrite and retrieve unchanged; eval 90/85/90 · 100/95/100 as before |
 | P2 ✅ | `postgres` service, `local_init.py pg`, RDS storage config accepted | `create-knowledge-base --store rds` works; schema identical to Aurora's; 149 tests pass |
 | P3 ✅ | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
-| P4 | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
+| P4 ✅ | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
 | P6 | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
 | P7 | runs on sample/medium/large; README results and a pros/cons verdict with measured numbers | — |

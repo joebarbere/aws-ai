@@ -23,7 +23,9 @@ from test_local_kb_ingest import DOCS, FakeS3
 
 from aws_ai.local_kb import cli
 from aws_ai.local_kb.control import ControlPlane
+from aws_ai.local_kb.filters import to_sql
 from aws_ai.local_kb.ingest import Services, run_job
+from aws_ai.local_kb.retrieve import retrieve
 from aws_ai.local_kb.store import store_for
 from aws_ai.local_kb.store_rds import RdsStore
 
@@ -64,6 +66,7 @@ class FakePostgres:
     def __init__(self) -> None:
         self.rows: dict[str, tuple[Any, ...]] = {}
         self.log: list[str] = []
+        self.search: list[tuple[Any, ...]] = []  # what a SEMANTIC or HYBRID statement returns
 
     @contextmanager
     def transaction(self) -> Iterator[None]:
@@ -95,6 +98,8 @@ class FakePostgres:
             )
         elif "pg_indexes" in sql:
             self.result = [("an_index", "…")]
+        elif sql.startswith(("SELECT chunks", "WITH hybrid")):
+            self.result = self.search
         return self
 
     def fetchall(self) -> list[tuple[Any, ...]]:
@@ -286,6 +291,94 @@ def test_a_table_without_bedrocks_indexes_fails_the_sync() -> None:
     assert "hnsw" in job["failureReasons"][-1]
 
 
+# ------------------------------------------------------------- query side
+
+
+def search_shape(sql: str) -> str:
+    """A search statement with its query vector and query text abstracted, whitespace
+    collapsed: Bedrock inlines both as literals, the store binds them."""
+    sql = re.sub(r"\$\d+", "%s", sql.replace("'[<1024 floats>]'::vector", "%s::vector"))
+    sql = re.sub(r"plainto_tsquery\('simple', '[^']*'\)", "plainto_tsquery('simple', %s)", sql)
+    return re.sub(r"\s+", " ", sql).strip()
+
+
+def test_every_captured_query_runs_bedrocks_sql() -> None:
+    """Each Retrieve fixture's request, sent to an RDS knowledge base, issues the statement
+    Bedrock issued for it on Aurora — filters, HYBRID's fusion, LIMIT and all."""
+    db = FakePostgres()
+    cp, services, _, kb_id, _, _ = phase0b(lambda _database: db)
+    captured = {
+        search_shape(sql)
+        for _, sql in bedrock_statements()
+        if sql.startswith(("SELECT chunks", "WITH hybrid")) and "LIMIT 1;" not in sql
+    }
+    requests = [fixture(f.name)["request"] for f in sorted(RDS.glob("retrieve-*.json"))]
+    assert len(requests) == 8
+    for request in requests:
+        db.log.clear()
+        retrieve(
+            cp,
+            services,
+            kb_id,
+            {"text": request["query"]},
+            {"vectorSearchConfiguration": request["vectorSearchConfiguration"]},
+        )
+        (ours,) = [s for s in db.log if s.startswith(("SELECT chunks", "WITH hybrid"))]
+        assert search_shape(ours) in captured, request
+
+
+def aurora_row(text: str, score: float) -> tuple[Any, ...]:
+    custom = {"x-amz-bedrock-kb-source-uri": "s3://kb-data/kb/a.txt", "revision": 3.0}
+    return (text, {"sourceUrl": "s3://kb-data/kb/a.txt"}, score, custom)
+
+
+@pytest.mark.parametrize("fix", [False, True])
+def test_semantic_comes_back_worst_first_unless_fixed(
+    fix: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Phase 0b: Bedrock reverses an RDS store's SEMANTIC results and keeps the distance as
+    the score. HYBRID is best-first. LOCAL_KB_RDS_FIX_ORDER=1 undoes the reversal."""
+    if fix:
+        monkeypatch.setenv("LOCAL_KB_RDS_FIX_ORDER", "1")
+    db = FakePostgres()
+    cp, services, _, kb_id, _, _ = phase0b(lambda _database: db)
+    db.search = [aurora_row("best", 0.1), aurora_row("next", 0.2), aurora_row("worst", 0.3)]
+    semantic = retrieve(cp, services, kb_id, {"text": "q"})["retrievalResults"]
+    order = ["best", "next", "worst"] if fix else ["worst", "next", "best"]
+    assert [r["content"]["text"] for r in semantic] == order
+    assert [r["score"] for r in semantic] == [0.1, 0.2, 0.3] if fix else [0.3, 0.2, 0.1]
+    hybrid = retrieve(
+        cp,
+        services,
+        kb_id,
+        {"text": "q"},
+        {"vectorSearchConfiguration": {"overrideSearchType": "HYBRID"}},
+    )["retrievalResults"]
+    assert [r["content"]["text"] for r in hybrid] == ["best", "next", "worst"]
+
+
+def test_results_have_bedrocks_shape() -> None:
+    db = FakePostgres()
+    cp, services, _, kb_id, _, _ = phase0b(lambda _database: db)
+    custom = fixture("index-documents.json")["rows"][0]["custom_metadata"]
+    pdf = next(
+        r["custom_metadata"]
+        for r in fixture("index-documents.json")["rows"]
+        if "x-amz-bedrock-kb-document-page-number" in r["custom_metadata"]
+    )
+    db.search = [("a", {"sourceUrl": "u"}, 0.25, custom), ("b", {"sourceUrl": "u"}, 0.5, pdf)]
+    results = retrieve(cp, services, kb_id, {"text": "q"})["retrievalResults"]
+    aws = fixture("retrieve-hybrid-keyword.json")["retrievalResults"]
+    assert all(set(r) == set(aws[0]) for r in results)
+    assert "x-amz-bedrock-kb-chunk-id" not in results[0]["metadata"]
+    assert results[0]["metadata"]["x-amz-bedrock-kb-document-page-number"] == 1.0
+    assert isinstance(results[0]["metadata"]["x-amz-bedrock-kb-document-page-number"], float)
+    assert results[0]["location"] == {
+        "s3Location": {"uri": pdf["x-amz-bedrock-kb-source-uri"]},
+        "type": "S3",
+    }
+
+
 # ---------------------------------------------------------------------- live
 
 
@@ -360,3 +453,149 @@ def test_phase0b_sequence_against_the_local_postgres(live: tuple[Any, str], tmp_
         r[1] for r in rows if r[1]["x-amz-bedrock-kb-source-uri"].endswith("dew-heater-guide.md")
     ]
     assert dew and all(c["revision"] == 4.0 for c in dew)
+
+
+def matches(node: dict[str, Any], meta: dict[str, Any]) -> bool:
+    """What each RetrievalFilter operator means, as the OpenSearch store implements it: the
+    reference for the SQL forms, captured and GUESS alike."""
+    ((op, arg),) = node.items()
+    if op == "andAll":
+        return all(matches(n, meta) for n in arg)
+    if op == "orAll":
+        return any(matches(n, meta) for n in arg)
+    key, value = arg["key"], arg["value"]
+    have = meta.get(key)
+    members = have if isinstance(have, list) else [have]
+
+    def equals(v: Any) -> bool:
+        return key in meta and (have == v or (isinstance(have, list) and v in have))
+
+    if op == "equals":
+        return equals(value)
+    if op == "notEquals":
+        return not equals(value)
+    if op == "in":
+        return any(equals(v) for v in value)
+    if op == "notIn":
+        return not any(equals(v) for v in value)
+    if op == "listContains":
+        return isinstance(have, list) and value in have
+    if op == "startsWith":
+        return isinstance(have, str) and have.startswith(value)
+    if op == "stringContains":
+        return any(isinstance(m, str) and value in m for m in members)
+    if not isinstance(have, int | float) or isinstance(have, bool):
+        return False
+    return {
+        "greaterThan": have > value,
+        "greaterThanOrEquals": have >= value,
+        "lessThan": have < value,
+        "lessThanOrEquals": have <= value,
+    }[op]
+
+
+FILTERS = [
+    {"equals": {"key": "department", "value": "operations"}},
+    {"equals": {"key": "revision", "value": 3}},
+    {"equals": {"key": "safety_critical", "value": True}},
+    {"equals": {"key": "tags", "value": "heater"}},  # a string equals also matches list members
+    {"notEquals": {"key": "department", "value": "operations"}},
+    {"in": {"key": "department", "value": ["operations", "membership"]}},
+    {"notIn": {"key": "department", "value": ["operations", "membership"]}},
+    {
+        "startsWith": {
+            "key": "x-amz-bedrock-kb-source-uri",
+            "value": "s3://aws-ai-study-data-000000000000/kb/t",
+        }
+    },
+    {"startsWith": {"key": "department", "value": "op_"}},  # LIKE wildcards are literal
+    {"stringContains": {"key": "department", "value": "era"}},
+    {"stringContains": {"key": "tags", "value": "eat"}},
+    {"listContains": {"key": "tags", "value": "heater"}},
+    {"greaterThan": {"key": "revision", "value": 2}},
+    {"greaterThanOrEquals": {"key": "effective_date", "value": 20261001}},
+    {"lessThan": {"key": "x-amz-bedrock-kb-document-page-number", "value": 2}},
+    {"lessThanOrEquals": {"key": "revision", "value": 1.5}},
+    {
+        "andAll": [
+            {"equals": {"key": "safety_critical", "value": True}},
+            {"greaterThanOrEquals": {"key": "effective_date", "value": 20261001}},
+            {"listContains": {"key": "tags", "value": "heater"}},
+        ]
+    },
+    {
+        "orAll": [
+            {"equals": {"key": "department", "value": "membership"}},
+            {"listContains": {"key": "tags", "value": "dew"}},
+        ]
+    },
+]
+
+
+def load_aurora_rows(db: Any, table: str) -> list[dict[str, Any]]:
+    """Phase 0b's 17 rows, with their real custom_metadata, and small made-up vectors."""
+    from aws_ai.local_kb.store_rds import _jsonb
+
+    rows = fixture("index-documents.json")["rows"]
+    for n, row in enumerate(rows):
+        vector = [1.0, n / 4, (n % 3) / 2, 0.5]
+        db.execute(
+            f"INSERT INTO {table} (id, embedding, chunks, metadata, custom_metadata) "
+            "VALUES (%s, %s::vector, %s, %s, %s)",
+            (
+                row["id"],
+                str(vector),
+                row["chunks"],
+                json.dumps(row["metadata"]),
+                _jsonb(row["custom_metadata"]),
+            ),
+        )
+        row["vector"] = vector
+    return rows
+
+
+@pytest.mark.parametrize("node", FILTERS, ids=lambda n: json.dumps(n)[:60])
+def test_filters_select_what_they_mean(live: tuple[Any, str], node: dict[str, Any]) -> None:
+    db, table = live
+    rows = load_aurora_rows(db, table)
+    sql, params = to_sql(node, "custom_metadata")
+    got = {r[0] for r in db.execute(f"SELECT chunks FROM {table} WHERE ({sql})", params).fetchall()}
+    want = {r["chunks"] for r in rows if matches(node, r["custom_metadata"])}
+    assert got == want
+
+
+def cosine_distance(a: list[float], b: list[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
+    norm = (sum(x * x for x in a) * sum(y * y for y in b)) ** 0.5
+    return 1 - dot / norm
+
+
+def test_semantic_and_hybrid_against_the_local_postgres(live: tuple[Any, str]) -> None:
+    db, table = live
+    rows = load_aurora_rows(db, table)
+    _, services, _, _, _, _ = phase0b(lambda _database: db)
+    kb = {
+        "storageConfiguration": cli.default_rds_storage_configuration(),
+        "knowledgeBaseConfiguration": cli.default_knowledge_base_configuration(DIMS),
+    }
+    kb["storageConfiguration"]["rdsConfiguration"]["tableName"] = table
+    store = store_for(kb, services)
+    q = [0.2, 1.0, 0.0, 0.3]
+    by_distance = sorted(rows, key=lambda r: cosine_distance(r["vector"], q))
+
+    hits = store.semantic(q, 5, None)  # best first; Retrieve reverses
+    assert [h.result["content"]["text"] for h in hits] == [r["chunks"] for r in by_distance[:5]]
+    for hit, row in zip(hits, by_distance, strict=False):
+        assert hit.result["score"] == pytest.approx(cosine_distance(row["vector"], q), abs=1e-6)
+
+    # One chunk has the code; it ranks first lexically, so its fused score is
+    # 30.5/61 + 30.5/(60 + its vector rank), and every other row scores 30.5/(60 + rank).
+    hits = store.hybrid("ZX-4471", q, 5, None)
+    rank = {r["chunks"]: n for n, r in enumerate(by_distance, 1)}
+    coded = next(r["chunks"] for r in rows if "ZX-4471" in r["chunks"])
+    assert hits[0].result["content"]["text"] == coded
+    for hit in hits:
+        text = hit.result["content"]["text"]
+        vector_part = 30.5 / (60 + rank[text]) if rank[text] <= 10 else 0.0
+        expected = vector_part + (30.5 / 61 if text == coded else 0.0)
+        assert hit.result["score"] == pytest.approx(expected, abs=1e-9)

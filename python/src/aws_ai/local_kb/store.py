@@ -42,6 +42,8 @@ class Hit:
 
 class VectorStore(Protocol):
     dimensions: int
+    # Whether Bedrock hands this store's SEMANTIC results back worst-first (RDS does).
+    semantic_worst_first: bool
 
     def ensure(self) -> None:
         """Create the index or table if it is missing."""
@@ -63,7 +65,8 @@ class VectorStore(Protocol):
     def compile_filter(self, retrieval_filter: dict[str, Any]) -> Any:
         """Validate a ``RetrievalFilter`` and translate it; raises ValidationException."""
 
-    def semantic(self, vector: list[float], k: int, compiled_filter: Any) -> list[Hit]: ...
+    def semantic(self, vector: list[float], k: int, compiled_filter: Any) -> list[Hit]:
+        """The k nearest, best first."""
 
     def hybrid(self, text: str, vector: list[float], k: int, compiled_filter: Any) -> list[Hit]: ...
 
