@@ -331,6 +331,7 @@ python/src/aws_ai/local_kb/
   parse.py, chunking.py, embed.py
   store.py             the vector-store seam: StoredChunk, Hit, store_for()
   store_opensearch.py  the OpenSearch store: layout, k-NN, hybrid pipeline, result shape
+  store_rds.py         the RDS (pgvector) store: Bedrock's SQL, captured on Aurora
   index.py, opensearch.py, filters.py   OpenSearch index body, client, RetrievalFilter → query
   trigger.py           queue + ETag poll → ingestion jobs
   retrieve.py          Retrieve: validation, embedding, HIERARCHICAL collapse

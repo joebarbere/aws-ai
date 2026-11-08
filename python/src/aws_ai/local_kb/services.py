@@ -44,6 +44,24 @@ def local_services(env: dict[str, str] | None = None) -> Services:
         # Loaded on first use: only chunking needs the tokenizer, and it downloads once.
         count_tokens=lambda text: qwen_token_counter()(text),
         chat=lm_studio_chat(),
+        postgres=lambda database: _postgres(database, values),
+    )
+
+
+def _postgres(database: str, values: dict[str, str]) -> Any:
+    """A connection as bedrock_user: the role AWS's guide creates, and Bedrock's credentials
+    secret names. Autocommit, as each Data API call is; the store opens transactions itself."""
+    if "BEDROCK_PG_PASSWORD" not in values:
+        raise SystemExit(f"{config.env_file()} lacks BEDROCK_PG_PASSWORD. Run `make local-up`.")
+    import psycopg
+
+    return psycopg.connect(
+        host=config.PG_HOST,
+        port=config.PG_PORT,
+        dbname=database,
+        user=config.PG_USER,
+        password=values["BEDROCK_PG_PASSWORD"],
+        autocommit=True,
     )
 
 

@@ -58,6 +58,7 @@ uv run local-kb serve --watch      # bedrock-agent + bedrock-agent-runtime for b
 | `embed` | LM Studio embeddings (Titan-shaped) and chat (Converse-shaped) |
 | `store` | The vector-store seam: store-neutral chunks and hits, and `store_for()` by storage type |
 | `store_opensearch` | The OpenSearch store: Bedrock's document layout, k-NN and hybrid search, result shape |
+| `store_rds` | The RDS (Aurora PostgreSQL + pgvector) store: Bedrock's table layout and the SQL it runs |
 | `index`, `opensearch` | The vector index Bedrock expects, and a minimal OpenSearch client |
 | `trigger` | Bucket events and an ETag poll, debounced into ingestion jobs |
 | `filters`, `retrieve` | `RetrievalFilter` → OpenSearch, and Retrieve (SEMANTIC and HYBRID) |

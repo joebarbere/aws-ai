@@ -84,4 +84,10 @@ def store_for(knowledge_base: dict[str, Any], services: Services) -> VectorStore
         from aws_ai.local_kb.store_opensearch import OpenSearchStore, Target
 
         return OpenSearchStore(services.opensearch, Target.of(knowledge_base))
+    if storage["type"] == "RDS":
+        from aws_ai.local_kb.store_rds import RdsStore, RdsTarget
+
+        if services.postgres is None:
+            raise ValueError("this knowledge base uses RDS storage, and no Postgres is configured")
+        return RdsStore(services.postgres, RdsTarget.of(knowledge_base))
     raise ValueError(f"no local store for storage type {storage['type']}")
