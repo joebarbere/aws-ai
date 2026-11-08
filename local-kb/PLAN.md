@@ -358,7 +358,34 @@ Qwen's Hugging Face repo.
 - **Fallback embedder:** the installed `nomic-embed-text-v1.5`, with `LOCAL_KB_EMBED_DIMS=768`.
   The index dimension follows config: the local version of the "dimensions must match" lesson.
 
-### Phase 3 — Control plane (`control.py`, `ids.py`, `cli.py`)
+### Phase 3 — Control plane (`control.py`, `ids.py`, `cli.py`) ✅ done 2026-11-08
+
+`python/src/aws_ai/local_kb/`:
+
+- `errors.py`: `ValidationException`, `ResourceNotFoundException` and `ConflictException`, with
+  AWS's codes and HTTP statuses.
+- `ids.py`: 10-character IDs, and chunk IDs in the `1%3A0%3A…` format.
+- `config.py`: endpoints and field names.
+- `control.py`: the SQLite store.
+- `cli.py`: the `local-kb` command, mirroring `aws bedrock-agent` verbs, JSON output and the
+  `An error occurred (…)` error line.
+
+28 new offline tests, 53 in total. They check output key sets against the Phase 0 fixtures, every
+chunking range from the botocore model, the one-running-job-per-knowledge-base rule, and
+deletion policies.
+
+How this differs from the sketch below:
+
+- **Storage is described as `OPENSEARCH_MANAGED_CLUSTER`** (a `domainEndpoint` of
+  `https://127.0.0.1:9200`), which fits a self-hosted cluster better than the Serverless type.
+- **The embedding model is the AWS-shaped ARN
+  `arn:aws:bedrock:us-east-1::foundation-model/kb-embed`.** Its model id is the LM Studio
+  identifier, so botocore accepts it and Phase 4 needs no lookup table.
+- **Deletion takes a `purge` callback** that the control plane calls under
+  `dataDeletionPolicy: DELETE`, so the control plane stays free of OpenSearch.
+- **`inclusionPrefixes` is capped at one prefix**, as the API model requires.
+- **There is no update operation,** because chunking is fixed at creation.
+
 
 SQLite at `local-kb/.state/control.db` (gitignored):
 

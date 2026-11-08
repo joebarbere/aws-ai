@@ -5,8 +5,8 @@ API shapes and ingestion behaviour as the cloud `knowledge_base` module, at $0/m
 ~$350. `PLAN.md` has the design and the build phases. `fixtures/` holds what a real KB produced,
 captured to test against.
 
-**Status:** Phases 0–2 (ground truth, infrastructure, models) are done. The ingestion worker and
-runtime API come next.
+**Status:** Phases 0–3 (ground truth, infrastructure, models, control plane) are done. Ingestion and
+the runtime API come next.
 
 ## Run it
 
