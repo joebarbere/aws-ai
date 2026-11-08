@@ -5,8 +5,8 @@ API shapes and ingestion behaviour as the cloud `knowledge_base` module, at $0/m
 ~$350. `PLAN.md` has the design and the build phases. `fixtures/` holds what a real KB produced,
 captured to test against.
 
-**Status:** Phases 0–3 (ground truth, infrastructure, models, control plane) are done. Ingestion and
-the runtime API come next.
+**Status:** Phases 0–4 (ground truth, infrastructure, models, control plane, ingestion) are done.
+Retrieve and RetrieveAndGenerate come next.
 
 ## Run it
 
@@ -20,6 +20,19 @@ make local-models  # LM Studio server on :1234 with kb-embed and kb-llm (models:
 make local-down    # stop, keep data
 make local-wipe    # stop and delete the volumes: the local `terraform destroy`
 ```
+
+The knowledge base itself is driven by `local-kb`, which takes the `aws bedrock-agent` verbs:
+
+```bash
+cd python
+uv run local-kb create-knowledge-base --name study-kb
+uv run local-kb create-data-source --knowledge-base-id <kb> --name docs   # s3://kb-data/kb/
+uv run local-kb sync --knowledge-base-id <kb> --data-source-id <ds>       # the console's Sync button
+uv run local-kb list-ingestion-jobs --knowledge-base-id <kb> --data-source-id <ds>
+```
+
+`make local-watch` syncs automatically: upload under `s3://kb-data/kb/`, and a job runs 10
+seconds after the last change.
 
 | Service | URL | Stands in for |
 |---|---|---|

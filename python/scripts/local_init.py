@@ -185,7 +185,13 @@ def ensure_opensearch_user(admin_password: str, kb_password: str) -> None:
         "index_permissions": [
             {
                 "index_patterns": [INDEX_PATTERN],
-                "allowed_actions": ["crud", "search", "create_index", "indices:admin/mapping/put"],
+                "allowed_actions": [
+                    "crud",
+                    "search",
+                    "create_index",
+                    "indices:admin/get",  # HEAD <index>: does the vector index exist yet?
+                    "indices:admin/mapping/put",
+                ],
             }
         ],
     }
@@ -209,6 +215,24 @@ def ensure_opensearch_user(admin_password: str, kb_password: str) -> None:
     print(f"OpenSearch user {USER} -> role {ROLE} on {INDEX_PATTERN}")
 
 
+def clear_create_index_block(admin_password: str) -> None:
+    """OpenSearch persists ``cluster.blocks.create_index`` when a node crosses its high disk
+    watermark, and keeps it after the disk recovers or the watermarks change. compose.yaml sets
+    the watermarks as free space; this lifts a block left over from before."""
+    _, settings = opensearch(
+        "GET", "/_cluster/settings?flat_settings=true", "admin", admin_password
+    )
+    if settings.get("persistent", {}).get("cluster.blocks.create_index") == "true":
+        opensearch(
+            "PUT",
+            "/_cluster/settings",
+            "admin",
+            admin_password,
+            {"persistent": {"cluster.blocks.create_index": None}},
+        )
+        print("cleared a leftover create-index block (the disk crossed a watermark earlier)")
+
+
 def init() -> None:
     env = load_env()
     s3 = s3_client(env)
@@ -220,6 +244,7 @@ def init() -> None:
     ensure_bucket(s3)
     ensure_bucket_event(s3)
     ensure_opensearch_user(admin, env["BEDROCK_KB_PASSWORD"])
+    clear_create_index_block(admin)
 
 
 def main() -> int:

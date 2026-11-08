@@ -7,6 +7,10 @@ README works here with ``aws bedrock-agent`` swapped for ``local-kb``:
     local-kb create-data-source --knowledge-base-id ABCDEFGHIJ --name docs
     local-kb start-ingestion-job --knowledge-base-id ABCDEFGHIJ --data-source-id KLMNOPQRST
     local-kb get-ingestion-job --knowledge-base-id ... --data-source-id ... --ingestion-job-id ...
+
+Three commands have no AWS CLI equivalent, because on AWS the service runs jobs itself:
+``sync`` starts a job and runs it now (the console's Sync button), ``run-pending`` runs every
+queued job, and ``watch`` syncs on bucket changes (the S3 event → Lambda wiring).
 """
 
 from __future__ import annotations
@@ -60,6 +64,42 @@ def _json_arg(text: str) -> Any:
         raise argparse.ArgumentTypeError(f"not valid JSON: {exc}") from exc
 
 
+def _services() -> Any:
+    # Imported late: these need the running stack and the `local` extra, which the plain
+    # control-plane commands do not.
+    from aws_ai.local_kb.services import local_services
+
+    return local_services()
+
+
+def _purge(cp: ControlPlane) -> Callable[[dict[str, Any]], None]:
+    from aws_ai.local_kb.services import purger
+
+    return purger(cp, _services())  # type: ignore[no-any-return]
+
+
+def _sync(cp: ControlPlane, kb: str, ds: str) -> dict[str, Any]:
+    from aws_ai.local_kb.ingest import run_job
+
+    return {"ingestionJob": run_job(cp, cp.start_ingestion_job(kb, ds), _services())}
+
+
+def _run_pending(cp: ControlPlane) -> dict[str, Any]:
+    from aws_ai.local_kb.ingest import run_pending
+
+    return {"ingestionJobs": run_pending(cp, _services())}
+
+
+def _watch(cp: ControlPlane, poll_seconds: float, debounce: float) -> None:
+    from aws_ai.local_kb.trigger import watch
+
+    print(f"watching kb-events and polling ETags every {poll_seconds:g}s; Ctrl-C to stop")
+    try:
+        watch(cp, _services(), poll_seconds=poll_seconds, debounce=debounce)
+    except KeyboardInterrupt:
+        pass
+
+
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
     # Each command declares only the ids it needs; argparse requires those, so "" never reaches
     # the control plane.
@@ -79,7 +119,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         },
         "get-knowledge-base": lambda: {"knowledgeBase": cp.get_knowledge_base(kb)},
         "list-knowledge-bases": lambda: {"knowledgeBaseSummaries": cp.list_knowledge_bases()},
-        "delete-knowledge-base": lambda: cp.delete_knowledge_base(kb),
+        "delete-knowledge-base": lambda: cp.delete_knowledge_base(kb, _purge(cp)),
         "create-data-source": lambda: {
             "dataSource": cp.create_data_source(
                 knowledge_base_id=kb,
@@ -99,13 +139,16 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         },
         "get-data-source": lambda: {"dataSource": cp.get_data_source(kb, ds)},
         "list-data-sources": lambda: {"dataSourceSummaries": cp.list_data_sources(kb)},
-        "delete-data-source": lambda: cp.delete_data_source(kb, ds),
+        "delete-data-source": lambda: cp.delete_data_source(kb, ds, _purge(cp)),
         "start-ingestion-job": lambda: {
             "ingestionJob": cp.start_ingestion_job(kb, ds, args.description)
         },
         "get-ingestion-job": lambda: {"ingestionJob": cp.get_ingestion_job(kb, ds, job)},
         "list-ingestion-jobs": lambda: {"ingestionJobSummaries": cp.list_ingestion_jobs(kb, ds)},
         "stop-ingestion-job": lambda: {"ingestionJob": cp.stop_ingestion_job(kb, ds, job)},
+        "sync": lambda: _sync(cp, kb, ds),
+        "run-pending": lambda: _run_pending(cp),
+        "watch": lambda: _watch(cp, args.poll_seconds, args.debounce),
     }
 
 
@@ -156,6 +199,11 @@ def build_parser() -> argparse.ArgumentParser:
     command("get-ingestion-job", "knowledge-base-id", "data-source-id", "ingestion-job-id")
     command("list-ingestion-jobs", "knowledge-base-id", "data-source-id")
     command("stop-ingestion-job", "knowledge-base-id", "data-source-id", "ingestion-job-id")
+    command("sync", "knowledge-base-id", "data-source-id")
+    command("run-pending")
+    p = command("watch")
+    p.add_argument("--poll-seconds", type=float, default=60, help="ETag poll; 0 turns it off")
+    p.add_argument("--debounce", type=float, default=10, help="Quiet seconds before syncing")
     return parser
 
 
@@ -178,7 +226,8 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 254
-    print(json.dumps(result, indent=4, default=_iso))
+    if result is not None:
+        print(json.dumps(result, indent=4, default=_iso))
     return 0
 
 

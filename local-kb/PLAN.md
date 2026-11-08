@@ -412,7 +412,51 @@ SQLite at `local-kb/.state/control.db` (gitignored):
 The CLI mirrors the AWS CLI verbs and output JSON: `create-knowledge-base`, `create-data-source`,
 `start-ingestion-job`, `get-ingestion-job`, `list-ingestion-jobs`, `delete-data-source`.
 
-### Phase 4 — Ingestion (`index.py`, `parse.py`, `chunking.py`, `embed.py`, `ingest.py`)
+### Phase 4 — Ingestion (`index.py`, `parse.py`, `chunking.py`, `embed.py`, `ingest.py`) ✅ done 2026-11-08
+
+**Replaying Phase 0 locally matches Bedrock on everything the fixtures record:**
+
+- **Ingestion counters:** both jobs, all 8 counters. Job 1 is 6 scanned / 2 metadata / 6 new;
+  job 2 is 5 / 2 / 1 modified / 1 metadata-modified / 1 deleted.
+- **The index mapping:** every field and type, including those dynamic mapping added.
+- **Chunk text:** all 17 chunks, character for character, with page numbers.
+- **Chunk fields and types:** identical to Bedrock's.
+- **The sidecar-only change:** rewritten in place under the same `_id`, with no embedding call
+  and `id` overwritten by the `_id`.
+
+A job over the sample documents takes about 1 s.
+
+What it took:
+
+- **Default chunking is sentence packing.** Chunks start *and* end on sentences. Whole sentences
+  are packed up to 300 tokens, and the next chunk repeats the trailing sentences that fit in 20%.
+- **Calibrating to Titan's tokenizer.** Tokens are counted with Qwen3's tokenizer and scaled.
+  Every scale from 1.11 to 1.16 Qwen tokens per Titan token reproduces all 12 inventory
+  boundaries; `chunking.QWEN_TOKENS_PER_TITAN_TOKEN = 1.13`.
+- **PDF parsing.** pypdf's layout extraction plus Bedrock's joining rules:
+  - wrapped lines: one space;
+  - paragraphs: three spaces;
+  - pages: nothing.
+- **Disk watermarks.** OpenSearch's defaults (85/90/95%) blocked index creation on a 94%-full
+  disk with 56 GB free. compose.yaml now sets the watermarks as free space (10/5/2 GB), and
+  `local_init.py` clears the persistent `cluster.blocks.create_index` such a block leaves behind.
+- **The worker role needed `indices:admin/get`** to check whether the index exists. Reading the
+  mapping stays admin-only.
+- **`local-kb watch` (`make local-watch`) is the trigger.** It long-polls kb-events, runs an ETag
+  poll every 60 s, waits 10 s after the last event, then syncs.
+  - Before starting a job it re-checks the bucket against the ledger. Delivery is at-least-once,
+    and a late duplicate event otherwise started a job with nothing to do.
+  - `local-kb sync` is the console's Sync button.
+
+18 new offline tests (71 in total):
+
+- parser output against Bedrock's stored text;
+- every chunking strategy;
+- the full Phase 0 sequence against fakes, asserting both fixture statistics and that only one
+  embedding call happens on the second sync.
+
+The sketch as first planned:
+
 
 **Index (`index.py`).** Create the index once, with only the fields Bedrock's own setup declares:
 

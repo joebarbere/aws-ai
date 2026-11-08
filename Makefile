@@ -1,5 +1,5 @@
 .PHONY: help fmt validate plan apply destroy test lint typecheck \
-	local-up local-down local-wipe local-init local-smoke local-models
+	local-up local-down local-wipe local-init local-smoke local-models local-watch
 
 help:
 	@echo "fmt        terraform fmt -recursive"
@@ -15,6 +15,7 @@ help:
 	@echo "local-init  bucket, bucket event, least-privilege OpenSearch user (idempotent)"
 	@echo "local-smoke check the storage behaviours the sync depends on"
 	@echo "local-models start LM Studio's server and load kb-embed + kb-llm"
+	@echo "local-watch sync knowledge bases as their buckets change (Ctrl-C to stop)"
 	@echo "local-down  stop the stack, keep data"
 	@echo "local-wipe  stop the stack and delete its volumes  <- the local terraform destroy"
 
@@ -55,6 +56,9 @@ local-init:
 
 local-smoke:
 	cd python && uv run python scripts/local_smoke.py
+
+local-watch:
+	cd python && uv run local-kb watch
 
 local-down:
 	$(LOCAL) down
