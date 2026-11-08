@@ -299,7 +299,9 @@ def ensure_postgres(env: dict[str, str], table: str | None = None, dimensions: i
     `bedrock_user`, so it owns them as on AWS. Bedrock validates this layout; it never creates
     it. Each RDS knowledge base needs a table of its own, as on AWS: pass ``table`` for more."""
     import psycopg
-    from rds_kb import DATABASE, ITERATIVE_SCAN, SETUP, TABLE, table_sql
+    from rds_kb import DATABASE, ITERATIVE_SCAN, SETUP, TABLE
+
+    from aws_ai.local_kb.store_rds import table_sql
 
     table = table or TABLE
 

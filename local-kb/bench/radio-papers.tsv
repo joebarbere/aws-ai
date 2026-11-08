@@ -1,0 +1,243 @@
+# arxiv_id	version	published	category	title
+# query: cat:astro-ph.IM AND (abs:"radio telescope" OR abs:"radio astronomy" OR abs:"radio interferometer" OR abs:"radio interferometry" OR abs:VLBI OR abs:"radio frequency interference" OR abs:"radio array" OR abs:"21 cm") AND submittedDate:[201501010000 TO 202610312359]
+# 240 of 1666 matches, every 6th
+1501.03219	1501.03219v2	2015-01-14	astro-ph.IM	On the use of shot noise for photon counting
+1501.05304	1501.05304v3	2015-01-21	astro-ph.IM	Bayesian Inference for Radio Observations
+1502.00312	1502.00312v1	2015-02-01	astro-ph.IM	Warkworth 12m VLBI Station: WARK12M - 2014
+1502.06678	1502.06678v1	2015-02-24	astro-ph.IM	Modeling of path delay in the neutral atmosphere: a paradigm shift
+1503.01405	1503.01405v1	2015-03-04	astro-ph.IM	PONDER - A Real time software backend for pulsar and IPS observations at the Ooty Radio Telescope
+1503.06203	1503.06203v1	2015-03-20	astro-ph.IM	GPU Kernels for High-Speed 4-Bit Astrophysical Data Processing
+1504.06579	1504.06579v1	2015-04-24	astro-ph.IM	Solving the polarization problem in ALMA-VLBI observations
+1505.02491	1505.02491v2	2015-05-11	astro-ph.IM	On the detection of global 21-cm signal from Reionization using interferometers
+1505.07540	1505.07540v2	2015-05-28	astro-ph.IM	The NANOGrav Nine-year Data Set: Observations, Arrival Time Measurements, and Analysis of 37 Millisecond Pulsars
+1506.09134	1506.09134v2	2015-06-30	astro-ph.IM	Measurement of the cosmic-ray energy spectrum above $10^{16}$ eV with the LOFAR Radboud Air Shower Array
+1507.07733	1507.07733v1	2015-07-28	astro-ph.IM	Prospects of GPGPU in the Auger Offline Software Framework
+1509.00186	1509.00186v1	2015-09-01	astro-ph.IM	A Real-time Coherent Dedispersion Pipeline for the Giant Metrewave Radio Telescope
+1509.05504	1509.05504v2	2015-09-18	astro-ph.IM	Gravitational Microlensing Events as a Target for SETI project
+1510.03477	1510.03477v1	2015-10-12	astro-ph.IM	Limits on Foreground Subtraction from Chromatic Beam Effects in Global Redshifted 21 cm Measurements
+1511.06597	1511.06597v1	2015-11-20	astro-ph.IM	LEAP: the large European array for pulsars
+1512.03550	1512.03550v1	2015-12-11	astro-ph.IM	The East-Asian VLBI Network
+1601.01466	1601.01466v1	2016-01-07	astro-ph.IM	Development of Lumped Element Kinetic Inductance Detectors for the W-Band
+1601.04452	1601.04452v3	2016-01-18	astro-ph.IM	Multi-source self-calibration: Unveiling the microJy population of compact radio sources
+1602.00838	1602.00838v1	2016-02-02	astro-ph.IM	Optical Observing Conditions at Delingha Station
+1602.04608	1602.04608v1	2016-02-15	astro-ph.IM	Effects of the Number of Active Receiver Channels on the Sensitivity of a Reflector Antenna System with a Multi-Beam Wideband Phased Array Feed
+1602.08065	1602.08065v3	2016-02-25	astro-ph.IM	Calibration of the EDGES High-Band Receiver to Observe the Global 21-cm Signature from the Epoch of Reionization
+1603.02126	1603.02126v3	2016-03-07	astro-ph.IM	An Efficient Feedback Calibration Algorithm for Direct Imaging Radio Telescopes
+1603.05990	1603.05990v1	2016-03-18	astro-ph.IM	The LOFAR Solar Imaging Pipeline and the LOFAR Solar Data Center
+1604.03273	1604.03273v1	2016-04-12	astro-ph.IM	Spectral calibration requirements of radio interferometers for Epoch of Reionisation science with the SKA
+1605.03980	1605.03980v3	2016-05-12	astro-ph.IM	Brute-Force Mapmaking with Compact Interferometers: A MITEoR Northern Sky Map from 128 MHz to 175 MHz
+1605.07619	1605.07619v1	2016-05-24	astro-ph.IM	Systematic biases in low frequency radio interferometric data due to calibration: the LOFAR EoR case
+1606.04683	1606.04683v1	2016-06-15	astro-ph.IM	Probing Ionospheric Structures using the LOFAR radio telescope
+1606.08701	1606.08701v1	2016-06-28	astro-ph.IM	The Hydrogen Epoch of Reionization Array (HERA). Improvement of the antenna response with a matching network and scientific impacts
+1607.03490	1607.03490v1	2016-07-12	astro-ph.IM	Intensity interferometry: Optical imaging with kilometer baselines
+1607.07740	1607.07740v1	2016-07-26	astro-ph.IM	Detecting Pulsars with Interstellar Scintillation in Variance Images
+1608.02407	1608.02407v1	2016-08-08	astro-ph.IM	Prospects for detecting ultra-high-energy particles with FAST
+1609.02097	1609.02097v2	2016-09-07	astro-ph.IM	A Fourier dimensionality reduction model for big data interferometric imaging
+1609.06590	1609.06590v1	2016-09-21	astro-ph.IM	Search for Cosmic Particles with the Moon and LOFAR
+1610.04140	1610.04140v1	2016-10-13	astro-ph.IM	Analysis of antenna position measurements and weather station network data during the ALMA Long Baseline Campaign of 2015
+1610.09014	1610.09014v2	2016-10-27	astro-ph.IM	The Case for a Publicly Available, Well-Instrumented GBT Operating at 20-115 GHz
+1611.09440	1611.09440v2	2016-11-29	astro-ph.IM	Pulsar Timing Array Based Search for Supermassive Black Hole Binaries in the Square Kilometer Array Era
+1612.02958	1612.02958v1	2016-12-09	astro-ph.IM	High-precision Astrometric Millimeter Very Long Baseline Interferometry Using a New Method for Multi-Frequency Calibration
+1612.07917	1612.07917v1	2016-12-23	astro-ph.IM	MANTIS: The Mid-Frequency Aperture Array Transient and Intensity-Mapping System
+1701.04538	1701.04538v1	2017-01-17	astro-ph.IM	SETIBURST: A Robotic, Commensal, Realtime Multi-Science Backend for the Arecibo Telescope
+1702.00844	1702.00844v1	2017-02-02	astro-ph.IM	Correlating Radio Astronomy Signals with Many-Core Hardware
+1702.05126	1702.05126v2	2017-02-16	astro-ph.IM	Spectral performance of SKA Log-periodic Antennas I: Mitigating spectral artefacts in SKA1-LOW 21-cm cosmology experiments
+1703.00625	1703.00625v1	2017-03-02	astro-ph.IM	The Receiver System for the Ooty Wide Field Array
+1703.09673	1703.09673v1	2017-03-28	astro-ph.IM	The Sardinia Radio Telescope: From a Technological Project to a Radio Observatory
+1705.04435	1705.04435v1	2017-05-12	astro-ph.IM	Simulation and Testing of a Linear Array of Modified Four-Square Feed Antennas for the Tianlai Cylindrical Radio Telescope
+1705.08543	1705.08543v1	2017-05-23	astro-ph.IM	Observing Pulsars with a Phased Array Feed at the Parkes Telescope
+1706.01501	1706.01501v2	2017-06-05	astro-ph.IM	Direction Dependent Corrections in Polarimetric Radio Imaging I : Characterizing the effects of the primary beam on full Stokes imaging
+1707.00908	1707.00908v4	2017-07-04	astro-ph.IM	The NIKA2 large field-of-view millimeter continuum camera for the 30-m IRAM telescope
+1707.06024	1707.06024v2	2017-07-19	astro-ph.IM	The Breakthrough Listen Search for Intelligent Life: A Wideband Data Recorder System for the Robert C. Byrd Green Bank Telescope
+1708.06156	1708.06156v1	2017-08-21	astro-ph.IM	A search for optical bursts from the repeating fast radio burst FRB 121102
+1709.03419	1709.03419v1	2017-09-11	astro-ph.IM	Planetary Radio Interferometry and Doppler Experiment (PRIDE) Technique: a Test Case of the Mars Express Phobos Fly-by. 2. Doppler tracking: Formulation of observed and computed values, and noise budget
+1709.07167	1709.07167v1	2017-09-21	astro-ph.IM	The Science Case for Simultaneous mm-Wavelength Receivers in Radio Astronomy
+1710.08576	1710.08576v1	2017-10-24	astro-ph.IM	Implementing and Characterizing Real-time Broadband RFI Excision for the GMRT Wideband Backend
+1710.10041	1710.10041v1	2017-10-27	astro-ph.IM	A comparative study of amplitude calibrations for East-Asia VLBI Network: a-priori and template spectrum methods
+1711.01286	1711.01286v1	2017-11-03	astro-ph.IM	Dynamical Imaging with Interferometry
+1711.03173	1711.03173v1	2017-11-08	astro-ph.IM	Global 21-cm signal extraction from foreground and instrumental effects I: Pattern recognition framework for separation using training sets
+1711.06124	1711.06124v1	2017-11-16	astro-ph.IM	Minimal Re-computation for Exploratory Data Analysis in Astronomy
+1711.10221	1711.10221v2	2017-11-28	astro-ph.IM	Data Multiplexing in Radio Interferometric Calibration
+1712.02078	1712.02078v2	2017-12-06	astro-ph.IM	Faceting for direction-dependent spectral deconvolution
+1712.06950	1712.06950v3	2017-12-19	astro-ph.IM	French SKA White Book - The French Community towards the Square Kilometre Array
+1801.04571	1801.04571v1	2018-01-14	astro-ph.IM	VLBI imaging of M81* at 3.4 mm with source-frequency phase-referencing
+1802.02315	1802.02315v1	2018-02-07	astro-ph.IM	EMC design for the actuators of FAST reflector
+1802.08467	1802.08467v1	2018-02-23	astro-ph.IM	Community Paper on Radio Astronomy Infrastructures
+1803.03084	1803.03084v1	2018-03-08	astro-ph.IM	Applying Deep Learning to Fast Radio Burst Classification
+1803.11235	1803.11235v1	2018-03-29	astro-ph.IM	The CHIME Fast Radio Burst Project: System Overview
+1804.05335	1804.05335v1	2018-04-15	astro-ph.IM	A GPU implementation of the Correlation Technique for Real-time Fourier Domain Pulsar Acceleration Searches
+1805.08259	1805.08259v1	2018-05-21	astro-ph.IM	An imaging algorithm for a lunar orbit interferometer array
+1806.06606	1806.06606v3	2018-06-18	astro-ph.IM	On optimising cost and value in compute systems for radio astronomy
+1807.02701	1807.02701v1	2018-07-07	astro-ph.IM	DeepSource: Point Source Detection using Deep Learning
+1807.09239	1807.09239v3	2018-07-24	astro-ph.IM	A fast and exact $w$-stacking and $w$-projection hybrid algorithm for wide-field interferometric imaging
+1808.05424	1808.05424v1	2018-08-16	astro-ph.IM	Single-pulse classifier for the LOFAR Tied-Array All-sky Survey
+1808.09046	1808.09046v2	2018-08-27	astro-ph.IM	Microarcsecond VLBI pulsar astrometry with PSR$π$ II. parallax distances for 57 pulsars
+1808.10735	1808.10735v1	2018-08-31	astro-ph.IM	Fast and Reproducible LOFAR Workflows with AGLOW
+1809.06851	1809.06851v1	2018-09-18	astro-ph.IM	Assessment of ionospheric activity tolerances for Epoch of Reionisation science with the Murchison Widefield Array
+1810.06568	1810.06568v2	2018-10-15	astro-ph.IM	Science with an ngVLA: SETI Searches for Evidence of Intelligent Life in the Galaxy
+1810.08933	1810.08933v4	2018-10-21	astro-ph.IM	The localization of single pulse in VLBI observation
+1811.01496	1811.01496v1	2018-11-05	astro-ph.IM	Air Shower Detection by Arrays of Radio Antennas (ISVHECRI 2018)
+1811.10454	1811.10454v1	2018-11-26	astro-ph.IM	Square Kilometre Array Science Data Challenge 1
+1812.03070	1812.03070v1	2018-12-07	astro-ph.IM	Present status and prospects of the Tunka Radio Extension
+1901.02980	1901.02980v2	2019-01-10	astro-ph.IM	The FHD/$\boldsymbol{\varepsilon}$ppsilon Epoch of Reionization Power Spectrum Pipeline
+1901.07756	1901.07756v1	2019-01-23	astro-ph.IM	Science Opportunities and Challenges Associated with SKA Big Data
+1902.01776	1902.01776v1	2019-02-05	astro-ph.IM	Radio detection in the multi-messenger context
+1903.01582	1903.01582v1	2019-03-04	astro-ph.IM	Venus Express radio occultation observed by PRIDE
+1903.06383	1903.06383v1	2019-03-15	astro-ph.IM	Pulsar Candidate Selection Using Ensemble Networks for FAST Drift-Scan Survey
+1903.09539	1903.09539v1	2019-03-22	astro-ph.IM	Imaging Black Holes and Jets with a VLBI Array Including Multiple Space-Based Telescopes
+1903.11796	1903.11796v1	2019-03-28	astro-ph.IM	Source-Frequency Phase-Referencing Observation of AGNs with KaVA Using Simultaneous Dual-Frequency Receiving
+1904.02686	1904.02686v1	2019-04-04	astro-ph.IM	A multi-wavelength pipeline for pulsar searches
+1904.11422	1904.11422v1	2019-04-25	astro-ph.IM	A Real-Time, All-Sky, High Time Resolution, Direct Imager for the Long Wavelength Array
+1905.04986	1905.04986v1	2019-05-13	astro-ph.IM	Radio detection of cosmic rays with the Auger Engineering Radio Array
+1906.01093	1906.01093v3	2019-06-03	astro-ph.IM	Absolving the SSINS of Precision Interferometric Radio Data: A New Technique for Mitigating Faint Radio Frequency Interference
+1906.08828	1906.08828v1	2019-06-20	astro-ph.IM	Metrics and Motivations for Earth-Space VLBI: Time-Resolving Sgr A* with the Event Horizon Telescope
+1907.00638	1907.00638v1	2019-07-01	astro-ph.IM	Concept of an Experimental Ultra Long-wavelength Radio Array
+1907.05263	1907.05263v1	2019-07-11	astro-ph.IM	Commensal, Multi-user Observations with an Ethernet-based Jansky Very Large Array
+1907.10193	1907.10193v1	2019-07-24	astro-ph.IM	Self-triggered radio detection and identification of cosmic air showers with the OVRO-LWA
+1908.03157	1908.03157v1	2019-08-08	astro-ph.IM	A Fiber Optic Based High Voltage System for Stellar Intensity Interferometry Observations
+1908.11232	1908.11232v1	2019-08-29	astro-ph.IM	Precision requirements for interferometric gridding in 21-cm power spectrum analysis
+1909.04893	1909.04893v1	2019-09-11	astro-ph.IM	GRANDProto300: a pathfinder with richastroparticle and radio-astronomy science case
+1909.11938	1909.11938v1	2019-09-26	astro-ph.IM	21 cm observations: calibration, strategies, observables
+1910.02895	1910.02895v1	2019-10-07	astro-ph.IM	Science with the Murchison Widefield Array: Phase I Results and Phase II Opportunities
+1910.12002	1910.12002v1	2019-10-26	astro-ph.IM	The DRAO Synthesis Telescope
+1911.01777	1911.01777v1	2019-11-05	astro-ph.IM	LRP 2020 Whitepaper: The Canadian Hydrogen Observatory and Radio-transient Detector (CHORD)
+1912.07704	1912.07704v2	2019-12-16	astro-ph.IM	Development of production-ready GPU data processing pipeline software for AstroAccelerate
+2001.02875	2001.02875v1	2020-01-09	astro-ph.IM	A flat-spectrum flare in S4 0444+63 revealed by a new implementation of multi-wavelength single-dish observations
+2001.10952	2001.10952v2	2020-01-29	astro-ph.IM	Concerns about ground based astronomical observations: a step to safeguard the astronomical sky
+2002.10024	2002.10024v1	2020-02-24	astro-ph.IM	Spacecraft Tracking Applications of the Square Kilometre Array
+2003.05116	2003.05116v1	2020-03-11	astro-ph.IM	Noise Temperature of Phased Array Radio Telescope: The Murchison Widefield Array and the Engineering Development Array
+2003.07358	2003.07358v3	2020-03-16	astro-ph.IM	Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations
+2003.10733	2003.10733v1	2020-03-24	astro-ph.IM	Antenna design for the SKA1-LOW and HERA super radio telescopes
+2004.06478	2004.06478v1	2020-04-08	astro-ph.IM	Offline and online reconstruction for radio interferometric imaging
+2005.01339	2005.01339v1	2020-05-04	astro-ph.IM	On the prospects of imaging Sagittarius A* from space
+2005.09122	2005.09122v1	2020-05-18	astro-ph.IM	Anchored in Shadows: Tying the Celestial Reference Frame Directly to Black Hole Event Horizons
+2005.11118	2005.11118v2	2020-05-22	astro-ph.IM	Supermassive Binary Black Hole Evolution can be traced by a small SKA Pulsar Timing Array
+2006.02955	2006.02955v2	2020-06-04	astro-ph.IM	MeerKATHI -- an end-to-end data reduction pipeline for MeerKAT and other radio telescopes
+2007.02347	2007.02347v1	2020-07-05	astro-ph.IM	VLBI20-30: a scientific roadmap for the next decade -- The future of the European VLBI Network
+2007.14996	2007.14996v1	2020-07-29	astro-ph.IM	Supervised Neural Networks for RFI Flagging
+2008.07790	2008.07790v1	2020-08-18	astro-ph.IM	The optimization of satellite orbit for Space-VLBI observation
+2008.11949	2008.11949v1	2020-08-27	astro-ph.IM	Radio Frequency Interference Mitigation based on the ArPLS and SumThreshold Method
+2009.08546	2009.08546v1	2020-09-17	astro-ph.IM	Ankara Üniversitesi Kreiken Rasathanesinde Bulunan Radyo Teleskobun Yönlendirme Mekanizmasının İncelenip Yenilenmesi, Anten Benzetimleri ve Uyumlama Tasarımı
+2009.13346	2009.13346v1	2020-09-28	astro-ph.IM	Square Kilometre Array Science Data Challenge 1: analysis and results
+2010.02235	2010.02235v1	2020-10-05	astro-ph.IM	A Broadband Digital Spectrometer for the Deep Space Network
+2010.15661	2010.15661v1	2020-10-29	astro-ph.IM	SAGECal performance with large sky models
+2011.05691	2011.05691v1	2020-11-11	astro-ph.IM	Characterising the Performance of High-Speed Data Converters for RFSoC-based Radio Astronomy Receivers
+2011.10191	2011.10191v1	2020-11-20	astro-ph.IM	Estimating fast transient detection pipeline efficiencies at UTMOST via real-time injection of mock FRBs
+2012.03008	2012.03008v1	2020-12-05	astro-ph.IM	An upper limit calculator (UL-CALC) for undetected extended sources with radio interferometers: radio halo upper limits
+2012.08359	2012.08359v2	2020-12-14	astro-ph.IM	The ITRF coordinates of the spherical center of FAST
+2012.11397	2012.11397v3	2020-12-21	astro-ph.IM	Extending the $Z^2_n$ and $H$ statistics to generic pulsed profiles
+2101.02960	2101.02960v2	2021-01-08	astro-ph.IM	Spectrometer Using superconductor MIxer Receiver (SUMIRE) for Laboratory Submillimeter Spectroscopy
+2101.11172	2101.11172v4	2021-01-27	astro-ph.IM	High accuracy wide field imaging method in radio interferometry
+2102.04619	2102.04619v1	2021-02-09	astro-ph.IM	An Ultra-High Time Resolution Cosmic Ray Detection Mode for the Murchison Widefield Array
+2103.00423	2103.00423v2	2021-02-28	astro-ph.IM	Validation of EDGES Low-Band Antenna Beam Model
+2103.12492	2103.12492v1	2021-03-23	astro-ph.IM	Holographic Calibration of Phased Array Telescopes
+2104.01756	2104.01756v1	2021-04-05	astro-ph.IM	SARAS 3 CD/EoR Radiometer: Design and Performance of the Receiver
+2105.06134	2105.06134v1	2021-05-13	astro-ph.IM	Accuracy vs. Complexity: Calibrating radio interferometer arrays with non-homogeneous element patterns
+2106.04407	2106.04407v1	2021-06-08	astro-ph.IM	Detecting Pulsars with Neural Networks: A Proof of Concept
+2107.01634	2107.01634v2	2021-07-04	astro-ph.IM	The BINGO Project II: Instrument Description
+2107.08967	2107.08967v1	2021-07-19	astro-ph.IM	Towards a robust estimation of orientation parameters between ICRF and $Gaia$ celestial reference frames
+2108.03083	2108.03083v2	2021-08-06	astro-ph.IM	Analysis of Orbital Configurations for Millimetron Space Observatory
+2108.10720	2108.10720v5	2021-08-24	astro-ph.IM	Imaging swiFTly: streaming widefield Fourier Transforms for large-scale interferometry
+2109.05044	2109.05044v2	2021-09-10	astro-ph.IM	Evaluating and Enhancing Candidate Clocking Systems for CHIME/FRB VLBI Outriggers
+2109.13755	2109.13755v2	2021-09-28	astro-ph.IM	The Hydrogen Intensity and Real-time Analysis eXperiment: 256-Element Array Status and Overview
+2110.06780	2110.06780v2	2021-10-13	astro-ph.IM	Spatially constrained direction dependent calibration
+2110.12749	2110.12749v1	2021-10-25	astro-ph.IM	A GPU based single-pulse search pipeline (GSP) with database and its application to the commensal radio astronomy FAST survey (CRAFTS)
+2111.03249	2111.03249v2	2021-11-05	astro-ph.IM	Deep Radio Interferometric Imaging with POLISH: DSA-2000 and weak lensing
+2111.14225	2111.14225v3	2021-11-28	astro-ph.IM	Removal and replacement of interference in tied-array radio pulsar observations using the spectral kurtosis estimator
+2112.06488	2112.06488v1	2021-12-13	astro-ph.IM	CHILES VII: Deep Imaging for the CHILES project, a SKA prototype
+2112.13088	2112.13088v1	2021-12-24	astro-ph.IM	An Empirical Evaluation On the Applicability of the DALiuGE Execution Framework
+2201.11806	2201.11806v3	2022-01-27	astro-ph.IM	A Digital Calibration Source for 21cm Cosmology Telescopes
+2202.09589	2202.09589v1	2022-02-19	astro-ph.IM	Calibration requirements for Epoch of Reionization 21-cm signal observations -- II. Analytical estimation of the bias and variance with time-correlated residual gains
+2203.01124	2203.01124v1	2022-03-01	astro-ph.IM	Lunar Orbit Measurement of Cosmic Dawn 21 cm Global Spectrum
+2203.14071	2203.14071v3	2022-03-26	astro-ph.IM	RadioLensfit: an HPC Tool for Accurate Galaxy Shape Measurement with SKA
+2204.08632	2204.08632v1	2022-04-19	astro-ph.IM	The Electromagnetic Characteristics of the Tianlai Cylindrical Pathfinder Array
+2205.07267	2205.07267v2	2022-05-15	astro-ph.IM	The Cavendish Computors: The women working in scientific computing for Radio Astronomy
+2206.07292	2206.07292v2	2022-06-15	astro-ph.IM	Mitigating radio frequency interference in CHIME/FRB real-time intensity data
+2206.13553	2206.13553v1	2022-06-27	astro-ph.IM	A Bayesian approach to high fidelity interferometric calibration II: demonstration with simulated data
+2207.00228	2207.00228v1	2022-07-01	astro-ph.IM	WS-Snapshot: An effective algorithm for wide-field and large-scale imaging
+2207.07054	2207.07054v3	2022-07-14	astro-ph.IM	High-Performance Computing for SKA Transient Search: Use of FPGA based Accelerators -- a brief review
+2207.13876	2207.13876v3	2022-07-28	astro-ph.IM	Characterization of the John A. Galt telescope for radio holography with CHIME
+2208.07233	2208.07233v1	2022-08-15	astro-ph.IM	A Probabilistic Model for the Efficiency of Cosmic-Ray Radio Arrays
+2209.06115	2209.06115v1	2022-09-13	astro-ph.IM	Software and techniques for VLBI data processing and analysis
+2210.02276	2210.02276v1	2022-10-05	astro-ph.IM	CASA, the Common Astronomy Software Applications for Radio Astronomy
+2210.12931	2210.12931v3	2022-10-24	astro-ph.IM	Removing Radio Frequency Interference from Auroral Kilometric Radiation with Stacked Autoencoders
+2211.03086	2211.03086v2	2022-11-06	astro-ph.IM	Uncertainties of the 30-408 MHz Galactic emission as a calibration source for radio detectors in astroparticle physics
+2211.08789	2211.08789v1	2022-11-16	astro-ph.IM	Searching for pulsars with phase characteristics
+2211.15448	2211.15448v4	2022-11-28	astro-ph.IM	Bayesian approach to radio frequency interference mitigation
+2212.06827	2212.06827v2	2022-12-13	astro-ph.IM	GALLIFRAY -- A geometric modeling and parameter estimation framework for black hole images using bayesian techniques
+2212.13331	2212.13331v1	2022-12-27	astro-ph.IM	KNIFE, KAshima Nobeyama InterFErometer
+2301.04543	2301.04543v1	2023-01-11	astro-ph.IM	A Characterization of the ALMA Phasing System at 345 GHz
+2301.10345	2301.10345v1	2023-01-24	astro-ph.IM	LuSEE 'Night': The Lunar Surface Electromagnetics Experiment
+2301.12724	2301.12724v1	2023-01-30	astro-ph.IM	The LOFAR LBA Sky Survey II. First data release
+2302.11776	2302.11776v1	2023-02-23	astro-ph.IM	The Transformational Power of Frequency Phase Transfer Methods for ngEHT
+2303.07524	2303.07524v2	2023-03-13	astro-ph.IM	Integration of storage endpoints into a Rucio data lake, as an activity to prototype a SKA Regional Centres Network
+2304.02661	2304.02661v2	2023-04-05	astro-ph.IM	Deep learning approach for identification of HII regions during reionization in 21-cm observations -- II. foreground contamination
+2304.13108	2304.13108v1	2023-04-25	astro-ph.IM	Detecting HI Galaxies with Deep Neural Networks in the Presence of Radio Frequency Interference
+2305.07780	2305.07780v1	2023-05-12	astro-ph.IM	The Next Generation Arecibo Telescope: A preliminary study
+2306.01013	2306.01013v2	2023-06-01	astro-ph.IM	Measuring the global 21-cm signal with the MWA-II: improved characterisation of lunar-reflected radio frequency interference
+2306.06724	2306.06724v1	2023-06-11	astro-ph.IM	Antenna Pattern Modelling Accuracy for a Very Large Aperture Array Radio Telescope with Strongly Coupled Elements
+2306.17647	2306.17647v1	2023-06-30	astro-ph.IM	A Brief History of Space VLBI
+2307.08793	2307.08793v1	2023-07-17	astro-ph.IM	On Detecting Interstellar Scintillation in Narrowband Radio SETI
+2307.12769	2307.12769v1	2023-07-24	astro-ph.IM	First look at data from the 13-antenna setup of GRANDProto300 in northwest China
+2308.04640	2308.04640v1	2023-08-09	astro-ph.IM	Demonstration of Orbit Determination for LEO Objects using the Murchison Widefield Array
+2308.13571	2308.13571v1	2023-08-25	astro-ph.IM	On the most reliable value of the Galactic aberration constant
+2309.08067	2309.08067v1	2023-09-14	astro-ph.IM	Evaluating Direct RF Sampling Performance for RFSoC-based Radio-frequency Astronomy Receivers
+2309.16891	2309.16891v1	2023-09-28	astro-ph.IM	The Multipurpose Interferometric Array and the development of its technological demonstrator
+2310.07741	2310.07741v3	2023-10-10	astro-ph.IM	Simulating the Detection of the Global 21 cm Signal with MIST for Different Models of the Soil and Beam Directivity
+2310.17602	2310.17602v2	2023-10-26	astro-ph.IM	Simulation-based Inference of Reionization Parameters from 3D Tomographic 21 cm Light-cone Images -- II: Application of Solid Harmonic Wavelet Scattering Transform
+2311.05427	2311.05427v1	2023-11-09	astro-ph.IM	Residual Entropy as a Diagnostic and Stopping Metric for CLEAN
+2311.10951	2311.10951v1	2023-11-18	astro-ph.IM	Detecting Cosmic 21 cm Global Signal Using an Improved Polynomial Fitting Algorithm
+2312.00306	2312.00306v1	2023-12-01	astro-ph.IM	RadioGalaxyNET: Dataset and Novel Computer Vision Algorithms for the Detection of Extended Radio Galaxies and Infrared Hosts
+2312.09764	2312.09764v1	2023-12-15	astro-ph.IM	Multi-antenna probing of absorbing regions inside and outside Cassiopeia A
+2401.10875	2401.10875v1	2024-01-19	astro-ph.IM	Identifying synergies between VLBI and STIX imaging
+2402.07898	2402.07898v2	2024-02-12	astro-ph.IM	CHIME/FRB Outriggers: KKO Station System and Commissioning Results
+2402.18306	2402.18306v4	2024-02-28	astro-ph.IM	Calibration requirement for Epoch of Reionization 21-cm signal observation -- III. Bias and variance in uGMRT ELAIS-N1 field power spectrum
+2403.13766	2403.13766v2	2024-03-20	astro-ph.IM	Statistical estimation of full-sky radio maps from 21cm array visibility data using Gaussian constrained realizations
+2404.05140	2404.05140v1	2024-04-08	astro-ph.IM	Verifying the Australian MWA EoR pipeline I: 21-cm sky model and correlated measurement density
+2405.03330	2405.03330v1	2024-05-06	astro-ph.IM	Swarm intelligence for full Stokes dynamic imaging reconstruction of interferometric data
+2405.18584	2405.18584v2	2024-05-28	astro-ph.IM	Identification of multi-component LOFAR sources with multi-modal deep learning
+2406.09024	2406.09024v2	2024-06-13	astro-ph.IM	E(2)-Equivariant Features in Machine Learning for Morphological Classification of Radio Galaxies
+2406.09975	2406.09975v1	2024-06-14	astro-ph.IM	The Black Hole Explorer Cryocooling Instrument
+2406.12509	2406.12509v1	2024-06-18	astro-ph.IM	Towards an astronomical use of new-generation geodetic observations. I. From the correlator to full-polarization images
+2406.18148	2406.18148v4	2024-06-26	astro-ph.IM	Searching for short-timescale radio anomalies using nonlinear dimensionality reduction techniques
+2407.07173	2407.07173v1	2024-07-09	astro-ph.IM	LuSEE-Night power requirements and power generation strategy
+2407.20015	2407.20015v1	2024-07-29	astro-ph.IM	Reducing instrumental errors in Parkes Pulsar Timing Array data
+2408.09502	2408.09502v1	2024-08-18	astro-ph.IM	The Electrical Design of a Membrane Antenna for Lunar-based Low-frequency Radio Telescope
+2408.16135	2408.16135v1	2024-08-28	astro-ph.IM	$\texttt{MEDEA}$: A New Model for Emulating Radio Antenna Beam Patterns for 21-cm Cosmology and Antenna Design Studies
+2409.03854	2409.03854v1	2024-09-05	astro-ph.IM	Progress towards an array-wide diffuse UHE neutrino search with the Askaryan Radio Array
+2409.11476	2409.11476v1	2024-09-17	astro-ph.IM	A VLBI Calibrator Grid at 600MHz for Fast Radio Transient Localizations with CHIME/FRB Outriggers
+2410.07794	2410.07794v3	2024-10-10	astro-ph.IM	Simulating images of radio galaxies with diffusion models
+2410.17135	2410.17135v1	2024-10-22	astro-ph.IM	Reinforcement Learning for Data-Driven Workflows in Radio Interferometry. I. Principal Demonstration in Calibration
+2410.22497	2410.22497v2	2024-10-29	astro-ph.IM	Performance of the Segment Anything Model in Various RFI/Events Detection in Radio Astronomy
+2411.07321	2411.07321v1	2024-11-11	astro-ph.IM	Accelerating radio astronomy imaging with RICK
+2411.14078	2411.14078v2	2024-11-21	astro-ph.IM	Self-supervised learning for radio-astronomy source classification: a benchmark
+2411.17118	2411.17118v2	2024-11-26	astro-ph.IM	Processing of GASKAP-HI pilot survey data using a commercial supercomputer
+2412.05786	2412.05786v2	2024-12-08	astro-ph.IM	A Novel Technosignature Search in the Breakthrough Listen Green Bank Telescope Archive
+2412.12052	2412.12052v2	2024-12-16	astro-ph.IM	Africanus I. Scalable, distributed and efficient radio data processing with Dask-MS and Codex Africanus
+2412.21010	2412.21010v1	2024-12-30	astro-ph.IM	Lowering In-Memory Footprint of Antenna Beams via Polynomial Approximation
+2501.05691	2501.05691v1	2025-01-10	astro-ph.IM	Optical frequency comb integration in radio telescopes: advancing signal generation and phase calibration
+2501.12928	2501.12928v1	2025-01-22	astro-ph.IM	BayesEoR: Bayesian 21-cm Power Spectrum Estimation from Interferometric Visibilities
+2502.03759	2502.03759v2	2025-02-06	astro-ph.IM	Drone Beam Mapping of the TONE Radio Dish Array
+2502.08867	2502.08867v1	2025-02-13	astro-ph.IM	Altitude Estimation of Radio Frequency Interference Sources via Interferometric Near Field Corrections
+2502.20419	2502.20419v1	2025-02-27	astro-ph.IM	Multibeam SETI Observations toward Nearby M dwarfs with FAST
+2503.01462	2503.01462v1	2025-03-03	astro-ph.IM	S-R2D2: a spherical extension of the R2D2 deep neural network series paradigm for wide-field radio-interferometric imaging
+2503.16675	2503.16675v2	2025-03-20	astro-ph.IM	A Formalism for Calibrating the Instrumental Polarization of Radio Interferometric Arrays at Meter Wavelengths using Unpolarized Sky: A Demonstration using the MWA Observations
+2503.24113	2503.24113v1	2025-03-31	astro-ph.IM	From Local to Remote: VisIVO Visual Analytics in the Era of the Square Kilometre Array
+2504.04955	2504.04955v1	2025-04-07	astro-ph.IM	The Short-spacing Interferometer Array for Global 21-cm Signal Detection (SIGMA): Design of the Antennas and Layout
+2504.14451	2504.14451v1	2025-04-20	astro-ph.IM	Environmental Monitoring Requirements for the ngVLA
+2505.02805	2505.02805v2	2025-05-05	astro-ph.IM	Improving source positions in the OCARS catalog: A first approach
+2505.19372	2505.19372v3	2025-05-25	astro-ph.IM	Temporal variability in low-frequency radio interference: Insight from high-cadence monitoring at a candidate radio notification zone in Malaysia
+2506.14737	2506.14737v1	2025-06-17	astro-ph.IM	SETI@home: Data Analysis and Findings
+2506.22617	2506.22617v1	2025-06-27	astro-ph.IM	On beam characterization of ground-based CMB radio telescopes using UAV-mounted sources: application to the QUIJOTE TFGI and plans for LSPE-Strip
+2507.06629	2507.06629v1	2025-07-09	astro-ph.IM	Calculation of the exposure of GRANDProto300 to cosmic rays
+2507.08500	2507.08500v2	2025-07-11	astro-ph.IM	Determination of the energy scale of cosmic ray measurements using the Auger Engineering Radio Array
+2507.16317	2507.16317v1	2025-07-22	astro-ph.IM	Lunar Orbital VLBI Experiment: motivation, scientific purposes and status
+2508.02577	2508.02577v1	2025-08-04	astro-ph.IM	EDGES-3: Instrument Design and Commissioning
+2508.16773	2508.16773v3	2025-08-22	astro-ph.IM	Linear map-making with LuSEE-Night
+2509.03075	2509.03075v1	2025-09-03	astro-ph.IM	A description of the radio astronomy data processing tool DDF Pipeline
+2509.09654	2509.09654v3	2025-09-11	astro-ph.IM	Dual-Backend Multibeam Position Switching Targeted SETI Observations toward Nearby Active Planet-Hosting Systems with FAST
+2509.17242	2509.17242v1	2025-09-21	astro-ph.IM	0.3-to-1.5-GHz LNA with Wideband Noise and Power Matching for Radio Astronomy
+2509.21754	2509.21754v2	2025-09-26	astro-ph.IM	FITrig: A High-Performance Detection Technique for Efficient Ultra-Long-Period Pulsars
+2510.09759	2510.09759v2	2025-10-10	astro-ph.IM	GMIMS-DRAGONS: A Faraday Depth Survey of the Northern Sky Covering 350-1030 MHz
+2510.19071	2510.19071v1	2025-10-21	astro-ph.IM	Modeling atmospheric phase corruptions in high-frequency VLBI using Gaussian processes
+2511.15788	2511.15788v1	2025-11-19	astro-ph.IM	Decoding the Radio Sky: Bayesian Ensemble Learning and SVD-Based Feature Extraction for Automated Radio Galaxy Classification

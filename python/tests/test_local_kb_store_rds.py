@@ -7,7 +7,6 @@ postgresql-statements.json, the SQL Bedrock itself ran on Aurora. With the local
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import re
 import shutil
@@ -27,7 +26,7 @@ from aws_ai.local_kb.filters import to_sql
 from aws_ai.local_kb.ingest import Services, run_job
 from aws_ai.local_kb.retrieve import retrieve
 from aws_ai.local_kb.store import store_for
-from aws_ai.local_kb.store_rds import RdsStore
+from aws_ai.local_kb.store_rds import RdsStore, table_sql
 
 REPO = Path(__file__).resolve().parents[2]
 RDS = REPO / "local-kb" / "fixtures" / "rds"
@@ -470,12 +469,8 @@ def live_table() -> Iterator[tuple[Any, str]]:
         )
     except psycopg.OperationalError:
         pytest.skip("the local Postgres is not running (make local-up)")
-    spec = importlib.util.spec_from_file_location("rds_kb", REPO / "python/scripts/rds_kb.py")
-    assert spec and spec.loader
-    rds_kb = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(rds_kb)
     name = f"test_{uuid.uuid4().hex[:12]}"
-    for sql in rds_kb.table_sql(f"bedrock_integration.{name}", DIMS):
+    for sql in table_sql(f"bedrock_integration.{name}", DIMS):
         db.execute(sql)
     try:
         yield db, f"bedrock_integration.{name}"

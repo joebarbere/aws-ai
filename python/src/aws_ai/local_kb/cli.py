@@ -10,7 +10,8 @@ README works here with ``aws bedrock-agent`` swapped for ``local-kb``:
 
 Three commands have no AWS CLI equivalent, because on AWS the service runs jobs itself:
 ``sync`` starts a job and runs it now (the console's Sync button), ``run-pending`` runs every
-queued job, and ``watch`` syncs on bucket changes (the S3 event → Lambda wiring).
+queued job, and ``watch`` syncs on bucket changes (the S3 event → Lambda wiring). ``bench``
+compares the OpenSearch and RDS stores (local-kb/PGVECTOR_PLAN.md §3).
 """
 
 from __future__ import annotations
@@ -191,6 +192,18 @@ def _evaluate(cp: ControlPlane, args: argparse.Namespace) -> None:
         print(f"wrote {args.output}")
 
 
+def _bench(args: argparse.Namespace) -> None:
+    from aws_ai.local_kb.bench import iter_lines, run
+
+    report = run(_services(), args.corpus, args.stores, args.queries, args.calls, args.concurrency)
+    output = args.output or (
+        config.default_state_dir().parent / "bench" / f"report-{args.corpus}.json"
+    )
+    output.write_text(json.dumps(report, indent=2) + "\n")
+    print("\n".join(iter_lines(report)))
+    print(f"\nwrote {output}")
+
+
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
     # Each command declares only the ids it needs; argparse requires those, so "" never reaches
     # the control plane.
@@ -248,6 +261,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "retrieve-and-generate": lambda: _retrieve_and_generate(cp, args),
         "serve": lambda: _serve(args),
         "evaluate": lambda: _evaluate(cp, args),
+        "bench": lambda: _bench(args),
     }
 
 
@@ -352,6 +366,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--model-arn", default=f"arn:aws:bedrock:{config.REGION}::foundation-model/kb-llm"
     )
     p.add_argument("--output", type=Path, help="Write the full report as JSON")
+
+    p = command("bench")
+    p.add_argument("--corpus", choices=["sample", "medium", "large"], default="sample")
+    p.add_argument(
+        "--stores", nargs="+", choices=["opensearch", "rds"], default=["opensearch", "rds"]
+    )
+    p.add_argument("--queries", type=int, default=200, help="Queries for recall and overlap")
+    p.add_argument("--calls", type=int, default=500, help="Timed calls per latency mode")
+    p.add_argument("--concurrency", type=int, default=8)
+    p.add_argument(
+        "--output", type=Path, help="Report path (default: local-kb/bench/report-<corpus>.json)"
+    )
     return parser
 
 

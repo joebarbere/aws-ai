@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import uuid
+import weakref
 from dataclasses import dataclass
 from typing import Any
 
@@ -34,6 +35,8 @@ HYBRID_WEIGHTS = [0.5, 0.5]
 # Min-max normalization over only the requested few results forces the last one to 0, however
 # close it was; normalize over a wider candidate pool, then trim.
 HYBRID_POOL = 50
+# Clients that have PUT the hybrid pipeline. A process keeps one client per cluster.
+_PIPELINES: weakref.WeakSet[Any] = weakref.WeakSet()
 
 
 @dataclass(frozen=True)
@@ -177,6 +180,10 @@ class OpenSearchStore:
         return {"knn": {self.target.vector_field: knn}}
 
     def _ensure_pipeline(self) -> None:
+        """PUT the pipeline once per client, not before every query: it is an extra round
+        trip that would count against HYBRID's latency."""
+        if self.client in _PIPELINES:
+            return
         self.client.request(
             "PUT",
             f"/_search/pipeline/{HYBRID_PIPELINE}",
@@ -195,6 +202,7 @@ class OpenSearchStore:
                 ],
             },
         )
+        _PIPELINES.add(self.client)
 
     def _hit(self, hit: dict[str, Any]) -> Hit:
         """``metadata`` is what the chunk stores minus the vector, the text,

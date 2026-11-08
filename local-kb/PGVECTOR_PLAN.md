@@ -383,6 +383,82 @@ Verification:
 
 ## 3. The comparison (Phases P6–P7)
 
+**Phase P6: the tooling** ✅ done 2026-11-08. This is what was built; the design notes below
+are kept as written.
+
+- **Corpora: radio astronomy, from arXiv,** in place of a generic text set
+  (`python/scripts/radio_corpus.py`, `make local-corpus`). Only the arXiv ids are committed
+  (`local-kb/bench/radio-papers.tsv`); the PDFs and abstracts stay in gitignored `.state/`.
+  Downloads follow arXiv's API terms: `export.arxiv.org`, one request every 3 s.
+  - `medium`: 240 astro-ph.IM papers on radio instrumentation, every 7th of 1,666 matches from
+    2015 to October 2026. 232 downloaded (8 were over 20 MB) and gave **13,602 chunks** through
+    the normal PDF parser and default chunking. The queries are 200 paper titles.
+  - `large`: **26,278 abstracts**, one chunk each, of radio-related astro-ph papers from 2015
+    to October 2026, with 200 titles as queries. That is about 2× medium, not the 10× planned;
+    widening the window back to 1993 would roughly double it.
+  - `sample`: the 17 Phase 0 chunks, with the 20 evaluation questions as queries.
+- **`local-kb bench --corpus … [--stores …]`** (`make local-bench CORPUS=…`, `bench.py`):
+  - Vectors are cached in SQLite by model and sha256 of the text (`.state/bench/vectors.sqlite`),
+    so both stores load identical vectors and LM Studio is out of every timing.
+  - Each store gets its own index or table, `…-bench-<corpus>`, recreated each run. Every chunk
+    carries `bench_n`, so results are scored by chunk number even though RDS results have no
+    chunk id. It also carries `bench_shard = n % 50`, so the filter keeps 2% of rows.
+  - Phases: load through each store's own write path; build (OpenSearch force merge, Postgres
+    ANALYZE, and a separate Postgres COPY then CREATE INDEX); recall@5 and recall@20 against
+    numpy brute force; filtered recall@10; latency p50/p95, single-threaded and with 8 workers;
+    a sidecar rewrite of 100 chunks; disk.
+  - Postgres runs at `ef_search` 40 and 512, and with `iterative_scan` relaxed and off, and the
+    report records which plan Postgres chose for the filtered query.
+  - `bench_resources.py` samples `podman stats` every second, tagged by phase, and reads
+    CPU-seconds per phase from each container's cgroup `cpu.stat`. It also records image sizes
+    and data-volume sizes (`podman unshare du`).
+  - The report goes to `local-kb/bench/report-<corpus>.json`, with the hardware, image tags and
+    parameters.
+- **Fixed on the way.** The first two would have made OpenSearch look slower than it is; the
+  last three are real local-kb bugs the radio papers exposed:
+  - The OpenSearch client opened a new HTTPS connection for every request. It now keeps one per
+    thread: SEMANTIC p50 went from 4.0 to 1.2 ms.
+  - The hybrid store re-sent its pipeline before every query. It now sends it once per client:
+    HYBRID p50 went from 13.3 to 1.7 ms on `sample`.
+  - A PDF page pypdf cannot lay out (`LimitReachedError` on a huge figure stream) failed the
+    whole ingestion job. It now falls back to plain extraction, then to an empty page, and an
+    unreadable PDF counts as one failed document.
+  - Lone UTF-16 surrogates from math fonts (arXiv 2506.22617, 133 of them) crashed the
+    tokenizer.
+  - NUL bytes in extracted text were accepted by OpenSearch but refused by Postgres.
+
+    The parser now replaces NUL and surrogates with U+FFFD, one character for one, in every
+    format.
+- **Deferred to P7:** cross-fusion (RRF on OpenSearch, min-max on Postgres), the cold-start
+  timing, and runs with one store's containers stopped.
+
+**First medium run, 2026-11-08.** This validates the tooling; P7 repeats it under clean
+conditions. It ran on a Ryzen 5 5600X (6 cores, 12 threads) with 64 GB of RAM, with the whole
+stack up, Dashboards included. Corpus: 13,602 chunks (14.6 M characters); the filter kept 272
+rows.
+
+| | OpenSearch 3.9 (faiss) | Postgres 17 + pgvector 0.8.2 |
+|---|---|---|
+| Load through the store (Bedrock's write path) | 10.7 s (1,266 chunks/s) | 44.4 s (307 chunks/s), one INSERT per chunk |
+| Build | force merge 10.4 s | ANALYZE 1.4 s; or COPY 5.4 s + CREATE INDEX 3.6 s |
+| recall@5 / @20 | 1.000 / 0.9995 | 0.992 / 0.986 (ef_search 40); 1.000 / 0.9998 (512) |
+| Filtered (2%) recall@10, rows returned | 1.000, 10 | 1.000, 10, via GIN and an exact sort (iterative scan never engaged) |
+| SEMANTIC p50 / p95 | 1.49 / 1.74 ms | 1.13 / 1.31 ms |
+| HYBRID p50 / p95 | 5.05 / 5.65 ms | 2.57 / 3.27 ms |
+| Filtered SEMANTIC p50 | 1.16 ms | 2.32 ms |
+| 8 workers, SEMANTIC | 1,502 qps | 1,705 qps |
+| Sidecar rewrite, 100 chunks | 0.11 s | 0.35 s |
+| On disk (store's own figure) | 131 MB, 1 segment | 229 MB: HNSW 111 MB, heap and TOAST, two GIN indexes 19 MB |
+| Container RSS: idle → peak | 3.41 → 3.52 GB (2 GB heap) | 46 MB → 328 MB; 844 MB during CREATE INDEX |
+| CPU-seconds to load and build | 21.8 | 39.6 (incremental); 12.1 (bulk) |
+
+- Both stores agree on SEMANTIC: Jaccard 0.988 over the top 10, and the same first result for
+  99.5% of queries. HYBRID agrees far less (Jaccard 0.564, the same first result 83%), because
+  the fusions differ: min-max over BM25 against Bedrock's RRF over `plainto_tsquery`.
+- The data volumes are 145 MB for OpenSearch and 682 MB for Postgres. The Postgres volume also
+  holds the WAL, the `pg-kb` table and space the bulk-build table freed but has not returned;
+  the store's own figure (229 MB) is the one to compare.
+
 ### What to keep identical
 
 - The same parsed chunks and the **same vectors**:
@@ -568,7 +644,7 @@ These are hypotheses for P7 to confirm or overturn:
 | P3 ✅ | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
 | P4 ✅ | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 ✅ | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
-| P6 | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
+| P6 ✅ | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
 | P7 | runs on sample/medium/large; README results and a pros/cons verdict with measured numbers | — |
 
 Commit once per phase, as before.

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import PurePosixPath
@@ -78,6 +79,14 @@ def sidecar_key(key: str) -> str:
 
 
 def parse_document(key: str, data: bytes) -> ParsedDocument:
+    parsed = _parse(key, data)
+    # NUL and lone UTF-16 surrogates come out of real PDFs (control codes and math fonts) and
+    # can turn up in any text. Postgres text columns refuse NUL, and tokenizers and strict
+    # UTF-8 refuse surrogates; each becomes U+FFFD, one for one, so page offsets stay put.
+    return ParsedDocument(_UNSTORABLE.sub("\ufffd", parsed.text), parsed.page_starts)
+
+
+def _parse(key: str, data: bytes) -> ParsedDocument:
     suffix = PurePosixPath(key).suffix.lower()
     if suffix not in SUPPORTED:
         raise ParseError(f"{key}: unsupported file type {suffix or '(none)'}")
@@ -145,21 +154,40 @@ def _html(text: str) -> str:
     return _collapse(f"{title} {markdown}")
 
 
+_UNSTORABLE = re.compile("[\x00\ud800-\udfff]")
+
+
 def _pdf(data: bytes) -> ParsedDocument:
     from pypdf import PdfReader
+    from pypdf.errors import PyPdfError
 
-    pages = []
-    for page in PdfReader(io.BytesIO(data)).pages:
-        layout = page.extract_text(extraction_mode="layout")
-        paragraphs = [
-            " ".join(
-                re.sub(r"\s+", " ", line).strip() for line in block.splitlines() if line.strip()
-            )
-            for block in re.split(r"\n\s*\n", layout)
-        ]
-        pages.append("   ".join(p for p in paragraphs if p))
+    # pypdf logs a warning per unusual font or rotated text run; real papers have thousands.
+    logging.getLogger("pypdf").setLevel(logging.ERROR)
+    try:
+        reader_pages = list(PdfReader(io.BytesIO(data)).pages)
+    except (PyPdfError, ValueError, KeyError) as exc:
+        raise ParseError(f"unreadable PDF: {exc}") from exc
+    pages = [_pdf_page(page, PyPdfError) for page in reader_pages]
     starts, offset = [], 0
     for text in pages:
         starts.append(offset)
         offset += len(text)
     return ParsedDocument("".join(pages), tuple(starts))
+
+
+def _pdf_page(page: Any, errors: type[Exception]) -> str:
+    """One page's text, laid out. A page pypdf can't lay out (a figure whose content stream
+    exceeds its token limit, say) falls back to plain extraction, then to no text, so one bad
+    page neither fails the document nor shifts the page numbers after it."""
+    try:
+        layout = page.extract_text(extraction_mode="layout")
+    except (errors, ValueError, KeyError):
+        try:
+            layout = page.extract_text()
+        except (errors, ValueError, KeyError):
+            return ""
+    paragraphs = [
+        " ".join(re.sub(r"\s+", " ", line).strip() for line in block.splitlines() if line.strip())
+        for block in re.split(r"\n\s*\n", layout)
+    ]
+    return "   ".join(p for p in paragraphs if p)

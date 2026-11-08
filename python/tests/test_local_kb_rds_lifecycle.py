@@ -9,7 +9,6 @@ an existing knowledge base.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import socket
 import threading
@@ -23,8 +22,7 @@ from typing import Any
 import pytest
 
 from aws_ai.local_kb import cli, config
-
-REPO = Path(__file__).resolve().parents[2]
+from aws_ai.local_kb.store_rds import table_sql
 
 
 def stack() -> tuple[Any, Any]:
@@ -61,12 +59,8 @@ def served(tmp_path: Path) -> Iterator[tuple[Any, Any, Any, str]]:
     from aws_ai.local_kb.server import create_app, start_worker
 
     services, db = stack()
-    spec = importlib.util.spec_from_file_location("rds_kb", REPO / "python/scripts/rds_kb.py")
-    assert spec and spec.loader
-    rds_kb = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(rds_kb)
     table = f"bedrock_integration.lifecycle_{uuid.uuid4().hex[:12]}"
-    for sql in rds_kb.table_sql(table):
+    for sql in table_sql(table, 1024):
         db.execute(sql)
 
     with socket.socket() as s:

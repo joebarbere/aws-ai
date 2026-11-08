@@ -75,6 +75,51 @@ def test_pdf_pages_are_tracked_by_offset() -> None:
     assert parsed.page_at(len(parsed.text) - 1) == 3
 
 
+def test_a_page_pypdf_cannot_lay_out_falls_back_without_shifting_pages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Seen on a real arXiv paper: a figure page whose content stream exceeds pypdf's token
+    limit. Its layout text falls back to plain text; the document still parses."""
+    from pypdf import PageObject
+    from pypdf.errors import LimitReachedError
+
+    data = (DOCS / "tidewater-handbook.pdf").read_bytes()
+    plain = parse_document("h.pdf", data)
+    real = PageObject.extract_text
+
+    def flaky(self: PageObject, *args: Any, **kwargs: Any) -> str:
+        if kwargs.get("extraction_mode") == "layout":
+            raise LimitReachedError("Reached maximum number of tokens per stream.")
+        return real(self, *args, **kwargs)
+
+    monkeypatch.setattr(PageObject, "extract_text", flaky)
+    fallback = parse_document("h.pdf", data)
+    assert fallback.page_starts is not None and plain.page_starts is not None
+    assert len(fallback.page_starts) == len(plain.page_starts)
+    assert "membership" in fallback.text.lower()
+
+
+def test_lone_surrogates_from_pdf_fonts_are_replaced(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Seen on arXiv 2506.22617: math fonts that pypdf decodes to lone surrogates, which the
+    tokenizer refuses with a TypeError."""
+    from pypdf import PageObject
+
+    monkeypatch.setattr(PageObject, "extract_text", lambda *_a, **_k: "flux \udc4e density")
+    parsed = parse_document("s.pdf", (DOCS / "tidewater-handbook.pdf").read_bytes())
+    assert "\udc4e" not in parsed.text and "flux \ufffd density" in parsed.text
+    parsed.text.encode()  # strict UTF-8 now succeeds
+
+
+def test_nul_bytes_are_replaced_in_any_format() -> None:
+    """Seen in an arXiv PDF: NUL in extracted text, which Postgres text columns refuse."""
+    assert parse_document("n.txt", b"a\x00b").text == "a\ufffdb"
+
+
+def test_an_unreadable_pdf_is_a_parse_error() -> None:
+    with pytest.raises(ParseError):
+        parse_document("broken.pdf", b"%PDF-1.7\n" + b"\x00" * 64)
+
+
 def test_unsupported_and_oversized_files_fail_cleanly() -> None:
     with pytest.raises(ParseError, match="unsupported"):
         parse_document("kb/photo.tiff", b"...")

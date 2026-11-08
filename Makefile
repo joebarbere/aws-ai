@@ -1,5 +1,5 @@
 .PHONY: help fmt validate plan apply destroy test lint typecheck \
-	local-up local-down local-wipe local-init local-smoke local-models local-watch local-serve local-eval local-sample-docs local-psql local-pg-inspect
+	local-up local-down local-wipe local-init local-smoke local-models local-watch local-serve local-eval local-sample-docs local-psql local-pg-inspect local-corpus local-bench
 
 help:
 	@echo "fmt        terraform fmt -recursive"
@@ -21,6 +21,8 @@ help:
 	@echo "local-sample-docs  upload local-kb/sample-docs/kb/ to s3://kb-data/kb/"
 	@echo "local-psql  psql into the RDS store's Postgres as bedrock_user"
 	@echo "local-pg-inspect  what the RDS store holds: chunks, Bedrock's fields, indexes (TABLE=...)"
+	@echo "local-corpus  download the radio astronomy bench corpora from arXiv (slow: 3 s/request)"
+	@echo "local-bench   OpenSearch vs pgvector on one corpus (CORPUS=sample|medium|large)"
 	@echo "local-down  stop the stack, keep data"
 	@echo "local-wipe  stop the stack and delete its volumes  <- the local terraform destroy"
 
@@ -82,6 +84,12 @@ local-psql:
 local-pg-inspect:
 	podman exec -i local-kb_postgres_1 psql -U postgres -d bedrock -v ON_ERROR_STOP=1 \
 	  $(if $(TABLE),-v table=$(TABLE)) < local-kb/pg/inspect.sql
+
+local-corpus:
+	cd python && uv run python scripts/radio_corpus.py fetch && uv run python scripts/radio_corpus.py abstracts
+
+local-bench:
+	cd python && uv run local-kb bench --corpus $(or $(CORPUS),sample)
 
 local-eval:
 	cd python && uv run local-kb evaluate --knowledge-base-id $(KB) --output ../local-kb/eval/report.json

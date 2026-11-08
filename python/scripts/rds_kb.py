@@ -32,6 +32,8 @@ from typing import Any
 
 import boto3
 
+from aws_ai.local_kb.store_rds import table_sql
+
 NAME = "aws-ai-study-kb-rds"
 DATABASE = "bedrock"
 TABLE = "bedrock_integration.bedrock_kb"
@@ -48,23 +50,7 @@ SETUP = [
 ]
 
 
-def table_sql(table: str = TABLE, dimensions: int = DIMENSIONS) -> list[str]:
-    """As bedrock_user — verbatim from the guide, with IF NOT EXISTS so a rerun is harmless.
-    Index names follow the table's (``bedrock_kb_embedding_idx`` for ``bedrock_kb``)."""
-    name = table.rpartition(".")[2]
-    return [
-        f"CREATE TABLE IF NOT EXISTS {table} (id uuid PRIMARY KEY, "
-        f"embedding vector({dimensions}), chunks text, metadata json, custom_metadata jsonb)",
-        f"CREATE INDEX IF NOT EXISTS {name}_embedding_idx ON {table} "
-        "USING hnsw (embedding vector_cosine_ops) WITH (ef_construction=256)",
-        f"CREATE INDEX IF NOT EXISTS {name}_chunks_idx ON {table} "
-        "USING gin (to_tsvector('simple', chunks))",
-        f"CREATE INDEX IF NOT EXISTS {name}_custom_metadata_idx ON {table} "
-        "USING gin (custom_metadata)",
-    ]
-
-
-TABLE_SQL = table_sql()
+TABLE_SQL = table_sql(TABLE, DIMENSIONS)
 
 # pgvector 0.8.0+: keep scanning the HNSW graph until a filtered query has its k rows.
 ITERATIVE_SCAN = [
