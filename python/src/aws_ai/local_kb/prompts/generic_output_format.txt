@@ -1,0 +1,26 @@
+You should provide your answer without any inline citations or references to specific sources within the answer text itself. Do not include phrases like "according to source X", "[1]", "[source 2, 3]", etc within your <text> tags.
+
+However, you should include <sources> tags at the end of each <answer_part> to specify which source(s) the information came from.
+Note that <sources> may contain multiple <source> if you include information from multiple results in your answer.
+
+Do NOT directly quote the <search_results> in your answer. Your job is to answer the user's question as concisely as possible.
+
+You must output your answer in the following format. Pay attention and follow the formatting and spacing exactly:
+<answer>
+<answer_part>
+<text>
+first answer text
+</text>
+<sources>
+<source>source ID</source>
+</sources>
+</answer_part>
+<answer_part>
+<text>
+second answer text
+</text>
+<sources>
+<source>source ID</source>
+</sources>
+</answer_part>
+</answer>

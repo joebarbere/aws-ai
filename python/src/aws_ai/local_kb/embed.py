@@ -61,3 +61,39 @@ def qwen_token_counter() -> Callable[[str], int]:
 
     tokenizer = Tokenizer.from_pretrained("Qwen/Qwen3-Embedding-0.6B")
     return lambda text: len(tokenizer.encode(text, add_special_tokens=False).ids)
+
+
+def lm_studio_chat(
+    model: str = "kb-llm", endpoint: str = config.LM_STUDIO_ENDPOINT
+) -> Callable[[str, str, dict[str, object]], str]:
+    """A chat call shaped like Bedrock's Converse: the prompt template as the system message,
+    the user's query as the one user message, Bedrock's inference settings mapped across.
+
+    ``reasoning_effort: "none"`` goes on every request: Qwen3.5 thinks otherwise, and it is the
+    only switch LM Studio honours (PLAN.md, Phase 2).
+    """
+
+    def chat(system: str, user: str, inference: dict[str, object]) -> str:
+        body: dict[str, object] = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "temperature": inference.get("temperature", 0.0),
+            "top_p": inference.get("topP", 1.0),
+            "max_tokens": inference.get("maxTokens", 2048),
+            "reasoning_effort": "none",
+        }
+        if inference.get("stopSequences"):
+            body["stop"] = inference["stopSequences"]
+        request = urllib.request.Request(  # noqa: S310 - local LM Studio
+            f"{endpoint}/chat/completions",
+            data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(request, timeout=600) as response:  # noqa: S310
+            reply = json.loads(response.read())["choices"][0]["message"].get("content") or ""
+        return str(reply)
+
+    return chat
