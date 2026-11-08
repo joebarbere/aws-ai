@@ -301,41 +301,62 @@ it. That is the local version of `terraform destroy`.
 **Done when:** the smoke test passes, `bedrock-kb` authenticates (`/_plugins/_security/authinfo`),
 and Dashboards loads. All three are met.
 
-### Phase 2 — Models in LM Studio
+### Phase 2 — Models in LM Studio ✅ done 2026-11-08
 
 ```bash
-lms get qwen/qwen3-embedding-0.6b          # GGUF, Q8_0 (~0.6 GB)
-lms get qwen/qwen3.5-9b                    # stock build; pick the Q6_K quant (~7.5 GB)
-lms load text-embedding-qwen3-embedding-0.6b --identifier kb-embed --gpu max
-lms load qwen3.5-9b --identifier kb-llm --context-length 16384 --gpu max
-lms server start --port 1234
+lms get https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF   # Q8_0, 639 MB (official GGUF)
+lms get "qwen/qwen3.5-9b@q6_k"                                  # 7.4 GB + 0.9 GB vision projector
+make local-models   # server on :1234, loads kb-embed and kb-llm with the flags below
 ```
 
-Use the exact model keys that `lms get` reports; the ones above are illustrative.
+`make local-models` runs:
 
-- **Why Qwen3-Embedding-0.6B?** It is the only local option that matches Titan V2 at every
-  dimension: native 1024, MRL-truncatable to 512 and 256. `embed.py` truncates on the client side
-  and then L2-normalizes, which reproduces Titan's `normalize=true` default. It does that because
-  it is [unverified] whether LM Studio honours the `dimensions` parameter.
-  - Queries get Qwen's `Instruct: Given a question, retrieve passages that answer it\nQuery:`
-    prefix; documents get none.
-  - With unit vectors, faiss l2 behaves like cosine, so `1/(1+d²)` scores come out near the ~0.6
-    seen in AWS samples.
-- **Why Qwen3.5-9B?**
-  - IFEval 91.5 and a 262K native context.
-  - The XML citation format (`<answer_part>/<sources>`) is an instruction-following test, and this
-    model is good at it.
-  - Q6_K plus a 16K context plus the embedder fits in 16 GB.
-  - Run it with `chat_template_kwargs: {"enable_thinking": false}` and temperature 0, close to
-    Bedrock's KB defaults.
-  - **Alternative:** `gpt-oss-20b` (MXFP4, about 13 GB). It fits on the 7600 XT, but strip its
-    reasoning channel before parsing citations, and it leaves less room for context.
-- **Fallback for the embedder:** the installed `nomic-embed-text-v1.5`, set with
-  `LOCAL_KB_EMBED_DIMS=768`. The index dimension follows config. This is the local version of the
-  "dimensions must match" lesson from the KB module README.
+```bash
+lms server start --port 1234
+lms load text-embedding-qwen3-embedding-0.6b --identifier kb-embed --gpu max
+lms load qwen/qwen3.5-9b --identifier kb-llm --context-length 16384 --parallel 1 --gpu max
+```
 
-**Done when:** `embed.py` returns 1024 floats with norm ≈ 1.0, and a smoke chat completion
-returns.
+`qwen/qwen3-embedding-0.6b` is not on the LM Studio hub, so the embedder comes straight from
+Qwen's Hugging Face repo.
+
+**What the checks found:**
+
+- **Embedder.** It returns 1024 floats with **norm 1.0**, matching Titan V2's `normalize=true`
+  default, so nothing needs normalizing at full size.
+  - **LM Studio ignores `dimensions`** (asking for 256 still returns 1024). So `embed.py` truncates
+    to 512 or 256 itself and re-normalizes, as planned.
+  - `usage` reports 0 tokens, so chunk sizes need a local tokenizer.
+- **Thinking.** Qwen3.5 thinks by default, and **only `reasoning_effort: "none"` turns it off**
+  in LM Studio. `chat_template_kwargs.enable_thinking`, `reasoning.effort` and a top-level
+  `enable_thinking` are all ignored. Left on, a citation prompt spent its entire 2,048-token
+  budget reasoning and returned an empty answer. `generate.py` must always send
+  `reasoning_effort: "none"`.
+- **Bedrock's own prompt works.** Replaying the exact XML prompt captured from the Llama 3 run
+  (`fixtures/invocation-logs-llama-nova-pro.json`), with Bedrock's generic inference settings
+  (`temperature 0, topP 1, maxTokens 2048, stop ["\nObservation"]`):
+  - Every answer was well-formed `<answer><answer_part>…<sources>` XML.
+  - The answer cited the right source when the relevant chunk was result 2 of 3.
+  - A two-part question cited both sources.
+  - Where AWS's own retrieval missed the answer, the reply was a clean "not found".
+- **Speed.** About 21–27 tokens/s generating; a 3.7K-token prompt answers in under 4 s.
+- **VRAM: 16.6 of 17.2 GB, with 0.5 GB spilled to system RAM (GTT).** The embedder takes 2.3 GB
+  (its 8K context buffers), the 9B model about 13.8 GB including the vision projector. Dropping
+  from 4 parallel slots to 1 saved only 0.3 GB. If headroom is needed later, load the embedder
+  with `--context-length 2048` or `--gpu off`.
+
+**Model choices (unchanged):**
+
+- **Qwen3-Embedding-0.6B** is the only local option matching Titan V2 at every dimension: 1024,
+  and MRL-truncatable to 512 and 256.
+  - Queries are embedded raw, as Bedrock does (§0). Qwen's recommended `Instruct:` query prefix
+    is a Phase 9 experiment.
+  - With unit vectors, faiss l2 behaves like cosine, so `1/(1+d²)` scores are comparable to the
+    fixtures.
+- **Qwen3.5-9B Q6_K**, the stock build rather than the abliterated one. **Alternative:**
+  `gpt-oss-20b`, but it doesn't fit next to the embedder in 16 GB.
+- **Fallback embedder:** the installed `nomic-embed-text-v1.5`, with `LOCAL_KB_EMBED_DIMS=768`.
+  The index dimension follows config: the local version of the "dimensions must match" lesson.
 
 ### Phase 3 — Control plane (`control.py`, `ids.py`, `cli.py`)
 

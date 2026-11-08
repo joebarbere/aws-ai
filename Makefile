@@ -1,5 +1,5 @@
 .PHONY: help fmt validate plan apply destroy test lint typecheck \
-	local-up local-down local-wipe local-init local-smoke
+	local-up local-down local-wipe local-init local-smoke local-models
 
 help:
 	@echo "fmt        terraform fmt -recursive"
@@ -14,6 +14,7 @@ help:
 	@echo "local-up    start the local KB stack (RustFS, kb-events, OpenSearch, Dashboards) + init"
 	@echo "local-init  bucket, bucket event, least-privilege OpenSearch user (idempotent)"
 	@echo "local-smoke check the storage behaviours the sync depends on"
+	@echo "local-models start LM Studio's server and load kb-embed + kb-llm"
 	@echo "local-down  stop the stack, keep data"
 	@echo "local-wipe  stop the stack and delete its volumes  <- the local terraform destroy"
 
@@ -57,6 +58,15 @@ local-smoke:
 
 local-down:
 	$(LOCAL) down
+
+# Thinking stays on unless each request sends reasoning_effort "none" (see PLAN.md, Phase 2).
+LMS := $(HOME)/.lmstudio/bin/lms
+local-models:
+	$(LMS) server start --port 1234
+	-$(LMS) unload kb-embed
+	-$(LMS) unload kb-llm
+	$(LMS) load text-embedding-qwen3-embedding-0.6b --identifier kb-embed --gpu max -y
+	$(LMS) load qwen/qwen3.5-9b --identifier kb-llm --context-length 16384 --parallel 1 --gpu max -y
 
 local-wipe:
 	$(LOCAL) down -v

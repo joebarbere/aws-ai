@@ -5,7 +5,7 @@ API shapes and ingestion behaviour as the cloud `knowledge_base` module, at $0/m
 ~$350. `PLAN.md` has the design and the build phases. `fixtures/` holds what a real KB produced,
 captured to test against.
 
-**Status:** Phase 0 (ground truth) and Phase 1 (infrastructure) are done. The ingestion worker and
+**Status:** Phases 0–2 (ground truth, infrastructure, models) are done. The ingestion worker and
 runtime API come next.
 
 ## Run it
@@ -16,6 +16,7 @@ You need podman with a compose provider. If you don't have one, install it witho
 ```bash
 make local-up      # writes local-kb/.env with random credentials, starts the stack, runs init
 make local-smoke   # 8 checks on the storage behaviours the sync relies on
+make local-models  # LM Studio server on :1234 with kb-embed and kb-llm (models: PLAN.md, Phase 2)
 make local-down    # stop, keep data
 make local-wipe    # stop and delete the volumes: the local `terraform destroy`
 ```
