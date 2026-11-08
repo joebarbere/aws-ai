@@ -1,0 +1,75 @@
+# Local stand-ins for the AWS side of a Bedrock knowledge base. See PLAN.md, Phase 1.
+#
+#   rustfs      S3 (the data source bucket)      :9000 API, :9001 console
+#   kb-events   SQS: bucket events, polled       :8098
+#   opensearch  OpenSearch Serverless            :9200 (HTTPS, security plugin on)
+#   dashboards  the AOSS dashboards endpoint     :5601
+#
+# Credentials come from .env (copy .env.example; make local-up does it for you). Ports bind to
+# 127.0.0.1 only. The ingestion worker and runtime API run on the host, where LM Studio is.
+
+name: local-kb
+
+services:
+  rustfs:
+    image: docker.io/rustfs/rustfs:1.0.4
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:?set in .env}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:?set in .env}
+      RUSTFS_CONSOLE_ENABLE: "true"
+      # Bucket events go to the kb-events queue, not straight to the host: RustFS's SSRF guard
+      # blocks link-local addresses even when allow-listed, and rootless podman's
+      # host.containers.internal is 169.254.1.2. A compose service name is a private address,
+      # which the allowlist does permit.
+      RUSTFS_NOTIFY_ENABLE: "true"
+      RUSTFS_NOTIFY_WEBHOOK_ENABLE_KB: "on"
+      RUSTFS_NOTIFY_WEBHOOK_ENDPOINT_KB: http://kb-events:8098/s3-events
+      RUSTFS_OUTBOUND_ALLOW_ORIGINS: http://kb-events:8098
+    volumes:
+      - rustfs-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
+      interval: 10s
+      retries: 6
+    depends_on:
+      - kb-events
+
+  # The SQS queue in "S3 -> SQS -> poller -> StartIngestionJob". See events/queue.py.
+  kb-events:
+    image: docker.io/library/python:3.13-alpine
+    command: ["python", "-u", "/app/queue.py"]
+    ports:
+      - "127.0.0.1:8098:8098"
+    volumes:
+      - ./events:/app:ro,Z
+
+  opensearch:
+    image: docker.io/opensearchproject/opensearch:3.9.0
+    ports:
+      - "127.0.0.1:9200:9200"
+    environment:
+      discovery.type: single-node
+      # Only read on first start with an empty volume; changing it later does nothing.
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD:?set in .env}
+      OPENSEARCH_JAVA_OPTS: -Xms2g -Xmx2g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  dashboards:
+    image: docker.io/opensearchproject/opensearch-dashboards:3.9.0
+    ports:
+      - "127.0.0.1:5601:5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+    depends_on:
+      - opensearch
+
+volumes:
+  rustfs-data:
+  opensearch-data:
