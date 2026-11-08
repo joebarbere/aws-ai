@@ -31,6 +31,8 @@ REPO = Path(__file__).resolve().parents[2]
 ENV_FILE = REPO / "local-kb" / ".env"
 
 S3_ENDPOINT = "http://127.0.0.1:9000"
+DASHBOARDS = "http://127.0.0.1:5601"
+SAVED_OBJECTS = REPO / "local-kb" / "dashboards" / "bedrock-kb.ndjson"
 OPENSEARCH = "https://127.0.0.1:9200"
 BUCKET = "kb-data"
 PREFIX = "kb/"
@@ -233,6 +235,49 @@ def clear_create_index_block(admin_password: str) -> None:
         print("cleared a leftover create-index block (the disk crossed a watermark earlier)")
 
 
+def import_dashboards(admin_password: str) -> None:
+    """Load the index pattern, the "Bedrock KB — internals" saved search and the chunks-per-file
+    table into both tenants: multi-tenancy is on, and a first login lands in Private."""
+    boundary = secrets.token_hex(16)
+    payload = (
+        (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="file"; filename="{SAVED_OBJECTS.name}"\r\n'
+            "Content-Type: application/ndjson\r\n\r\n"
+        ).encode()
+        + SAVED_OBJECTS.read_bytes()
+        + f"\r\n--{boundary}--\r\n".encode()
+    )
+    token = base64.b64encode(f"admin:{admin_password}".encode()).decode()
+    for tenant in ("global", "private"):
+        request = urllib.request.Request(  # noqa: S310 - fixed local URL
+            f"{DASHBOARDS}/api/saved_objects/_import?overwrite=true",
+            data=payload,
+            method="POST",
+            headers={
+                "Authorization": f"Basic {token}",
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "osd-xsrf": "true",
+                "securitytenant": tenant,
+            },
+        )
+        with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310
+            result = json.loads(response.read())
+        if not result.get("success"):
+            raise SystemExit(f"Dashboards import into {tenant} failed: {result}")
+    print(f"Dashboards: imported {result['successCount']} saved objects into Global and Private")
+
+
+def dashboards_up(admin_password: str) -> bool:
+    token = base64.b64encode(f"admin:{admin_password}".encode()).decode()
+    request = urllib.request.Request(  # noqa: S310 - fixed local URL
+        f"{DASHBOARDS}/api/status", headers={"Authorization": f"Basic {token}"}
+    )
+    with urllib.request.urlopen(request, timeout=10) as response:  # noqa: S310
+        state = json.loads(response.read())["status"]["overall"]["state"]
+    return bool(state == "green")
+
+
 def init() -> None:
     env = load_env()
     s3 = s3_client(env)
@@ -245,6 +290,8 @@ def init() -> None:
     ensure_bucket_event(s3)
     ensure_opensearch_user(admin, env["BEDROCK_KB_PASSWORD"])
     clear_create_index_block(admin)
+    wait_for("dashboards", lambda: dashboards_up(admin))
+    import_dashboards(admin)
 
 
 def main() -> int:

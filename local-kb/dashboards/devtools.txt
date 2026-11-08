@@ -1,0 +1,36 @@
+# Paste into OpenSearch Dashboards → Dev Tools (http://127.0.0.1:5601/app/dev_tools#/console).
+# Each query looks at what a Bedrock knowledge base writes, the way PLAN.md §0 describes it.
+
+# 1. The mapping: three declared fields, and everything dynamic mapping added on first write
+#    (x-amz-bedrock-kb-*, id, and each .metadata.json attribute, typed).
+GET bedrock-knowledge-base-default-index/_mapping
+
+# 2. One stored chunk without its 1024-float vector. Note that _id is the chunk-id
+#    (1%3A0%3A…), and AMAZON_BEDROCK_METADATA is just {"source": …}.
+GET bedrock-knowledge-base-default-index/_search
+{
+  "size": 1,
+  "_source": { "excludes": ["bedrock-knowledge-base-default-vector"] }
+}
+
+# 3. The prefix filter: every chunk from files whose S3 key starts with kb/tidewater.
+#    It works on the .keyword subfield, which is why Bedrock's startsWith needs one.
+GET bedrock-knowledge-base-default-index/_search
+{
+  "_source": ["x-amz-bedrock-kb-source-uri", "x-amz-bedrock-kb-document-page-number"],
+  "query": { "prefix": { "x-amz-bedrock-kb-source-uri.keyword": "s3://kb-data/kb/tidewater" } }
+}
+
+# 4. Chunks per source file: the same terms aggregation as the saved visualization.
+GET bedrock-knowledge-base-default-index/_search
+{
+  "size": 0,
+  "aggs": { "per_file": { "terms": { "field": "x-amz-bedrock-kb-source-uri.keyword", "size": 50 } } }
+}
+
+# 5. A sidecar attribute filter, as Retrieve sends it for {"equals": {"key": "department", ...}}.
+GET bedrock-knowledge-base-default-index/_search
+{
+  "_source": ["x-amz-bedrock-kb-source-uri", "department", "revision", "tags"],
+  "query": { "term": { "department.keyword": "operations" } }
+}
