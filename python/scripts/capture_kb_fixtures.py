@@ -18,8 +18,20 @@ local-kb/sample-docs/kb/ under the data source prefix, syncs, then saves to loca
 
 The account id is replaced with 000000000000 in everything written, so fixtures can be committed.
 
+``--store rds`` does the same against an Aurora PostgreSQL knowledge base
+(terraform/modules/knowledge_base_rds + rds_kb.py) and writes to local-kb/fixtures/rds/. There
+is no mapping there; ``table-schema.json`` holds the columns and indexes instead, rows are read
+through the RDS Data API, and ``postgresql-statements.json`` holds every SQL statement the
+cluster ran — Bedrock's inserts, searches and filters, verbatim.
+
     uv run python scripts/capture_kb_fixtures.py --knowledge-base-id ABCDEFGHIJ \\
         --data-source-id KLMNOPQRST --endpoint https://abc.us-east-1.aoss.amazonaws.com \\
+        --bucket aws-ai-study-data-123 --log-group /aws-ai-study/ai
+
+    uv run python scripts/capture_kb_fixtures.py --store rds --knowledge-base-id ... \
+        --data-source-id ... --cluster-arn arn:aws:rds:...:cluster:aws-ai-study-kb-rds \
+        --secret-arn <kb_rds_master_secret_arn> \
+        --postgres-log-group /aws/rds/cluster/aws-ai-study-kb-rds/postgresql \
         --bucket aws-ai-study-data-123 --log-group /aws-ai-study/ai
 """
 
@@ -28,6 +40,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import tempfile
 import time
@@ -68,6 +81,8 @@ class Capture:
         self.logs = session.client("logs")
         self.kb = {"knowledgeBaseId": args.knowledge_base_id}
         self.ds = {**self.kb, "dataSourceId": args.data_source_id}
+        self.out = FIXTURES / "rds" if args.store == "rds" else FIXTURES
+        self.rds = session.client("rds-data") if args.store == "rds" else None
         self.model_arn = (
             f"arn:aws:bedrock:{args.region}:{self.account}:inference-profile/{args.model_id}"
             if args.model_id.startswith(("us.", "global."))
@@ -79,8 +94,8 @@ class Capture:
     def save(self, name: str, data: Any) -> None:
         text = json.dumps(data, indent=2, default=str, ensure_ascii=False)
         text = text.replace(self.account, "000000000000")
-        (FIXTURES / name).write_text(text + "\n")
-        print(f"  wrote fixtures/{name}")
+        (self.out / name).write_text(text + "\n")
+        print(f"  wrote {(self.out / name).relative_to(FIXTURES.parent)}")
 
     # ------------------------------------------------------- OpenSearch (SigV4)
 
@@ -106,6 +121,9 @@ class Capture:
             raise SystemExit(f"{method} {path}: HTTP {exc.code} {exc.read().decode()}") from exc
 
     def dump_documents(self, name: str) -> None:
+        if self.args.store == "rds":
+            self.dump_rows(name)
+            return
         # AOSS is eventually consistent: 30 s after a job reported COMPLETE, an edited file's new
         # chunk was still invisible and a deleted file still searchable. Wait longer than that.
         time.sleep(120)
@@ -130,6 +148,95 @@ class Capture:
                 "hits": hits,
             },
         )
+
+    # ------------------------------------------------- Aurora (RDS Data API)
+
+    def sql(self, statement: str) -> list[dict[str, Any]]:
+        assert self.rds is not None
+        response = self.rds.execute_statement(
+            resourceArn=self.args.cluster_arn,
+            secretArn=self.args.secret_arn,
+            database=self.args.database,
+            sql=statement,
+            formatRecordsAs="JSON",
+        )
+        rows: list[dict[str, Any]] = json.loads(response.get("formattedRecords") or "[]")
+        return rows
+
+    def dump_schema(self, name: str) -> None:
+        schema, table = self.args.table.split(".")
+        where = f"table_schema = '{schema}' AND table_name = '{table}'"
+        self.save(
+            name,
+            {
+                "columns": self.sql(
+                    "SELECT column_name, data_type, udt_name, is_nullable "
+                    f"FROM information_schema.columns WHERE {where} ORDER BY ordinal_position"
+                ),
+                "indexes": self.sql(
+                    "SELECT indexname, indexdef FROM pg_indexes "
+                    f"WHERE schemaname = '{schema}' AND tablename = '{table}'"
+                ),
+                "pgvector": self.sql(
+                    "SELECT extversion FROM pg_extension WHERE extname = 'vector'"
+                ),
+                "settings": self.sql(
+                    "SELECT name, setting FROM pg_settings WHERE name LIKE 'hnsw.%' "
+                    "OR name IN ('server_version', 'default_text_search_config')"
+                ),
+            },
+        )
+
+    def dump_rows(self, name: str) -> None:
+        # Same wait as for AOSS, so the two stores are snapshotted at the same moment after
+        # the job — Aurora is transactional, but whether Bedrock writes before or after it
+        # reports COMPLETE is part of what this records.
+        time.sleep(120)
+        rows = self.sql(
+            "SELECT id::text AS id, chunks, metadata::text AS metadata, "
+            "custom_metadata::text AS custom_metadata, vector_dims(embedding) AS dims, "
+            "vector_norm(embedding) AS l2_norm, "
+            "subvector(embedding, 1, 8)::text AS first_8 "
+            f"FROM {self.args.table} ORDER BY metadata::text, chunks"
+        )
+        for row in rows:
+            for key in ("metadata", "custom_metadata"):
+                if row.get(key) is not None:
+                    row[key] = json.loads(row[key])
+        self.save(name, {"total": len(rows), "rows": rows})
+
+    def capture_statements(self, since: datetime) -> None:
+        """Every statement the cluster logged, vector literals shortened to their length."""
+        # One character class, not a repeated group: the group form backtracks catastrophically
+        # on the 1024-float literals in Bedrock's INSERTs.
+        vector = re.compile(r"\[[-+\d.eE,]{200,}\]")
+        password = re.compile(r"PASSWORD '[^']*'", re.IGNORECASE)
+        events: list[dict[str, Any]] = []
+        group = self.args.postgres_log_group
+        # One stream per instance. filter_log_events crawls this group for tens of minutes
+        # (it pages through time, mostly empty pages); reading each stream in order is instant.
+        for stream in self.logs.describe_log_streams(logGroupName=group)["logStreams"]:
+            token = None
+            while True:
+                page = self.logs.get_log_events(
+                    logGroupName=group,
+                    logStreamName=stream["logStreamName"],
+                    startTime=int(since.timestamp() * 1000),
+                    startFromHead=True,
+                    **({"nextToken": token} if token else {}),
+                )
+                for event in page["events"]:
+                    message = vector.sub(
+                        lambda m: f"[<{m.group(0).count(',') + 1} floats>]", event["message"]
+                    )
+                    # rds_kb.py sets bedrock_user's password with ALTER ROLE, which is logged.
+                    message = password.sub("PASSWORD '<redacted>'", message)
+                    events.append({"timestamp": event["timestamp"], "message": message})
+                if page["nextForwardToken"] == token:
+                    break
+                token = page["nextForwardToken"]
+        events.sort(key=lambda e: e["timestamp"])
+        self.save("postgresql-statements.json", events)
 
     # ------------------------------------------------------------ control plane
 
@@ -199,17 +306,25 @@ class Capture:
     # ---------------------------------------------------------------- the run
 
     def run(self) -> None:
-        FIXTURES.mkdir(parents=True, exist_ok=True)
+        self.out.mkdir(parents=True, exist_ok=True)
         started = datetime.now(UTC)
+        if self.args.resume_after_first_sync:
+            # Job 1 already ran and was saved; re-running it would sync nothing new.
+            job = json.loads((self.out / "ingestion-job-1.json").read_text())
+            started = datetime.fromisoformat(job["startedAt"])
 
         print("control plane")
         self.save("knowledge-base.json", self.agent.get_knowledge_base(**self.kb)["knowledgeBase"])
         self.save("data-source.json", self.agent.get_data_source(**self.ds)["dataSource"])
 
-        print("first sync")
-        self.upload(SAMPLE_DOCS)
-        self.sync("ingestion-job-1.json")
-        self.save("index-mapping.json", self.aoss("GET", f"{INDEX}/_mapping"))
+        if not self.args.resume_after_first_sync:
+            print("first sync")
+            self.upload(SAMPLE_DOCS)
+            self.sync("ingestion-job-1.json")
+        if self.args.store == "rds":
+            self.dump_schema("table-schema.json")
+        else:
+            self.save("index-mapping.json", self.aoss("GET", f"{INDEX}/_mapping"))
         self.dump_documents("index-documents.json")
 
         print("retrieve")
@@ -302,6 +417,9 @@ class Capture:
 
         print("invocation logs")
         self.capture_logs(started)
+        if self.args.store == "rds":
+            print("postgresql statements")
+            self.capture_statements(started)
 
     def capture_logs(self, since: datetime) -> None:
         # Delivery to CloudWatch lags by a minute or two.
@@ -332,7 +450,17 @@ def main() -> int:
     )
     parser.add_argument("--knowledge-base-id", required=True)
     parser.add_argument("--data-source-id", required=True)
-    parser.add_argument("--endpoint", required=True, help="Collection endpoint (https://...)")
+    parser.add_argument("--store", choices=("aoss", "rds"), default="aoss")
+    parser.add_argument("--endpoint", help="AOSS: collection endpoint (https://...)")
+    parser.add_argument("--cluster-arn", help="RDS: terraform output kb_rds_cluster_arn")
+    parser.add_argument("--secret-arn", help="RDS: kb_rds_master_secret_arn")
+    parser.add_argument("--database", default="bedrock", help="RDS: database name")
+    parser.add_argument(
+        "--table", default="bedrock_integration.bedrock_kb", help="RDS: schema-qualified table"
+    )
+    parser.add_argument(
+        "--postgres-log-group", help="RDS: terraform output kb_rds_postgresql_log_group"
+    )
     parser.add_argument(
         "--bucket", required=True, help="Data bucket (terraform output data_bucket)"
     )
@@ -345,7 +473,21 @@ def main() -> int:
         default="amazon.nova-lite-v1:0",
         help="Generation model or inference profile for RetrieveAndGenerate",
     )
-    Capture(parser.parse_args()).run()
+    parser.add_argument(
+        "--resume-after-first-sync",
+        action="store_true",
+        help="Skip the upload and first sync, which already ran and saved ingestion-job-1.json",
+    )
+    args = parser.parse_args()
+    needed = (
+        ("cluster_arn", "secret_arn", "postgres_log_group")
+        if args.store == "rds"
+        else ("endpoint",)
+    )
+    missing = [f"--{n.replace('_', '-')}" for n in needed if getattr(args, n) is None]
+    if missing:
+        parser.error(f"--store {args.store} needs {', '.join(missing)}")
+    Capture(args).run()
     return 0
 
 

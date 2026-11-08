@@ -1,0 +1,37 @@
+{
+  "request": {
+    "input": {
+      "text": "What temperature must the camera reach before science frames, and on which page is that?"
+    },
+    "retrieveAndGenerateConfiguration": {
+      "type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "WELTNMLSFC",
+        "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/meta.llama3-8b-instruct-v1:0",
+        "retrievalConfiguration": {
+          "vectorSearchConfiguration": {
+            "numberOfResults": 10
+          }
+        }
+      }
+    }
+  },
+  "citations": [
+    {
+      "generatedResponsePart": {
+        "textResponsePart": {
+          "span": {
+            "end": 50,
+            "start": 0
+          },
+          "text": "Sorry, I am unable to assist you with this request."
+        }
+      },
+      "retrievedReferences": []
+    }
+  ],
+  "output": {
+    "text": "Sorry, I am unable to assist you with this request."
+  },
+  "sessionId": "267f9f30-2e95-4de9-a8d3-d9d6c8444ef6"
+}

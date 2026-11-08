@@ -1,0 +1,37 @@
+{
+  "request": {
+    "input": {
+      "text": "How much does a student membership cost, and which port does the dew strap use?"
+    },
+    "retrieveAndGenerateConfiguration": {
+      "type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "WELTNMLSFC",
+        "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0",
+        "orchestrationConfiguration": {
+          "queryTransformationConfiguration": {
+            "type": "QUERY_DECOMPOSITION"
+          }
+        }
+      }
+    }
+  },
+  "citations": [
+    {
+      "generatedResponsePart": {
+        "textResponsePart": {
+          "span": {
+            "end": 67,
+            "start": 0
+          },
+          "text": "The model cannot find sufficient information to answer the question."
+        }
+      },
+      "retrievedReferences": []
+    }
+  ],
+  "output": {
+    "text": "The model cannot find sufficient information to answer the question."
+  },
+  "sessionId": "14ab62d1-badc-4f5d-ab3a-e9022e65b9e2"
+}

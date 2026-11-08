@@ -1,0 +1,32 @@
+{
+  "request": {
+    "input": {
+      "text": "What temperature must the camera reach before science frames, and on which page is that?"
+    },
+    "retrieveAndGenerateConfiguration": {
+      "type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "WELTNMLSFC",
+        "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0"
+      }
+    }
+  },
+  "citations": [
+    {
+      "generatedResponsePart": {
+        "textResponsePart": {
+          "span": {
+            "end": 67,
+            "start": 0
+          },
+          "text": "The model cannot find sufficient information to answer the question."
+        }
+      },
+      "retrievedReferences": []
+    }
+  ],
+  "output": {
+    "text": "The model cannot find sufficient information to answer the question."
+  },
+  "sessionId": "142416c0-e4ea-4032-b05c-4fba7822a642"
+}

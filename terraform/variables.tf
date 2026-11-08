@@ -55,6 +55,12 @@ variable "kb_vector_index_ready" {
   default     = false
 }
 
+variable "enable_knowledge_base_rds" {
+  description = "Bedrock knowledge base over Aurora PostgreSQL Serverless v2 + pgvector (Bedrock's RDS store). ~$0.06/hr at the 0.5 ACU floor — about $43/month if left running. The knowledge base itself is created by python/scripts/rds_kb.py."
+  type        = bool
+  default     = false
+}
+
 variable "enable_conversational" {
   description = "Lex V2 bot plus the Polly/Transcribe IAM. Per-request pricing with nothing hourly, so it is safe to leave on."
   type        = bool

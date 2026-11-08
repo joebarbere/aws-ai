@@ -68,6 +68,36 @@ output "kb_data_source_id" {
   value       = var.enable_knowledge_base ? module.knowledge_base[0].data_source_id : null
 }
 
+output "kb_rds_cluster_arn" {
+  description = "Aurora cluster behind the RDS knowledge base, or null when disabled."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].cluster_arn : null
+}
+
+output "kb_rds_master_secret_arn" {
+  description = "Aurora master credentials, for rds_kb.py."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].master_secret_arn : null
+}
+
+output "kb_rds_bedrock_user_secret_arn" {
+  description = "bedrock_user credentials secret, filled in by rds_kb.py."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].bedrock_user_secret_arn : null
+}
+
+output "kb_rds_database_name" {
+  description = "Database holding the RDS knowledge base table."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].database_name : null
+}
+
+output "kb_rds_postgresql_log_group" {
+  description = "Every SQL statement the RDS knowledge base's cluster ran, when log_statements is on."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].postgresql_log_group : null
+}
+
+output "kb_rds_role_arn" {
+  description = "Role for the RDS-backed knowledge base, passed to rds_kb.py create."
+  value       = var.enable_knowledge_base_rds ? module.knowledge_base_rds[0].role_arn : null
+}
+
 output "lex_bot_id" {
   description = "Lex V2 bot id, or null when enable_conversational is false."
   value       = var.enable_conversational ? module.conversational[0].bot_id : null
