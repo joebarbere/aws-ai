@@ -774,7 +774,52 @@ The sketch as first planned:
 7. **Inference config.** `inferenceConfig.textInferenceConfig.{maxTokens, temperature, topP,
    stopSequences}` passes through to LM Studio. `modelArn` is accepted and mapped to `kb-llm`.
 
-### Phase 7 — Runtime server (`server.py`)
+### Phase 7 — Runtime server (`server.py`) ✅ done 2026-11-08
+
+`local-kb serve` (`make local-serve`, which adds `--watch`) serves `bedrock-agent` and
+`bedrock-agent-runtime` on `127.0.0.1:8099`. **Stock boto3, with no local-kb code, ran the whole
+lifecycle:**
+
+1. `create_knowledge_base` (202) and `create_data_source`.
+2. `start_ingestion_job`, then polling `get_ingestion_job` until `COMPLETE` (6 new documents),
+   and `list_ingestion_jobs`.
+3. A hybrid `retrieve` for `ZX-4471`: the dew guide ranked first, 0.9 against 0.5.
+4. `retrieve_and_generate`: 30 dollars, cited.
+5. A follow-up in the same `sessionId`: three hours.
+6. `delete_data_source` and `delete_knowledge_base`.
+
+`ValidationException`, `ResourceNotFoundException` and `ConflictException` arrive as boto3's own
+`client.exceptions.*` classes.
+
+How it works:
+
+- **Routes, methods and success codes** come from botocore's service models. A test walks the
+  model and checks that every implemented operation is routed with the method and path botocore
+  will use. In rest-json, PUT creates, POST lists, and DELETE, Stop and StartIngestionJob answer
+  202.
+- **Errors** carry the code in `x-amzn-ErrorType` and the message in the body. Malformed JSON is a
+  `ValidationException`, not FastAPI's 422.
+- **SigV4** is accepted and not checked, so any credentials work.
+- **A background worker runs queued jobs,** as the service does on AWS, and `--watch` adds the
+  bucket-change trigger.
+- **Concurrency.** Each request opens its own SQLite connection, and WAL mode lets the worker write
+  while requests read. Retrieve and RetrieveAndGenerate run in the thread pool.
+- **boto3 validates some things itself.** A filter node with two operators never reaches the
+  server, because botocore rejects the tagged union before sending. The server still checks,
+  for clients that skip botocore.
+
+**One unexplained miss.** In the first boto3 run, "How much is a student membership?" asked
+seconds after the sync finished came back "not found", although retrieval ranked the handbook
+first. Five repeats, and a fresh second run, all answered correctly. It may be the moments after
+a sync before new chunks are searchable, or model variance. It was not reproduced.
+
+Not implemented: `RetrieveAndGenerateStream` (it needs AWS event-stream framing) and
+`IngestKnowledgeBaseDocuments`.
+
+20 new offline tests, 136 in total.
+
+The sketch as first planned:
+
 
 A FastAPI app on `:8099`. Routes are copied from the installed botocore service models (verified):
 

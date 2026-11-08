@@ -136,6 +136,17 @@ def _retrieve_and_generate(cp: ControlPlane, args: argparse.Namespace) -> dict[s
     return retrieve_and_generate(cp, _services(), args.input, configuration, args.session_id)
 
 
+def _serve(args: argparse.Namespace) -> None:
+    import uvicorn
+
+    from aws_ai.local_kb.server import create_app, start_worker
+
+    services = _services()
+    start_worker(services, args.state_dir, args.watch, lambda line: print(line, flush=True))
+    print(f"bedrock-agent and bedrock-agent-runtime on http://{args.host}:{args.port}")
+    uvicorn.run(create_app(services, args.state_dir), host=args.host, port=args.port)
+
+
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
     # Each command declares only the ids it needs; argparse requires those, so "" never reaches
     # the control plane.
@@ -187,6 +198,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "watch": lambda: _watch(cp, args.poll_seconds, args.debounce),
         "retrieve": lambda: _retrieve(cp, args),
         "retrieve-and-generate": lambda: _retrieve_and_generate(cp, args),
+        "serve": lambda: _serve(args),
     }
 
 
@@ -264,6 +276,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=f"arn:aws:bedrock:{config.REGION}::foundation-model/kb-llm",
         help="Chooses the prompt family: a nova model id gets Nova's prompt. kb-llm answers.",
     )
+
+    p = command("serve")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8099)
+    p.add_argument("--watch", action="store_true", help="Also sync on bucket changes")
     return parser
 
 

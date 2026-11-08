@@ -97,7 +97,10 @@ def open_control_plane(state_dir: Path | None = None) -> ControlPlane:
     """Open (creating if needed) the SQLite store under ``state_dir``."""
     directory = state_dir or config.default_state_dir()
     directory.mkdir(parents=True, exist_ok=True)
-    return ControlPlane(sqlite3.connect(directory / "control.db"))
+    connection = sqlite3.connect(directory / "control.db", timeout=30)
+    # WAL lets the server's request threads read while its ingestion worker writes.
+    connection.execute("PRAGMA journal_mode=WAL")
+    return ControlPlane(connection)
 
 
 class ControlPlane:
