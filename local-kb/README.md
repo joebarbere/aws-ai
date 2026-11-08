@@ -5,8 +5,8 @@ API shapes and ingestion behaviour as the cloud `knowledge_base` module, at $0/m
 ~$350. `PLAN.md` has the design and the build phases. `fixtures/` holds what a real KB produced,
 captured to test against.
 
-**Status:** Phases 0–6 (ground truth, infrastructure, models, control plane, ingestion, Retrieve,
-RetrieveAndGenerate) are done. The boto3-compatible HTTP server comes next.
+**Status:** Phases 0–7 are done: ingestion, Retrieve and RetrieveAndGenerate, served on Bedrock's REST
+routes so stock boto3 works. Dashboards saved objects and the evaluation harness come next.
 
 ## Run it
 
@@ -55,6 +55,32 @@ Credentials are in `local-kb/.env`, which is gitignored:
 
 Every port is bound to 127.0.0.1. OpenSearch's demo TLS certificate is self-signed, so use
 `curl -k`.
+
+## Use it from boto3
+
+`make local-serve` serves both APIs on `127.0.0.1:8099` and syncs as the bucket changes. Code
+written for AWS works with only the endpoint changed:
+
+```python
+import boto3
+
+kw = dict(endpoint_url="http://127.0.0.1:8099", region_name="us-east-1",
+          aws_access_key_id="x", aws_secret_access_key="x")  # not checked
+agent = boto3.client("bedrock-agent", **kw)
+runtime = boto3.client("bedrock-agent-runtime", **kw)
+
+answer = runtime.retrieve_and_generate(
+    input={"text": "How much is a student membership?"},
+    retrieveAndGenerateConfiguration={
+        "type": "KNOWLEDGE_BASE",
+        "knowledgeBaseConfiguration": {
+            "knowledgeBaseId": "<kb>",
+            # The ARN picks Bedrock's prompt style (amazon.nova-* gets Nova's); kb-llm answers.
+            "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/kb-llm",
+        },
+    },
+)
+```
 
 ## Why the bucket events go through a queue
 

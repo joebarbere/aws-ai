@@ -1,5 +1,5 @@
 .PHONY: help fmt validate plan apply destroy test lint typecheck \
-	local-up local-down local-wipe local-init local-smoke local-models local-watch
+	local-up local-down local-wipe local-init local-smoke local-models local-watch local-serve
 
 help:
 	@echo "fmt        terraform fmt -recursive"
@@ -16,6 +16,7 @@ help:
 	@echo "local-smoke check the storage behaviours the sync depends on"
 	@echo "local-models start LM Studio's server and load kb-embed + kb-llm"
 	@echo "local-watch sync knowledge bases as their buckets change (Ctrl-C to stop)"
+	@echo "local-serve bedrock-agent + bedrock-agent-runtime on :8099 for boto3, syncing on changes"
 	@echo "local-down  stop the stack, keep data"
 	@echo "local-wipe  stop the stack and delete its volumes  <- the local terraform destroy"
 
@@ -59,6 +60,9 @@ local-smoke:
 
 local-watch:
 	cd python && uv run local-kb watch
+
+local-serve:
+	cd python && uv run local-kb serve --watch
 
 local-down:
 	$(LOCAL) down
