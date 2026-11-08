@@ -147,6 +147,30 @@ def _serve(args: argparse.Namespace) -> None:
     uvicorn.run(create_app(services, args.state_dir), host=args.host, port=args.port)
 
 
+def _evaluate(cp: ControlPlane, args: argparse.Namespace) -> None:
+    from aws_ai.local_kb.evaluate import evaluate, load, summary, table
+
+    services = _services()
+    dataset = load(args.dataset)
+    reports = []
+    for search_type in args.search_type:
+        outcomes = evaluate(
+            cp,
+            services,
+            args.knowledge_base_id,
+            dataset,
+            search_type=search_type,
+            number_of_results=args.number_of_results,
+            model_arn=args.model_arn,
+        )
+        report = summary(outcomes, f"{search_type} top-{args.number_of_results}")
+        reports.append(report)
+        print(table(report), end="\n\n", flush=True)
+    if args.output:
+        args.output.write_text(json.dumps(reports, indent=2, ensure_ascii=False) + "\n")
+        print(f"wrote {args.output}")
+
+
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
     # Each command declares only the ids it needs; argparse requires those, so "" never reaches
     # the control plane.
@@ -199,6 +223,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "retrieve": lambda: _retrieve(cp, args),
         "retrieve-and-generate": lambda: _retrieve_and_generate(cp, args),
         "serve": lambda: _serve(args),
+        "evaluate": lambda: _evaluate(cp, args),
     }
 
 
@@ -281,6 +306,22 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8099)
     p.add_argument("--watch", action="store_true", help="Also sync on bucket changes")
+
+    p = command("evaluate", "knowledge-base-id")
+    p.add_argument(
+        "--dataset",
+        type=Path,
+        default=config.default_state_dir().parent / "eval" / "qa.jsonl",
+        help="JSON lines: question, source, keywords, reference (default: local-kb/eval/qa.jsonl)",
+    )
+    p.add_argument(
+        "--search-type", nargs="+", default=["SEMANTIC", "HYBRID"], choices=["SEMANTIC", "HYBRID"]
+    )
+    p.add_argument("--number-of-results", type=int, default=5)
+    p.add_argument(
+        "--model-arn", default=f"arn:aws:bedrock:{config.REGION}::foundation-model/kb-llm"
+    )
+    p.add_argument("--output", type=Path, help="Write the full report as JSON")
     return parser
 
 

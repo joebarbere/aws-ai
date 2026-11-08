@@ -1,5 +1,5 @@
 .PHONY: help fmt validate plan apply destroy test lint typecheck \
-	local-up local-down local-wipe local-init local-smoke local-models local-watch local-serve
+	local-up local-down local-wipe local-init local-smoke local-models local-watch local-serve local-eval local-sample-docs
 
 help:
 	@echo "fmt        terraform fmt -recursive"
@@ -17,6 +17,8 @@ help:
 	@echo "local-models start LM Studio's server and load kb-embed + kb-llm"
 	@echo "local-watch sync knowledge bases as their buckets change (Ctrl-C to stop)"
 	@echo "local-serve bedrock-agent + bedrock-agent-runtime on :8099 for boto3, syncing on changes"
+	@echo "local-eval  20-question RAG evaluation, SEMANTIC vs HYBRID (KB=<knowledge base id>)"
+	@echo "local-sample-docs  upload local-kb/sample-docs/kb/ to s3://kb-data/kb/"
 	@echo "local-down  stop the stack, keep data"
 	@echo "local-wipe  stop the stack and delete its volumes  <- the local terraform destroy"
 
@@ -63,6 +65,15 @@ local-watch:
 
 local-serve:
 	cd python && uv run local-kb serve --watch
+
+local-sample-docs:
+	cd python && uv run python -c 'import pathlib; from aws_ai.local_kb.services import local_services; \
+	s3 = local_services().s3; \
+	[s3.upload_file(str(p), "kb-data", f"kb/{p.name}") or print("uploaded", p.name) \
+	 for p in sorted(pathlib.Path("../local-kb/sample-docs/kb").iterdir())]'
+
+local-eval:
+	cd python && uv run local-kb evaluate --knowledge-base-id $(KB) --output ../local-kb/eval/report.json
 
 local-down:
 	$(LOCAL) down

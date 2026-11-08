@@ -1,0 +1,20 @@
+{"question": "How much does a student membership cost?", "source": "tidewater-handbook.pdf", "keywords": [["30"]], "reference": "30 dollars a year."}
+{"question": "What does an adult membership cost?", "source": "tidewater-handbook.pdf", "keywords": [["85"]], "reference": "85 dollars a year."}
+{"question": "When does the orientation course run?", "source": "tidewater-handbook.pdf", "keywords": [["first saturday"]], "reference": "On the first Saturday of every month."}
+{"question": "How long does the orientation course take?", "source": "tidewater-handbook.pdf", "keywords": [["three hours", "3 hours"]], "reference": "About three hours."}
+{"question": "What temperature must the camera reach before science frames are taken?", "source": "tidewater-handbook.pdf", "keywords": [["minus 10", "-10"]], "reference": "Minus 10 degrees Celsius.", "note": "AWS (Titan) never retrieved the handbook for this in Phase 0."}
+{"question": "What is the focal ratio of the main instrument?", "source": "tidewater-handbook.pdf", "keywords": [["f/8"]], "reference": "f/8."}
+{"question": "Where is the emergency stop?", "source": "tidewater-handbook.pdf", "keywords": [["red button"], ["north pier"]], "reference": "The red button on the north pier."}
+{"question": "How many booking blocks can a member have per week?", "source": "tidewater-handbook.pdf", "keywords": [["three", "3"]], "reference": "At most three two-hour blocks per week."}
+{"question": "When is a booking released automatically?", "source": "tidewater-handbook.pdf", "keywords": [["30 minutes"]], "reference": "If the member hasn't badged into the dome within 30 minutes of the block start."}
+{"question": "How long are raw frames kept in the archive?", "source": "tidewater-handbook.pdf", "keywords": [["18 months"]], "reference": "18 months."}
+{"question": "Which port does the dew heater strap plug into?", "source": "dew-heater-guide.md", "keywords": [["dh-2"]], "reference": "Port DH-2 on the controller."}
+{"question": "What output should the dew controller use when humidity passes 85 percent?", "source": "dew-heater-guide.md", "keywords": [["70"]], "reference": "Raise it to 70 percent."}
+{"question": "What is the part number of the replacement heater strap?", "source": "dew-heater-guide.md", "keywords": [["zx-4471"]], "reference": "ZX-4471."}
+{"question": "What spare fuse does the dew controller take?", "source": "dew-heater-guide.md", "keywords": [["zx-0090", "2-amp", "2 amp"]], "reference": "Part ZX-0090, a 2-amp slow-blow fuse."}
+{"question": "Where do visitors park for the public meteor night?", "source": "meteor-night.html", "keywords": [["lower lot"]], "reference": "In the lower lot, then walk up."}
+{"question": "What kind of lights are allowed on the observing field at meteor night?", "source": "meteor-night.html", "keywords": [["red"]], "reference": "Only red lights; white lights and phone screens are not allowed."}
+{"question": "What must be recorded at the start of an observing session?", "source": "night-log-template.txt", "keywords": [["observer"], ["transparency", "seeing"]], "reference": "Observer name, booking block, sky transparency, seeing and dome temperature."}
+{"question": "How soon must faults be reported in the co-op chat?", "source": "night-log-template.txt", "keywords": [["24 hours"]], "reference": "Within 24 hours."}
+{"question": "Where is item INV-056 stored?", "source": "equipment-inventory.txt", "keywords": [["drawer b"]], "reference": "Drawer B."}
+{"question": "When was the dome closed for the 2025 winter service?", "source": "winter-closure-2025.txt", "keywords": [["20 december"], ["5 january"]], "reference": "From 20 December 2025 to 5 January 2026."}

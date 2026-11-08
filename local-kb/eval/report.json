@@ -1,0 +1,742 @@
+[
+  {
+    "run": "SEMANTIC top-5",
+    "questions": 20,
+    "retrieval_hit_rate": 0.9,
+    "keyword_accuracy": 0.85,
+    "judge_accuracy": 0.9,
+    "mean_seconds": 5.1,
+    "outcomes": [
+      {
+        "question": "How much does a student membership cost?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "winter-closure-2025.txt",
+          "night-log-template.txt",
+          "meteor-night.html",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "A student membership costs 30 dollars.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer states the same price ($30) as the reference answer, omitting only the frequency (\"a year\"), which is not explicitly contradicted by the provided text.",
+        "seconds": 3.5,
+        "note": ""
+      },
+      {
+        "question": "What does an adult membership cost?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "winter-closure-2025.txt",
+          "night-log-template.txt",
+          "meteor-night.html",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "An adult membership costs 85 dollars.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately states the cost ($85) and implies the annual duration (\"a year\") through the context of \"membership,\" matching the reference answer's facts.",
+        "seconds": 4.7,
+        "note": ""
+      },
+      {
+        "question": "When does the orientation course run?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "winter-closure-2025.txt",
+          "tidewater-handbook.pdf",
+          "meteor-night.html",
+          "night-log-template.txt",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "The orientation course runs on the first Saturday of every month.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer conveys the exact same factual information as the reference answer.",
+        "seconds": 4.1,
+        "note": ""
+      },
+      {
+        "question": "How long does the orientation course take?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "meteor-night.html",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "The orientation course takes about three hours.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer conveys the exact same factual information as the reference answer (\"about three hours\").",
+        "seconds": 4.2,
+        "note": ""
+      },
+      {
+        "question": "What temperature must the camera reach before science frames are taken?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "night-log-template.txt",
+          "dew-heater-guide.md",
+          "tidewater-handbook.pdf",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The camera must be cooled to minus 10 degrees Celsius before any science frames are taken.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately states the required temperature of minus 10 degrees Celsius, matching the reference answer's factual content.",
+        "seconds": 3.6,
+        "note": "AWS (Titan) never retrieved the handbook for this in Phase 0."
+      },
+      {
+        "question": "What is the focal ratio of the main instrument?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The focal ratio of the main instrument is f/8.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer matches the reference answer exactly.",
+        "seconds": 4.5,
+        "note": ""
+      },
+      {
+        "question": "Where is the emergency stop?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": false,
+        "answer": "The provided search results do not contain information regarding the location of an emergency stop.",
+        "keywords": false,
+        "judge": false,
+        "judge_reason": "The system answer claims the information is missing, whereas the reference answer explicitly states the location of the emergency stop.",
+        "seconds": 5.7,
+        "note": ""
+      },
+      {
+        "question": "How many booking blocks can a member have per week?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "A member can have at most three booking blocks per week.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same core fact as the reference answer (a maximum of three blocks per week), omitting only the specific duration (\"two-hour\") which is not required to confirm the primary constraint.",
+        "seconds": 5.5,
+        "note": ""
+      },
+      {
+        "question": "When is a booking released automatically?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "tidewater-handbook.pdf",
+          "meteor-night.html",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "A booking is released automatically if the member has not badged into the dome within 30 minutes of the block start time.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same factual information as the reference answer regarding the 30-minute window for automatic booking release.",
+        "seconds": 5.0,
+        "note": ""
+      },
+      {
+        "question": "How long are raw frames kept in the archive?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": false,
+        "answer": "The provided search results do not contain information regarding how long raw frames are kept in the archive.",
+        "keywords": false,
+        "judge": false,
+        "judge_reason": "The system answer claims the information is missing, but the reference answer explicitly states it is 18 months, making the system's claim of non-existence factually wrong in this context.",
+        "seconds": 5.8,
+        "note": ""
+      },
+      {
+        "question": "Which port does the dew heater strap plug into?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The dew heater strap plugs into port DH-2 on the controller. Port DH-1 is reserved for the finder scope and should not be used for the dew heater.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer correctly identifies port DH-2 as the connection point for the dew heater strap, matching the reference answer's key fact. The additional information regarding Port DH-1 is consistent with standard equipment usage and does not contradict the reference.",
+        "seconds": 6.5,
+        "note": ""
+      },
+      {
+        "question": "What output should the dew controller use when humidity passes 85 percent?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "When the humidity reading passes 85 percent, the dew controller's output should be raised to 70 percent.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same factual instruction as the reference answer: raising the controller's output to 70 percent when humidity exceeds 85 percent.",
+        "seconds": 5.5,
+        "note": ""
+      },
+      {
+        "question": "What is the part number of the replacement heater strap?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The part number for the replacement heater strap is ZX-4471.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer provides the exact same part number (ZX-4471) as the reference answer.",
+        "seconds": 5.1,
+        "note": ""
+      },
+      {
+        "question": "What spare fuse does the dew controller take?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The dew controller uses a 2-amp slow-blow fuse. The specific part number for this spare fuse is ZX-0090.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately provides both the fuse specifications (2-amp slow-blow) and the part number (ZX-0090), matching all key facts in the reference answer.",
+        "seconds": 6.0,
+        "note": ""
+      },
+      {
+        "question": "Where do visitors park for the public meteor night?",
+        "expected_source": "meteor-night.html",
+        "retrieved": [
+          "meteor-night.html",
+          "night-log-template.txt",
+          "dew-heater-guide.md",
+          "tidewater-handbook.pdf",
+          "winter-closure-2025.txt"
+        ],
+        "hit": true,
+        "answer": "Visitors park in the lower lot during public meteor nights.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer correctly identifies the parking location (\"lower lot\") as stated in the reference answer.",
+        "seconds": 4.4,
+        "note": ""
+      },
+      {
+        "question": "What kind of lights are allowed on the observing field at meteor night?",
+        "expected_source": "meteor-night.html",
+        "retrieved": [
+          "meteor-night.html",
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "winter-closure-2025.txt"
+        ],
+        "hit": true,
+        "answer": "At public meteor nights, white lights, including those from phone screens, are not permitted on the observing field. Visitors are provided with red-light torches at the gate for illumination.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately reflects the reference answer by confirming that white lights and phone screens are prohibited and implying red lights are allowed (via the provision of red-light torches), which aligns with the core fact that \"Only red lights\" are permitted.",
+        "seconds": 6.1,
+        "note": ""
+      },
+      {
+        "question": "What must be recorded at the start of an observing session?",
+        "expected_source": "night-log-template.txt",
+        "retrieved": [
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "meteor-night.html",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "At the start of every observing session, you must record the observer's name, the booking block, sky transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer includes all the specific items listed in the reference answer (observer name, booking block, sky transparency, seeing, and dome temperature) without omitting any required facts.",
+        "seconds": 6.1,
+        "note": ""
+      },
+      {
+        "question": "How soon must faults be reported in the co-op chat?",
+        "expected_source": "night-log-template.txt",
+        "retrieved": [
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "meteor-night.html",
+          "equipment-inventory.txt",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "Faults must be reported in the co-op chat within 24 hours.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same fact as the reference answer: faults must be reported within 24 hours.",
+        "seconds": 4.9,
+        "note": ""
+      },
+      {
+        "question": "Where is item INV-056 stored?",
+        "expected_source": "equipment-inventory.txt",
+        "retrieved": [
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "Item INV-056 is an eyepiece stored in drawer B.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer includes the location \"drawer B,\" which matches the reference answer, and the additional detail about the item being an eyepiece does not contradict the provided information.",
+        "seconds": 5.9,
+        "note": ""
+      },
+      {
+        "question": "When was the dome closed for the 2025 winter service?",
+        "expected_source": "winter-closure-2025.txt",
+        "retrieved": [
+          "winter-closure-2025.txt",
+          "dew-heater-guide.md",
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "meteor-night.html"
+        ],
+        "hit": true,
+        "answer": "The dome was closed from December 20, 2025, to January 5, 2026, for the annual mount service.",
+        "keywords": false,
+        "judge": true,
+        "judge_reason": "The system answer provides the exact same start and end dates as the reference answer, correctly identifying the closure period for the 2025 winter service.",
+        "seconds": 5.4,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "run": "HYBRID top-5",
+    "questions": 20,
+    "retrieval_hit_rate": 1.0,
+    "keyword_accuracy": 0.95,
+    "judge_accuracy": 1.0,
+    "mean_seconds": 4.8,
+    "outcomes": [
+      {
+        "question": "How much does a student membership cost?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "winter-closure-2025.txt",
+          "night-log-template.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "A student membership costs 30 dollars.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer states the same price ($30) as the reference answer, omitting only the frequency (\"a year\"), which is not explicitly contradicted by the provided text.",
+        "seconds": 4.8,
+        "note": ""
+      },
+      {
+        "question": "What does an adult membership cost?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "winter-closure-2025.txt",
+          "night-log-template.txt",
+          "meteor-night.html"
+        ],
+        "hit": true,
+        "answer": "An adult membership costs 85 dollars.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately states the cost ($85) and implies the annual duration (\"a year\") through the context of \"membership,\" matching the reference answer's facts.",
+        "seconds": 4.5,
+        "note": ""
+      },
+      {
+        "question": "When does the orientation course run?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "winter-closure-2025.txt",
+          "meteor-night.html",
+          "night-log-template.txt"
+        ],
+        "hit": true,
+        "answer": "The orientation course runs on the first Saturday of every month.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer conveys the exact same factual information as the reference answer.",
+        "seconds": 3.3,
+        "note": ""
+      },
+      {
+        "question": "How long does the orientation course take?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "meteor-night.html"
+        ],
+        "hit": true,
+        "answer": "The orientation course takes about three hours.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer conveys the exact same factual information as the reference answer (\"about three hours\").",
+        "seconds": 4.1,
+        "note": ""
+      },
+      {
+        "question": "What temperature must the camera reach before science frames are taken?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The camera must be cooled to minus 10 degrees Celsius before any science frames are taken.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately states the required temperature of minus 10 degrees Celsius, matching the reference answer's factual content.",
+        "seconds": 5.0,
+        "note": "AWS (Titan) never retrieved the handbook for this in Phase 0."
+      },
+      {
+        "question": "What is the focal ratio of the main instrument?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The focal ratio of the main instrument is f/8.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer matches the reference answer exactly.",
+        "seconds": 4.3,
+        "note": ""
+      },
+      {
+        "question": "Where is the emergency stop?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The emergency stop is a red button located on the north pier.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer identifies the location (north pier) and the object (red button), which matches all key facts in the reference answer.",
+        "seconds": 4.5,
+        "note": ""
+      },
+      {
+        "question": "How many booking blocks can a member have per week?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "A member can have at most three booking blocks per week.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same core fact as the reference answer (a maximum of three blocks per week), omitting only the specific duration (\"two-hour\") which is not required to confirm the primary constraint.",
+        "seconds": 5.2,
+        "note": ""
+      },
+      {
+        "question": "When is a booking released automatically?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "winter-closure-2025.txt",
+          "dew-heater-guide.md",
+          "meteor-night.html"
+        ],
+        "hit": true,
+        "answer": "A booking is released automatically if the member has not badged into the dome within 30 minutes of the block start time.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same factual information as the reference answer regarding the 30-minute window for automatic booking release.",
+        "seconds": 4.8,
+        "note": ""
+      },
+      {
+        "question": "How long are raw frames kept in the archive?",
+        "expected_source": "tidewater-handbook.pdf",
+        "retrieved": [
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "Raw frames are kept in the archive for 18 months. Members who wish to retain their data longer must export it before this period expires.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately states the 18-month retention period mentioned in the reference answer and adds relevant context without contradicting the core fact.",
+        "seconds": 5.8,
+        "note": ""
+      },
+      {
+        "question": "Which port does the dew heater strap plug into?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "night-log-template.txt"
+        ],
+        "hit": true,
+        "answer": "The dew heater strap should be plugged into port DH-2 on the controller. Port DH-1 is reserved for the finder scope and should not be used for the dew heater.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer correctly identifies port DH-2 as the correct connection point, matching the reference answer's key fact.",
+        "seconds": 5.7,
+        "note": ""
+      },
+      {
+        "question": "What output should the dew controller use when humidity passes 85 percent?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "When the humidity reading passes 85 percent, the dew controller's output should be raised to 70 percent.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same factual instruction as the reference answer: raising the controller's output to 70 percent when humidity exceeds 85 percent.",
+        "seconds": 3.8,
+        "note": ""
+      },
+      {
+        "question": "What is the part number of the replacement heater strap?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "night-log-template.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The part number for the replacement heater strap is ZX-4471.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer provides the exact same part number (ZX-4471) as the reference answer.",
+        "seconds": 4.9,
+        "note": ""
+      },
+      {
+        "question": "What spare fuse does the dew controller take?",
+        "expected_source": "dew-heater-guide.md",
+        "retrieved": [
+          "dew-heater-guide.md",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "The dew controller uses a 2-amp slow-blow fuse. The specific part number for this spare fuse is ZX-0090.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately provides both the fuse specifications (2-amp slow-blow) and the part number (ZX-0090), matching all key facts in the reference answer.",
+        "seconds": 4.1,
+        "note": ""
+      },
+      {
+        "question": "Where do visitors park for the public meteor night?",
+        "expected_source": "meteor-night.html",
+        "retrieved": [
+          "meteor-night.html",
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "winter-closure-2025.txt",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "Visitors park in the lower lot during public meteor nights.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer correctly identifies the parking location (\"lower lot\") as stated in the reference answer.",
+        "seconds": 4.2,
+        "note": ""
+      },
+      {
+        "question": "What kind of lights are allowed on the observing field at meteor night?",
+        "expected_source": "meteor-night.html",
+        "retrieved": [
+          "meteor-night.html",
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "winter-closure-2025.txt"
+        ],
+        "hit": true,
+        "answer": "At public meteor nights, white lights, including those from phone screens, are not permitted on the observing field. Visitors are provided with red-light torches at the gate for illumination.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately reflects the reference answer by confirming that white lights and phone screens are prohibited and implying red lights are allowed (via the provision of red-light torches), which aligns with the core fact that \"Only red lights\" are permitted.",
+        "seconds": 5.9,
+        "note": ""
+      },
+      {
+        "question": "What must be recorded at the start of an observing session?",
+        "expected_source": "night-log-template.txt",
+        "retrieved": [
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "dew-heater-guide.md",
+          "meteor-night.html",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "At the start of every observing session, you must record the observer's name, the booking block, sky transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer includes all the specific items listed in the reference answer (observer name, booking block, sky transparency, seeing, and dome temperature) without omitting any required facts.",
+        "seconds": 5.8,
+        "note": ""
+      },
+      {
+        "question": "How soon must faults be reported in the co-op chat?",
+        "expected_source": "night-log-template.txt",
+        "retrieved": [
+          "night-log-template.txt",
+          "tidewater-handbook.pdf",
+          "meteor-night.html",
+          "equipment-inventory.txt",
+          "dew-heater-guide.md"
+        ],
+        "hit": true,
+        "answer": "Faults must be reported in the co-op chat within 24 hours.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer accurately conveys the same fact as the reference answer: faults must be reported within 24 hours.",
+        "seconds": 4.6,
+        "note": ""
+      },
+      {
+        "question": "Where is item INV-056 stored?",
+        "expected_source": "equipment-inventory.txt",
+        "retrieved": [
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt",
+          "equipment-inventory.txt"
+        ],
+        "hit": true,
+        "answer": "Item INV-056 is an eyepiece stored in drawer B.",
+        "keywords": true,
+        "judge": true,
+        "judge_reason": "The system answer includes the location \"drawer B,\" which matches the reference answer, and the additional detail about the item being an eyepiece does not contradict the provided information.",
+        "seconds": 5.8,
+        "note": ""
+      },
+      {
+        "question": "When was the dome closed for the 2025 winter service?",
+        "expected_source": "winter-closure-2025.txt",
+        "retrieved": [
+          "winter-closure-2025.txt",
+          "dew-heater-guide.md",
+          "tidewater-handbook.pdf",
+          "night-log-template.txt",
+          "meteor-night.html"
+        ],
+        "hit": true,
+        "answer": "The dome was closed from December 20, 2025, to January 5, 2026, for the annual mount service.",
+        "keywords": false,
+        "judge": true,
+        "judge_reason": "The system answer provides the exact same start and end dates as the reference answer, correctly identifying the closure period for the 2025 winter service.",
+        "seconds": 4.0,
+        "note": ""
+      }
+    ]
+  }
+]
