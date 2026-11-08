@@ -47,17 +47,24 @@ SETUP = [
     "GRANT ALL ON SCHEMA bedrock_integration to bedrock_user",
 ]
 
-# As bedrock_user — verbatim from the guide, with IF NOT EXISTS so a rerun is harmless.
-TABLE_SQL = [
-    f"CREATE TABLE IF NOT EXISTS {TABLE} (id uuid PRIMARY KEY, embedding vector({DIMENSIONS}), "
-    "chunks text, metadata json, custom_metadata jsonb)",
-    f"CREATE INDEX IF NOT EXISTS bedrock_kb_embedding_idx ON {TABLE} "
-    "USING hnsw (embedding vector_cosine_ops) WITH (ef_construction=256)",
-    f"CREATE INDEX IF NOT EXISTS bedrock_kb_chunks_idx ON {TABLE} "
-    "USING gin (to_tsvector('simple', chunks))",
-    f"CREATE INDEX IF NOT EXISTS bedrock_kb_custom_metadata_idx ON {TABLE} "
-    "USING gin (custom_metadata)",
-]
+
+def table_sql(table: str = TABLE, dimensions: int = DIMENSIONS) -> list[str]:
+    """As bedrock_user — verbatim from the guide, with IF NOT EXISTS so a rerun is harmless.
+    Index names follow the table's (``bedrock_kb_embedding_idx`` for ``bedrock_kb``)."""
+    name = table.rpartition(".")[2]
+    return [
+        f"CREATE TABLE IF NOT EXISTS {table} (id uuid PRIMARY KEY, "
+        f"embedding vector({dimensions}), chunks text, metadata json, custom_metadata jsonb)",
+        f"CREATE INDEX IF NOT EXISTS {name}_embedding_idx ON {table} "
+        "USING hnsw (embedding vector_cosine_ops) WITH (ef_construction=256)",
+        f"CREATE INDEX IF NOT EXISTS {name}_chunks_idx ON {table} "
+        "USING gin (to_tsvector('simple', chunks))",
+        f"CREATE INDEX IF NOT EXISTS {name}_custom_metadata_idx ON {table} "
+        "USING gin (custom_metadata)",
+    ]
+
+
+TABLE_SQL = table_sql()
 
 # pgvector 0.8.0+: keep scanning the HNSW graph until a filtered query has its k rows.
 ITERATIVE_SCAN = [

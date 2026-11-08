@@ -333,24 +333,53 @@ Verification:
 - RetrieveAndGenerate answers the fuse and strap questions correctly, citing the dew heater
   guide.
 
-**Phase P5: API parity.**
+**Phase P5: API parity** ✅ done 2026-11-08.
 
-- `local-kb serve` and the CLI work unchanged against an RDS knowledge base.
-- `CreateKnowledgeBase` with an RDS `storageConfiguration` works from stock boto3.
-- Add an RDS run to `local_smoke.py`.
-- Tests:
-  - mirror `test_local_kb_ingest` and `test_local_kb_retrieve`, parametrized over both stores;
-  - add a unit test for the filter → SQL translation;
-  - add a Postgres integration test, skipped when port 5432 is closed (same pattern as the
-    OpenSearch tests).
-- **Viewing the internals.** Dashboards has no Postgres equivalent. Ship
-  `local-kb/pg/inspect.sql`, a set of psql queries that does the same job as the Dashboards
-  prefix-filter view:
-  - chunks per source;
-  - `metadata` and `custom_metadata` flattened with `jsonb_each`;
-  - the index list with sizes.
-  - Optional: a lightweight browser UI such as `adminer` under the `pg` profile. Leave out
-    pgAdmin, which is about 500 MB.
+- **Stock boto3, end to end** (`tests/test_local_kb_rds_lifecycle.py`, the gate). `local-kb
+  serve` runs in-process on a free port, with a throwaway state directory and table, against
+  the live RustFS, Postgres and LM Studio. The test:
+  - creates an RDS knowledge base and an S3 data source;
+  - starts an ingestion job and polls it to COMPLETE;
+  - runs SEMANTIC (worst-first distances, no chunk id), HYBRID (`ZX-4471` first) and a filter;
+  - gets a server-side ValidationException;
+  - runs RetrieveAndGenerate, whose answer contains `ZX-4471`;
+  - deletes the data source, which empties the table under policy DELETE;
+  - deletes the knowledge base and gets ResourceNotFound.
+
+  It takes about 7 s, and skips when any part of the stack is down.
+- **One table per RDS knowledge base,** as on AWS: two knowledge bases on one table would see
+  each other's rows. `local_init.py pg --table bedrock_integration.<name> [--dimensions N]`
+  creates another. `rds_kb.table_sql()` names the indexes after the table, and the default's
+  names are unchanged.
+- **The smoke test** gains 8 Postgres checks:
+  - pgvector 0.8+;
+  - `relaxed_order`;
+  - the `simple` text search default;
+  - the default table passes Bedrock's validation;
+  - a write found at once at distance 0;
+  - HYBRID scores an exact code 1.0;
+  - a sidecar rewrite keeps the id;
+  - a data source delete empties the rows.
+- **Tests:**
+  - `test_local_kb_stores.py` runs one contract over both stores: the Phase 0 counters for
+    both syncs, re-embedding only the edited file, the sidecar rewrite in place, edits and
+    deletes, the data source purge, and the same filters accepted and refused;
+  - unit tests for the filter SQL;
+  - the live Postgres tests from P3 and P4 skip when Postgres is down.
+- **`pg/inspect.sql`** (`make local-pg-inspect [TABLE=…]`) is the Dashboards view's counterpart.
+  It shows:
+  - chunks per file;
+  - Bedrock's `x-amz-bedrock-kb-*` fields, one row per chunk and field;
+  - sidecar attributes with their JSON types;
+  - the `metadata` keys;
+  - vector dimensions and norms;
+  - indexes with sizes;
+  - live and dead rows (the sidecar round trip left 2 dead);
+  - the search settings.
+
+  `make local-psql` opens psql as `bedrock_user`, with the password passed through the
+  environment. No browser UI: psql covers it, and adminer would add a container for little
+  gain.
 
 ## 3. The comparison (Phases P6–P7)
 
@@ -538,7 +567,7 @@ These are hypotheses for P7 to confirm or overturn:
 | P2 ✅ | `postgres` service, `local_init.py pg`, RDS storage config accepted | `create-knowledge-base --store rds` works; schema identical to Aurora's; 149 tests pass |
 | P3 ✅ | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
 | P4 ✅ | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
-| P5 | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
+| P5 ✅ | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
 | P6 | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
 | P7 | runs on sample/medium/large; README results and a pros/cons verdict with measured numbers | — |
 

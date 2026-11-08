@@ -4,6 +4,7 @@
     python local_init.py env    write local-kb/.env with random credentials, or add missing ones
     python local_init.py init   bucket, bucket event, the least-privilege OpenSearch user, and pg
     python local_init.py pg     AWS's Aurora setup SQL against the local Postgres, only
+    python local_init.py pg --table bedrock_integration.other_kb   another RDS KB's table
 
 `init` and `pg` are idempotent: run them as often as you like. They are the local version of the
 cloud module's policies — the bucket stands in for the S3 data source, the bucket event for the
@@ -292,13 +293,15 @@ def dashboards_up(admin_password: str) -> bool:
     return bool(state == "green")
 
 
-def ensure_postgres(env: dict[str, str]) -> None:
+def ensure_postgres(env: dict[str, str], table: str | None = None, dimensions: int = 1024) -> None:
     """AWS's Aurora setup, verbatim from rds_kb.py: the extension, schema and `bedrock_user` as
     the superuser (Aurora's master user), then the table and its three indexes as
     `bedrock_user`, so it owns them as on AWS. Bedrock validates this layout; it never creates
-    it."""
+    it. Each RDS knowledge base needs a table of its own, as on AWS: pass ``table`` for more."""
     import psycopg
-    from rds_kb import DATABASE, ITERATIVE_SCAN, SETUP, TABLE, TABLE_SQL
+    from rds_kb import DATABASE, ITERATIVE_SCAN, SETUP, TABLE, table_sql
+
+    table = table or TABLE
 
     def connect(user: str, password: str) -> Any:
         return psycopg.connect(
@@ -324,12 +327,12 @@ def ensure_postgres(env: dict[str, str]) -> None:
         for sql in ITERATIVE_SCAN:
             admin.execute(sql)
     with connect(PG_USER, env["BEDROCK_PG_PASSWORD"]) as user:
-        for sql in TABLE_SQL:
+        for sql in table_sql(table, dimensions):
             user.execute(sql)
         version = user.execute(
             "SELECT extversion FROM pg_extension WHERE extname = 'vector'"
         ).fetchone()[0]
-    print(f"Postgres: pgvector {version}, {TABLE} owned by {PG_USER}")
+    print(f"Postgres: pgvector {version}, {table} owned by {PG_USER}")
 
 
 def init() -> None:
@@ -352,8 +355,15 @@ def init() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["env", "init", "pg"])
+    parser.add_argument(
+        "--table", help="pg only: another bedrock_integration.<name> table, for another RDS KB"
+    )
+    parser.add_argument("--dimensions", type=int, default=1024, help="pg --table only")
     args = parser.parse_args()
-    {"env": write_env, "init": init, "pg": lambda: ensure_postgres(load_env())}[args.command]()
+    if args.command == "pg":
+        ensure_postgres(load_env(), args.table, args.dimensions)
+    else:
+        {"env": write_env, "init": init}[args.command]()
     return 0
 
 
