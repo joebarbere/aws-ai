@@ -5,8 +5,8 @@ API shapes and ingestion behaviour as the cloud `knowledge_base` module, at $0/m
 ~$350. `PLAN.md` has the design and the build phases. `fixtures/` holds what a real KB produced,
 captured to test against.
 
-**Status:** Phases 0–4 (ground truth, infrastructure, models, control plane, ingestion) are done.
-Retrieve and RetrieveAndGenerate come next.
+**Status:** Phases 0–5 (ground truth, infrastructure, models, control plane, ingestion, Retrieve)
+are done. RetrieveAndGenerate comes next.
 
 ## Run it
 
@@ -29,6 +29,9 @@ uv run local-kb create-knowledge-base --name study-kb
 uv run local-kb create-data-source --knowledge-base-id <kb> --name docs   # s3://kb-data/kb/
 uv run local-kb sync --knowledge-base-id <kb> --data-source-id <ds>       # the console's Sync button
 uv run local-kb list-ingestion-jobs --knowledge-base-id <kb> --data-source-id <ds>
+uv run local-kb retrieve --knowledge-base-id <kb> --retrieval-query "text=Which fuse does the dew controller take?"
+uv run local-kb retrieve --knowledge-base-id <kb> --retrieval-query text=ZX-4471 \
+    --retrieval-configuration '{"vectorSearchConfiguration": {"overrideSearchType": "HYBRID"}}'
 ```
 
 `make local-watch` syncs automatically: upload under `s3://kb-data/kb/`, and a job runs 10

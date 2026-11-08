@@ -35,7 +35,8 @@ def local_services(env: dict[str, str] | None = None) -> Services:
             config.OPENSEARCH_ENDPOINT, OPENSEARCH_USER, values["BEDROCK_KB_PASSWORD"]
         ),
         embedder=lambda arn, dims: lm_studio_embedder(model_id(arn), dims),
-        count_tokens=qwen_token_counter(),
+        # Loaded on first use: only chunking needs the tokenizer, and it downloads once.
+        count_tokens=lambda text: qwen_token_counter()(text),
     )
 
 
