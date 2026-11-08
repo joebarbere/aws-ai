@@ -128,30 +128,60 @@ mapping types them. Phase 4 reproduces this, including the dynamic mapping.
 
 ## 1. Architecture
 
+```mermaid
+flowchart LR
+    subgraph clients["Clients"]
+        boto3["boto3<br/>bedrock-agent · bedrock-agent-runtime"]
+        cli["local-kb CLI"]
+        browser["Browser"]
+    end
+
+    subgraph host["Host processes (uv run local-kb …)"]
+        server["local-kb serve :8099<br/>Bedrock REST routes"]
+        control[("Control plane · SQLite<br/>KBs · data sources · jobs<br/>document ledger · sessions")]
+        trigger["Sync trigger<br/>queue poll + ETag poll<br/>10 s debounce"]
+        ingest["Ingestion job<br/>list → diff → parse → chunk<br/>→ embed → write"]
+        runtime["Retrieve · RetrieveAndGenerate<br/>filters · hybrid · prompts · citations"]
+    end
+
+    subgraph lmstudio["LM Studio :1234"]
+        embed["kb-embed<br/>Qwen3-Embedding-0.6B"]
+        llm["kb-llm<br/>Qwen3.5-9B Q6_K"]
+    end
+
+    subgraph containers["podman-compose · bound to 127.0.0.1"]
+        rustfs[("RustFS :9000 · console :9001<br/>s3://kb-data/kb/")]
+        events["kb-events :8098<br/>bucket-event queue"]
+        opensearch[("OpenSearch :9200<br/>bedrock-knowledge-base-default-index")]
+        dashboards["OpenSearch Dashboards :5601"]
+    end
+
+    boto3 -->|"HTTP, SigV4 ignored"| server
+    cli --> control
+    cli --> ingest
+    cli --> runtime
+    server --> control
+    server --> runtime
+    server -->|"background worker"| ingest
+    rustfs -->|"ObjectCreated / ObjectRemoved webhook"| events
+    trigger -->|"long-poll GET /messages"| events
+    trigger -->|"StartIngestionJob"| control
+    trigger --> ingest
+    ingest -->|"ListObjectsV2 · GetObject"| rustfs
+    ingest -->|"/v1/embeddings"| embed
+    ingest -->|"_bulk as bedrock-kb"| opensearch
+    ingest <-->|"ledger · statistics"| control
+    runtime -->|"query embedding"| embed
+    runtime -->|"knn / hybrid search"| opensearch
+    runtime -->|"/v1/chat/completions"| llm
+    browser --> dashboards
+    browser --> rustfs
+    dashboards --> opensearch
 ```
-                 (control plane — SQLite: KBs, data sources, jobs, document ledger)
-                                         │
- ┌──────────┐ webhook  ┌───────────┐  ┌─┴──────────────┐ StartIngestionJob ┌──────────────────────┐
- │  RustFS  │ ───────▶ │ kb-events │◀─│ sync trigger   │ ────(debounced)─▶ │ ingestion worker     │
- │ kb/*.pdf │  (SQS)   │  :8098    │  │ polls queue    │                   │ list → diff → parse  │
- │ *.metadata.json                     └────────────────┘                   │ → chunk → embed      │
- └────┬─────┘ ◀────────────────── GetObject / ListObjectsV2 ─────────────────│ → bulk index/delete  │
-      │                                                                     └───┬───────────┬──────┘
-      │                                       LM Studio :1234                   │ /v1/embeddings
-      │                                ┌──────────────────────────┐ ◀───────────┘           │ _bulk
-      │                                │ Qwen3-Embedding-0.6B     │                         ▼
-      │                                │ Qwen3.5-9B (generation)  │ ◀──┐        ┌──────────────────────┐
-      │                                └──────────────────────────┘    │        │ OpenSearch :9200     │
-      │                                                                │        │ bedrock-knowledge-   │
-      │   boto3 bedrock-agent-runtime(endpoint_url=:8099)              │        │ base-default-index   │
-      │        │                                                       │        └─────────┬────────────┘
-      │        ▼                                                       │                  │
-      │  ┌────────────────────────────────────────┐   /v1/chat/completions                │
-      └─▶│ runtime API :8099                      │───────────────────┘   Dashboards :5601 ◀─┘
-         │ /knowledgebases/{id}/retrieve          │── knn / hybrid query ─▶ OpenSearch
-         │ /retrieveAndGenerate(/Stream)          │
-         └────────────────────────────────────────┘
-```
+
+The same diagram, with a request-level sequence and a guide to every component, is in
+[README.md](README.md#architecture). The ASCII sketch from the first draft of this plan showed
+MinIO calling the host directly; RustFS (Phase 1 findings) and the kb-events queue replaced both.
 
 Two design rules, both copied from the real service:
 
@@ -847,7 +877,31 @@ rt = boto3.client("bedrock-agent-runtime", endpoint_url="http://localhost:8099",
 rt.retrieve_and_generate(input={"text": "..."}, retrieveAndGenerateConfiguration={...})
 ```
 
-### Phase 8 — OpenSearch Dashboards: show the AWS internal fields
+### Phase 8 — OpenSearch Dashboards: show the AWS internal fields ✅ done 2026-11-08
+
+`make local-init` imports [`dashboards/bedrock-kb.ndjson`](dashboards/bedrock-kb.ndjson) into
+**both** the Private and Global tenants. Multi-tenancy is on in the Dashboards image, and a first
+login lands in Private, so objects only in Global would look missing. It contains:
+
+- the index pattern, with the vector hidden through `sourceFilters`;
+- the saved search **Bedrock KB — internals**;
+- the **Chunks per source document** table.
+
+It was checked through the same field-list API Discover uses:
+
+- **Typing `x-amz-bedrock`** leaves exactly `-data-source-id`, `-source-file-modality` and
+  `-source-uri` (each a string with an aggregatable `.keyword` twin) and `-document-page-number`
+  (number).
+- **Typing `AMAZON_BEDROCK`** leaves the text and metadata fields.
+- **The table** shows 12 inventory chunks and 1 for each other file.
+
+[`dashboards/devtools.txt`](dashboards/devtools.txt) has the Dev Tools version: the mapping, one
+raw chunk, a `prefix` query on `x-amz-bedrock-kb-source-uri.keyword`, the per-file aggregation,
+and a sidecar-attribute filter. A test checks that every saved-search column is a field a real
+Bedrock chunk has (`fixtures/index-documents.json`).
+
+The sketch as first planned:
+
 
 `dashboards/bedrock-kb.ndjson`, imported by `local-init`, contains:
 
@@ -871,7 +925,42 @@ rt.retrieve_and_generate(input={"text": "..."}, retrieveAndGenerateConfiguration
    - A `prefix` query on `x-amz-bedrock-kb-source-uri.keyword`.
    - A raw `knn` query, for comparison with what `Retrieve` returns.
 
-### Phase 9 — Tests and an evaluation harness
+### Phase 9 — Tests and an evaluation harness ✅ done 2026-11-08
+
+**Tests.** 141 offline tests, with no stack needed. They cover:
+
+- every module against the Phase 0 fixtures;
+- the Phase 0 ingestion sequence against fakes;
+- each prompt template byte for byte;
+- each filter operator;
+- every server route against botocore's model;
+- the evaluator and the saved objects.
+
+The live checks were run by hand at each phase: the Phase 0 replay, Retrieve against all 8
+fixture requests, RetrieveAndGenerate in five modes, and a stock-boto3 lifecycle.
+
+**Evaluation.** `local-kb evaluate` (`make local-eval KB=<id>`) runs
+[`eval/qa.jsonl`](eval/qa.jsonl): 20 questions, each naming the file that holds the answer,
+required keyword groups, and a reference answer. It scores retrieval hit@k, keywords, and an
+LLM-as-judge verdict from the local model, for SEMANTIC and HYBRID. Results
+([`eval/report.json`](eval/report.json)):
+
+| Search | hit@5 | Keywords | Judge | s/question |
+|---|---|---|---|---|
+| SEMANTIC | 90% | 85% | 90% | 5.1 |
+| HYBRID | 100% | 95% | 100% | 4.8 |
+
+- **SEMANTIC's two misses** are both handbook questions (emergency stop, frame retention). They
+  are the single-chunk PDF problem that also made AWS miss the camera question. HYBRID's lexical
+  half fixes both.
+- **The one keyword miss** under HYBRID is a paraphrase ("December 20" for "20 December") that the
+  judge correctly accepts. That is why both checks exist.
+- **Comparing with AWS on the same 20 questions** would need another Phase 0 run (about 20 minutes
+  of OpenSearch Serverless). The harness is ready for it: point `evaluate` at results from a cloud
+  KB.
+
+The sketch as first planned:
+
 
 - **Unit tests, offline with fakes:** chunkers (boundaries, overlap, hierarchical parent linkage),
   filter translation (one case per operator), ledger diff (all five cases), citation parsing
@@ -924,9 +1013,8 @@ rt.retrieve_and_generate(input={"text": "..."}, retrieveAndGenerateConfiguration
 
 ## 6. Suggested build order
 
-Phases 1 → 2 → 3 → 4 (with the Dashboards import from Phase 8 as soon as the first chunks land) →
-5 → 6 → 7 → 9. Phase 0 is done; its fixtures are the tests' expected values from Phase 4 on. Each
-phase is one PR, small enough for `make test lint typecheck` to stay green.
+All phases are done (2026-11-08). They were built in the order 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 →
+8 → 9, one commit each on the `local-kb` branch, with `make test lint typecheck` green throughout.
 
 ---
 
