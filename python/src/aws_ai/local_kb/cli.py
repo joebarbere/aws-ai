@@ -57,6 +57,13 @@ def default_storage_configuration(index_name: str) -> dict[str, Any]:
     }
 
 
+def _query_arg(text: str) -> Any:
+    """``--retrieval-query`` as JSON, or the AWS CLI shorthand ``text=...``."""
+    if text.startswith("text="):
+        return {"text": text.removeprefix("text=")}
+    return _json_arg(text)
+
+
 def _json_arg(text: str) -> Any:
     try:
         return json.loads(text)
@@ -98,6 +105,18 @@ def _watch(cp: ControlPlane, poll_seconds: float, debounce: float) -> None:
         watch(cp, _services(), poll_seconds=poll_seconds, debounce=debounce)
     except KeyboardInterrupt:
         pass
+
+
+def _retrieve(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Any]:
+    from aws_ai.local_kb.retrieve import retrieve
+
+    return retrieve(
+        cp,
+        _services(),
+        args.knowledge_base_id,
+        args.retrieval_query,
+        args.retrieval_configuration,
+    )
 
 
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
@@ -149,6 +168,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "sync": lambda: _sync(cp, kb, ds),
         "run-pending": lambda: _run_pending(cp),
         "watch": lambda: _watch(cp, args.poll_seconds, args.debounce),
+        "retrieve": lambda: _retrieve(cp, args),
     }
 
 
@@ -204,6 +224,17 @@ def build_parser() -> argparse.ArgumentParser:
     p = command("watch")
     p.add_argument("--poll-seconds", type=float, default=60, help="ETag poll; 0 turns it off")
     p.add_argument("--debounce", type=float, default=10, help="Quiet seconds before syncing")
+
+    # bedrock-agent-runtime
+    p = command("retrieve", "knowledge-base-id")
+    p.add_argument(
+        "--retrieval-query", type=_query_arg, required=True, help='text=... or {"text": ...}'
+    )
+    p.add_argument(
+        "--retrieval-configuration",
+        type=_json_arg,
+        help='JSON, e.g. {"vectorSearchConfiguration": {"overrideSearchType": "HYBRID"}}',
+    )
     return parser
 
 

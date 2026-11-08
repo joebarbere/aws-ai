@@ -584,7 +584,49 @@ changes, as AWS documents. This is a stretch goal.
 fixture counterpart, except for chunk boundaries, which come from a different tokenizer (see the
 risks).
 
-### Phase 5 — Retrieve (`filters.py`, `retrieve.py`)
+### Phase 5 — Retrieve (`filters.py`, `retrieve.py`) ✅ done 2026-11-08
+
+`local-kb retrieve` (and `retrieve.retrieve()`) answers in the shape of
+`bedrock-agent-runtime retrieve`. Replaying the 8 fixture requests against the local index,
+synced from the same documents:
+
+- **Shape:** identical for every request. Each result is exactly `content`, `location`,
+  `metadata` and `score`, with no `documentId` or `nextToken`. Metadata types match too,
+  including page numbers as `1.0`.
+- **Filters:** all four filter fixtures return exactly what Bedrock returned. That covers
+  `equals` on a sidecar string, `equals` page 2 (empty, because the PDF is one chunk),
+  `startsWith` on the source URI, and `andAll` of a boolean, a `gte` on a float and
+  `listContains`.
+- **Semantic:** same top result for the fuse question, 4 of 5 shared results there, and 9 of 10
+  on the inventory query. Scores run about 0.1 higher than Titan's, as expected from a different
+  model with the same `1/(1+d²)` formula.
+- **The embedding model shows on short codes.** For the bare query `ZX-4471`, Titan's semantic
+  search ranked the dew guide first; Qwen ranks the night-log template first. Exact codes are
+  exactly where semantic-only search is fragile.
+- **Hybrid had to be tuned.** AWS doesn't publish its fusion, and in Phase 0 its HYBRID matched
+  SEMANTIC exactly, so nothing could be copied.
+  - First try: 0.3/0.7 weights. The vector score buried the exact match.
+  - Second try: equal weights, OpenSearch's default. That gave a 0.5/0.5 tie, because min-max
+    normalization over just the requested few results forces the last of them to 0.
+  - Now: equal weights, min-max normalized over a **50-candidate pool**, then trimmed.
+    `ZX-4471`, `DH-2`, `INV-056` and two natural-language questions all rank the right chunk
+    first, with margins like 0.9 vs 0.5.
+- **Hierarchical:** children are swapped for their `parentText` once per parent, so fewer than
+  `numberOfResults` can come back, as on AWS.
+- **Not supported:** `implicitFilterConfiguration` and `rerankingConfiguration` are refused with
+  a `ValidationException` rather than silently ignored.
+
+33 new offline tests, 104 in total:
+
+- every filter operator, plus malformed filters;
+- the response shape against the fixture;
+- filter placement inside `knn`;
+- the hybrid pipeline and its candidate pool;
+- parent swapping;
+- configuration validation.
+
+The sketch as first planned:
+
 
 **Request and response.** Match `bedrock-agent-runtime` exactly:
 
