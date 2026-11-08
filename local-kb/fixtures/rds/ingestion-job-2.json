@@ -1,0 +1,18 @@
+{
+  "knowledgeBaseId": "WELTNMLSFC",
+  "dataSourceId": "CCGSG5GOJA",
+  "ingestionJobId": "CPIR57U0U4",
+  "status": "COMPLETE",
+  "statistics": {
+    "numberOfDocumentsScanned": 5,
+    "numberOfMetadataDocumentsScanned": 2,
+    "numberOfNewDocumentsIndexed": 0,
+    "numberOfModifiedDocumentsIndexed": 1,
+    "numberOfMetadataDocumentsModified": 1,
+    "numberOfDocumentsDeleted": 1,
+    "numberOfDocumentsFailed": 0,
+    "numberOfDocumentsSkipped": 0
+  },
+  "startedAt": "2026-11-08 18:45:14.045644+00:00",
+  "updatedAt": "2026-11-08 18:45:19.259454+00:00"
+}

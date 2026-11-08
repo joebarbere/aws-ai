@@ -1,0 +1,83 @@
+{
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "udt_name": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "column_name": "embedding",
+      "data_type": "USER-DEFINED",
+      "udt_name": "vector",
+      "is_nullable": "YES"
+    },
+    {
+      "column_name": "chunks",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES"
+    },
+    {
+      "column_name": "metadata",
+      "data_type": "json",
+      "udt_name": "json",
+      "is_nullable": "YES"
+    },
+    {
+      "column_name": "custom_metadata",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "bedrock_kb_pkey",
+      "indexdef": "CREATE UNIQUE INDEX bedrock_kb_pkey ON bedrock_integration.bedrock_kb USING btree (id)"
+    },
+    {
+      "indexname": "bedrock_kb_embedding_idx",
+      "indexdef": "CREATE INDEX bedrock_kb_embedding_idx ON bedrock_integration.bedrock_kb USING hnsw (embedding vector_cosine_ops) WITH (ef_construction='256')"
+    },
+    {
+      "indexname": "bedrock_kb_chunks_idx",
+      "indexdef": "CREATE INDEX bedrock_kb_chunks_idx ON bedrock_integration.bedrock_kb USING gin (to_tsvector('simple'::regconfig, chunks))"
+    },
+    {
+      "indexname": "bedrock_kb_custom_metadata_idx",
+      "indexdef": "CREATE INDEX bedrock_kb_custom_metadata_idx ON bedrock_integration.bedrock_kb USING gin (custom_metadata)"
+    }
+  ],
+  "pgvector": [
+    {
+      "extversion": "0.8.2"
+    }
+  ],
+  "settings": [
+    {
+      "name": "default_text_search_config",
+      "setting": "pg_catalog.simple"
+    },
+    {
+      "name": "hnsw.ef_search",
+      "setting": "40"
+    },
+    {
+      "name": "hnsw.iterative_scan",
+      "setting": "off"
+    },
+    {
+      "name": "hnsw.max_scan_tuples",
+      "setting": "20000"
+    },
+    {
+      "name": "hnsw.scan_mem_multiplier",
+      "setting": "1"
+    },
+    {
+      "name": "server_version",
+      "setting": "17.11"
+    }
+  ]
+}

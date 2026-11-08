@@ -1,0 +1,31 @@
+{
+  "knowledgeBaseId": "WELTNMLSFC",
+  "name": "aws-ai-study-kb-rds",
+  "knowledgeBaseArn": "arn:aws:bedrock:us-east-1:000000000000:knowledge-base/WELTNMLSFC",
+  "roleArn": "arn:aws:iam::000000000000:role/aws-ai-study-kb-rds",
+  "knowledgeBaseConfiguration": {
+    "type": "VECTOR",
+    "vectorKnowledgeBaseConfiguration": {
+      "embeddingModelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+    }
+  },
+  "storageConfiguration": {
+    "type": "RDS",
+    "rdsConfiguration": {
+      "resourceArn": "arn:aws:rds:us-east-1:000000000000:cluster:aws-ai-study-kb-rds",
+      "credentialsSecretArn": "arn:aws:secretsmanager:us-east-1:000000000000:secret:aws-ai-study-kb-rds-bedrock-user-f5SAzA",
+      "databaseName": "bedrock",
+      "tableName": "bedrock_integration.bedrock_kb",
+      "fieldMapping": {
+        "primaryKeyField": "id",
+        "vectorField": "embedding",
+        "textField": "chunks",
+        "metadataField": "metadata",
+        "customMetadataField": "custom_metadata"
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "createdAt": "2026-11-08 18:40:14.186578+00:00",
+  "updatedAt": "2026-11-08 18:40:14.186578+00:00"
+}

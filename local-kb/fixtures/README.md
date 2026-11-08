@@ -27,3 +27,7 @@ against `local-kb/sample-docs/kb/`. The account id is replaced with `00000000000
 | `invocation-logs*.json` | The exact model requests Bedrock made: embedding inputs, including the `includeForEmbedding` prefix, and the rendered generation and orchestration prompts |
 
 What these files show is summarized in `../PLAN.md` §0.
+
+`rds/` holds the same capture against Bedrock's other vector store, Aurora PostgreSQL with pgvector
+(Phase 0b of `../PGVECTOR_PLAN.md`). It includes every SQL statement Bedrock ran; see
+`rds/README.md`.

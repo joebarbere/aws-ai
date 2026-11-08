@@ -76,46 +76,71 @@ ALTER DATABASE postgres SET hnsw.max_scan_tuples = 20000;
 
 | | OpenSearch (current) | RDS / pgvector |
 |---|---|---|
-| Primary key | `_id` = `1%3A0%3A` + 20 characters | `id uuid` (format of the chunk ID returned in results: **unknown**) |
-| Distance | faiss l2; score `1/(1+d²)` | `vector_cosine_ops` (score formula: **unknown**) |
+| Primary key | `_id` = `1%3A0%3A` + 20 characters | `id uuid` (uuid4); results carry **no** chunk ID |
+| Distance and score | faiss l2; score `1/(1+d²)`, best first | `<=>` cosine; score is the **raw distance `1 − cos`, returned worst-first** |
 | Sidecar attributes | top-level fields, dynamic mapping | `custom_metadata` jsonb, or typed columns |
-| `x-amz-bedrock-kb-*` fields | top-level fields in each document | **unknown**: probably inside the `metadata` json |
-| Lexical side of HYBRID | `match` (BM25) | `to_tsvector('simple', chunks)`: a GIN index, *not* BM25 |
-| Consistency | AOSS is eventually consistent (Phase 0 saw a stale window) | transactional |
+| `x-amz-bedrock-kb-*` fields | top-level fields in each document | inside `custom_metadata`, next to the sidecar attributes |
+| Metadata column | `AMAZON_BEDROCK_METADATA` = `{"source":…}` | `metadata` = `{"sourceUrl": …}` |
+| HYBRID | `match` (BM25) fused with k-NN (fusion not published) | RRF (k = 60, × 61/2) of the top 10 by `<=>` and the top 10 by `ts_rank` over `plainto_tsquery('simple', …)` |
+| Consistency | AOSS is eventually consistent (Phase 0 saw a stale window) | settled when the job reports COMPLETE; an edit is delete-then-insert, not atomic |
 
-## 1. Phase 0b: capture a real Aurora knowledge base (optional, recommended)
+## 1. Phase 0b: capture a real Aurora knowledge base ✅ done
 
-The docs leave four things out:
+Captured on 2026-11-08. The setup:
 
-- what Bedrock writes into `metadata`;
-- the chunk-ID format;
-- the `score` it returns for cosine distance;
-- how HYBRID fuses `ts_rank` with vector distance.
+- Aurora PostgreSQL 17.11 with pgvector 0.8.2, Serverless v2 at 0.5–2 ACU, with the Data API on.
+- `log_statement = all`, exported to CloudWatch.
+- The same corpus, the same two syncs and the same queries as Phase 0.
 
-The OpenSearch Phase 0 showed that guessing these gets the details wrong, so capture them the
-same way.
+The cluster ran for about an hour, cost about $0.10, and is destroyed. The tooling is
+`terraform/modules/knowledge_base_rds` and `python/scripts/rds_kb.py`, and the capture command
+is `capture_kb_fixtures.py --store rds`. The fixtures are in `local-kb/fixtures/rds/`; its
+README has the details and Bedrock's SQL verbatim.
 
-**Steps.**
+**What it settled:**
 
-- Write a `terraform/modules/knowledge_base_rds` variant:
-  - Aurora PostgreSQL Serverless v2 with min ACU 0, so it scales to zero;
-  - the Data API enabled;
-  - the secret in Secrets Manager;
-  - the SQL above run through `aws rds-data execute-statement`.
-- Reuse `capture_kb_fixtures.py` with a `--store rds` flag. Instead of the OpenSearch index,
-  dump rows with `SELECT id, chunks, metadata, custom_metadata, vector_dims(embedding) ...`.
-- Use the same corpus and the same two-job mutation script as Phase 0. Write the output to
-  `local-kb/fixtures/rds/`.
+- **Ingestion matches OpenSearch exactly:**
+  - the same 8 counters for both jobs;
+  - the same 17 chunk texts;
+  - sidecar-only changes rewrite in place under the same `id`, with no embedding call.
+- **Row layout:**
+  - `id` is a uuid4;
+  - `metadata` is `{"sourceUrl": "s3://…"}`;
+  - `custom_metadata` holds the sidecar attributes **and** `x-amz-bedrock-kb-source-uri`,
+    `-data-source-id`, `-source-file-modality` and `-document-page-number`;
+  - numbers are stored as json floats.
+- **Writes:** `INSERT … ON CONFLICT(id) DO UPDATE … RETURNING NULL`.
+  - A multi-chunk document goes in inside one transaction.
+  - An edit is `DELETE … WHERE id IN (…)` followed by inserts, as separate statements.
+  - A sidecar-only change reads the row (`SELECT id, embedding, …`) and upserts it.
+- **Validation** runs at knowledge base creation and at the start of every sync:
+  - a `<=>` probe;
+  - the column types, from `pg_attribute`;
+  - three `pg_indexes … LIKE` checks (text GIN with `simple` or `english`, HNSW
+    `vector_cosine_ops`, and the `custom_metadata` GIN index).
+- **SEMANTIC** is `SELECT chunks, metadata, embedding <=> $q as score, custom_metadata … ORDER
+  BY score LIMIT k`. Bedrock then **returns the k rows worst-first, with `score` = cosine
+  distance**. This looks like a Bedrock bug: distances sorted as similarities. The set is right;
+  the order and the meaning of the score are inverted.
+- **HYBRID** is reciprocal rank fusion in one SQL statement, using `rank()` over `<=>` and over
+  `ts_rank(to_tsvector('simple', chunks), plainto_tsquery('simple', text))`.
+  - Each side contributes its top 10 (for k = 5).
+  - The fused score is `Σ 1/(60 + rank) × 61/2`, so a rank-1 hit on both sides scores 1.0.
+  - Results come back best-first.
+- **Filters** become jsonb conditions on `custom_metadata`:
+  - `equals` on a string is `@> {"k":"v"} or @> {"k":["v"]}`;
+  - `equals` on a number or boolean is a plain `@>`;
+  - `startsWith` is `->> 'k' like 'v%'`;
+  - numeric ranges are `(->> 'k')::double precision >= 20261001.000000`, with the value
+    formatted into the SQL;
+  - `listContains` is `@> {"k":["v"]}`;
+  - all four filter fixtures return the same chunks as on OpenSearch.
+- **Retrieve results** have `metadata` equal to `custom_metadata`, with no
+  `x-amz-bedrock-kb-chunk-id`.
 
-**Cost and setup.**
-
-- Expected cost is under $1 for about an hour: ACUs, storage, Secrets Manager and Titan calls.
-  Destroy everything afterwards.
-- Expect to lift and restore a seatbelt deny again, this time on `rds:CreateDBCluster`. This is
-  the same pattern as the AOSS one.
-
-If this phase is skipped, the local implementation still follows the documented schema exactly.
-The four unknowns become explicit guesses, marked `# GUESS` in code and listed in the README.
+**Still open:** whether the hybrid sides' `LIMIT 10` means `2k` or a fixed 10 (only k = 5 was
+captured). The capture also never exercised `in`, `notEquals`, `notIn`, `stringContains`,
+`orAll`, or other ranges, so their SQL follows the same pattern and is marked `# GUESS`.
 
 ## 2. Design: a vector-store seam, then a second store
 
@@ -173,18 +198,21 @@ class VectorStore(Protocol):
 
 **Phase P3: the pgvector store, ingest side.**
 
-- `write`: a single `INSERT ... ` per chunk inside one transaction per document. Each row has:
+Write exactly what Phase 0b recorded:
+
+- **Insert:** Bedrock's `INSERT … ON CONFLICT(id) DO UPDATE … RETURNING NULL`, one statement
+  per chunk. A multi-chunk document goes in inside one transaction. Each row has:
   - `id`: a uuid4;
-  - `embedding`: the vector, sent as a `'[...]'::vector` literal;
+  - `embedding`: the vector, as a `'[...]'::vector` literal;
   - `chunks`;
-  - `metadata`: a json object with `source` and `parentText` (as in `AMAZON_BEDROCK_METADATA`)
-    plus the `x-amz-bedrock-kb-*` fields, `# GUESS` until Phase 0b;
-  - `custom_metadata`: the sidecar attributes, typed.
-- Sidecar-only change: `UPDATE ... SET custom_metadata = $1 WHERE id = ANY($2)`. There is no
-  read-back and no re-embedding. This is simpler than the OpenSearch read-modify-write, and it
-  is atomic.
-- Delete and replace for an edited document happens in one transaction, so a reader never sees
-  both the old and new chunks, or neither.
+  - `metadata`: `{"sourceUrl": uri}`, plus `parentText` for hierarchical chunking
+    (`# GUESS`: not captured);
+  - `custom_metadata`: the sidecar attributes plus the `x-amz-bedrock-kb-*` fields, with
+    numbers as floats.
+- **Sidecar-only change:** read the rows, then upsert them under the same `id`, as Bedrock does.
+  A plain `UPDATE` would be simpler, but it is not what AWS does.
+- **Edited document:** `DELETE … WHERE id IN (…)`, then the inserts. These are separate
+  statements, as on AWS, so the change is not atomic.
 - Ingestion statistics come from `_Sync` and stay as they are.
 
 **Phase P4: the pgvector store, query side.**
@@ -200,36 +228,36 @@ class VectorStore(Protocol):
   - Without it, HNSW returns `ef_search` (40) candidates and then filters them, so a selective
     filter can return fewer than k. Benchmark both settings, because this is pgvector's best
     known pitfall.
-  - Score: `1 - d/2`, mapping cosine distance onto [0, 1]. This is `# GUESS` until Phase 0b.
-- **Filters → SQL over `custom_metadata`:**
-  - `equals`: `custom_metadata @> '{"k": v}'`, which uses the GIN index.
-  - numeric comparisons: `(custom_metadata->>'k')::float8 > $v`.
-  - `in`: `custom_metadata->>'k' = ANY($v)`.
-  - `startsWith`: `LIKE $v || '%'`.
-  - `stringContains`: `LIKE '%'||$v||'%'`.
-  - `listContains`: `custom_metadata->'k' ? $v`.
-  - `notEquals` and `notIn` must also match rows that lack the key, as on AWS:
-    `NOT (custom_metadata ? 'k') OR ...`.
-  - `andAll` / `orAll` map to `AND` / `OR`.
-  - All values are bound parameters; nothing is interpolated into the SQL.
-  - The four filter fixtures from Phase 0 must give the same chunk sets as OpenSearch.
-- **HYBRID:** one SQL statement with two candidate pools of `HYBRID_POOL` (50) each.
-  - Vector side: `ORDER BY embedding <=> $q`.
-  - Lexical side: `ts_rank_cd(to_tsvector('simple', chunks), q)` with
-    `WHERE to_tsvector('simple', chunks) @@ q`.
-  - Combine with the **same** fusion as the OpenSearch pipeline: min-max normalize each side
-    over its pool, take the arithmetic mean with weights [0.5, 0.5], sum, then trim to k. Using
-    the same fusion means the comparison isolates the stores, not the fusion.
-  - **Gotcha:** `plainto_tsquery` ANDs every term, so a natural-language question matches
-    almost nothing. Build an OR query from the lexemes instead:
-
-    ```sql
-    to_tsquery('simple', string_agg(lexeme, ' | '))
-    ```
-
-  - The OpenSearch side's `match` is OR plus BM25. Postgres's `ts_rank` has no IDF, so expect
-    a weaker lexical signal. Measure it; do not fix it here. ParadeDB `pg_search` and
-    VectorChord-bm25 add BM25 and are noted as future options.
+  - Score and order, as captured: `score` is the cosine distance, and the k rows are returned
+    **worst-first**. This is reproduced by default. A `LOCAL_KB_RDS_FIX_ORDER=1` switch returns
+    best-first instead, for anyone who wants usable output. The README calls out the bug.
+- **Filters → SQL over `custom_metadata`.** Use the captured forms verbatim:
+  - `equals` on a string: `( custom_metadata @> $1 or custom_metadata @> $2 )`, a scalar or a
+    one-element list;
+  - `equals` on a number or boolean: `@> $1`;
+  - `startsWith`: `(custom_metadata ->> $1) like $2`;
+  - ranges: `(custom_metadata ->> $k)::double precision >= <%f literal>`;
+  - `listContains`: `@> {"k": [v]}`;
+  - `andAll` maps to `( a and b )`.
+  - The forms that were not captured follow the same pattern and are marked `# GUESS`:
+    - `in` / `notIn` as or-ed / negated `@>`;
+    - `notEquals` as `NOT (… @> …)`, which also matches rows that lack the key;
+    - `stringContains` as `like '%v%'`;
+    - `orAll`.
+  - The four filter fixtures must give the RDS fixtures' chunk sets.
+- **HYBRID:** Bedrock's RRF statement, verbatim from the fixture:
+  - each side contributes its top `2k`; `# GUESS` for k ≠ 5;
+  - the fused score is `Σ 1/(60 + rank) × 61/2`;
+  - results come back best-first.
+  - **What this inherits from AWS:**
+    - `plainto_tsquery` ANDs every term, so a natural-language question rarely matches
+      lexically, and hybrid then reduces to the vector ranking.
+    - `ts_rank` has no IDF.
+    - Exact codes such as `ZX-4471` still match, which is the case hybrid search is for.
+  - **For the comparison**, the bench can switch the fusion: AWS's RRF on Postgres, against
+    this repo's min-max fusion on OpenSearch. That way "store" and "fusion" can be separated.
+    It can also try an OR'd `to_tsquery` as a non-faithful variant.
+  - ParadeDB `pg_search` and VectorChord-bm25 add BM25, and are noted as future options.
 - **Hierarchical chunking:** `parentText` lives in `metadata`, and the parent-collapse logic in
   `retrieve.py` stays shared.
 
@@ -261,7 +289,7 @@ class VectorStore(Protocol):
     cache into both stores.
   - This removes LM Studio from the ingest timings and guarantees both stores see identical
     data.
-- The same queries, k, pool size and fusion.
+- The same queries and k. Fusion is reported both ways: as each store does it on AWS (RRF on Postgres; this repo's min-max on OpenSearch), and with each store using the other's fusion.
 - The same machine, one store measured at a time for resources, with Dashboards stopped. It is
   a UI, not part of the store.
 
@@ -433,11 +461,11 @@ These are hypotheses for P7 to confirm or overturn:
 
 | Phase | Deliverable | Gate |
 |---|---|---|
-| 0b (optional) | `fixtures/rds/` from a real Aurora knowledge base; plan updated with what it settles | user go-ahead (costs money; seatbelt change) |
+| 0b ✅ | `fixtures/rds/` from a real Aurora knowledge base; plan updated with what it settles | done 2026-11-08 |
 | P1 | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged |
 | P2 | `postgres` service, `local_init.py pg`, RDS storage config accepted | `local-kb create-knowledge-base --store rds` works |
-| P3 | pgvector ingest, sidecar `UPDATE`, transactional replace | Phase 0 replay: same 8 counters, same 17 chunk texts |
-| P4 | SEMANTIC, filters → SQL, HYBRID | filter fixtures give the same chunk sets; ZX-4471 ranks first under HYBRID |
+| P3 | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
+| P4 | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
 | P6 | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
 | P7 | runs on sample/medium/large; README results and a pros/cons verdict with measured numbers | — |

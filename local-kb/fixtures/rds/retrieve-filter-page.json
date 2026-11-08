@@ -1,0 +1,14 @@
+{
+  "request": {
+    "query": "telescope",
+    "vectorSearchConfiguration": {
+      "filter": {
+        "equals": {
+          "key": "x-amz-bedrock-kb-document-page-number",
+          "value": 2
+        }
+      }
+    }
+  },
+  "retrievalResults": []
+}

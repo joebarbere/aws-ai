@@ -1,0 +1,36 @@
+{
+  "request": {
+    "query": "telescope",
+    "vectorSearchConfiguration": {
+      "filter": {
+        "startsWith": {
+          "key": "x-amz-bedrock-kb-source-uri",
+          "value": "s3://aws-ai-study-data-000000000000/kb/tidewater"
+        }
+      }
+    }
+  },
+  "retrievalResults": [
+    {
+      "content": {
+        "text": "Tidewater Telescope Co-op - Member Handbook   1. Membership   The Tidewater Telescope Co-op is a volunteer-run observatory on Gull Point. Annual membership costs 85 dollars for adults and 30 dollars for students. Members receive a key card for the dome and may book the main instrument after completing the orientation course.   The orientation course runs on the first Saturday of every month and takes about three hours. It covers dome safety, the mount controls, and the dew heater procedure.2. The main instrument   The main instrument is a 16-inch Ritchey-Chretien reflector on an equatorial fork mount. Its focal ratio is f/8 and the native focal length is 3250 millimetres. The camera is a cooled monochrome sensor that must be cooled to minus 10 degrees Celsius before any science frames are taken.   Never slew the mount while the dome shutter is closed below 40 degrees altitude; the tube can strike the shutter lip. The emergency stop is the red button on the north pier.3. Booking and data   Bookings are made in two-hour blocks, at most three blocks per member per week. A booking is released automatically if the member has not badged into the dome within 30 minutes of the block start.   All raw frames are copied each morning to the co-op archive and kept for 18 months. Members who want their data kept longer must export it themselves before it expires.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "audience": "all-members",
+        "x-amz-bedrock-kb-document-page-number": 1.0,
+        "department": "membership",
+        "x-amz-bedrock-kb-data-source-id": "CCGSG5GOJA"
+      },
+      "score": 0.7871796482647748
+    }
+  ]
+}

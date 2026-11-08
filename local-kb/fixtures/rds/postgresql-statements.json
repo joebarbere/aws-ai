@@ -1,0 +1,1098 @@
+[
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  received SIGHUP, reloading configuration files"
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.enable_plan_management\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.babelfish_status\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.adaptive_autovacuum\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.queryid_counters_min_eviction_sec\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  parameter \"unix_socket_permissions\" cannot be changed without restarting the server"
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.csd_test_parameter_3\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  parameter \"apg_critical_insights_enabled\" changed to \"on\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[729]:LOG:  configuration file \"/rdsdbdata/config/postgresql.conf\" contains errors; unaffected changes were applied"
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[736]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[759]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[754]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[730]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[753]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[758]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[760]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163210000,
+    "message": "2026-11-08 18:40:10 UTC::@:[757]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_2: CREATE EXTENSION IF NOT EXISTS vector"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_3: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_5: CREATE SCHEMA IF NOT EXISTS bedrock_integration"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_6: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_8: DO $$ BEGIN CREATE ROLE bedrock_user LOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_9: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_11: ALTER ROLE bedrock_user WITH PASSWORD '<redacted>'"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_12: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_14: GRANT ALL ON SCHEMA bedrock_integration to bedrock_user"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_15: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163212000,
+    "message": "2026-11-08 18:40:12 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 3079 AS oid , 6 AS attnum) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_17: SELECT extversion FROM pg_extension WHERE extname='vector'"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_18: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_20: ALTER DATABASE bedrock SET hnsw.iterative_scan = 'relaxed_order'"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_21: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_23: ALTER DATABASE bedrock SET hnsw.max_scan_tuples = 20000"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_24: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_2: SELECT 1"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_3: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_5: CREATE TABLE IF NOT EXISTS bedrock_integration.bedrock_kb (id uuid PRIMARY KEY, embedding vector(1024), chunks text, metadata json, custom_metadata jsonb)"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_6: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_8: CREATE INDEX IF NOT EXISTS bedrock_kb_embedding_idx ON bedrock_integration.bedrock_kb USING hnsw (embedding vector_cosine_ops) WITH (ef_construction=256)"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_9: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_11: CREATE INDEX IF NOT EXISTS bedrock_kb_chunks_idx ON bedrock_integration.bedrock_kb USING gin (to_tsvector('simple', chunks))"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_12: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_14: CREATE INDEX IF NOT EXISTS bedrock_kb_custom_metadata_idx ON bedrock_integration.bedrock_kb USING gin (custom_metadata)"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_15: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 12043 AS oid , 3 AS attnum UNION ALL SELECT 12043, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_26: SELECT indexname, indexdef FROM pg_indexes WHERE schemaname='bedrock_integration'"
+  },
+  {
+    "timestamp": 1794163213000,
+    "message": "2026-11-08 18:40:13 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_27: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_17: SELECT embedding <=> '[<1024 floats>]'::vector as score FROM bedrock_integration.bedrock_kb LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_18: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_20: SELECT attname AS column_name, format_type(atttypid, atttypmod) AS data_type FROM pg_attribute WHERE attrelid = 'bedrock_integration.bedrock_kb'::regclass AND attnum > 0;"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_21: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_23: SELECT indexname AS index_name, indexdef AS index_definition FROM pg_indexes WHERE schemaname= 'bedrock_integration' AND tablename = 'bedrock_kb' AND (indexdef LIKE '%USING gin (to_tsvector(''simple''::regconfig, chunks))%' OR indexdef LIKE '%USING gin (to_tsvector(''english''::regconfig, chunks))%')"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_24: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_26: SELECT indexname AS index_name, indexdef AS index_definition FROM pg_indexes WHERE schemaname= 'bedrock_integration' AND tablename = 'bedrock_kb' AND indexdef LIKE '%USING hnsw (embedding vector_cosine_ops)%'"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_27: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_29: SELECT indexname AS index_name, indexdef AS index_definition FROM pg_indexes WHERE schemaname= 'bedrock_integration' AND tablename = 'bedrock_kb' AND indexdef LIKE '%USING gin (custom_metadata)%'"
+  },
+  {
+    "timestamp": 1794163214000,
+    "message": "2026-11-08 18:40:14 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_30: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163215000,
+    "message": "2026-11-08 18:40:15 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163215000,
+    "message": "2026-11-08 18:40:15 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_32: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163215000,
+    "message": "2026-11-08 18:40:15 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_33: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_35: SELECT embedding <=> '[<1024 floats>]'::vector as score FROM bedrock_integration.bedrock_kb LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_36: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_38: SELECT attname AS column_name, format_type(atttypid, atttypmod) AS data_type FROM pg_attribute WHERE attrelid = 'bedrock_integration.bedrock_kb'::regclass AND attnum > 0;"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_39: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_41: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163229000,
+    "message": "2026-11-08 18:40:29 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_42: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  received SIGHUP, reloading configuration files"
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.enable_plan_management\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.babelfish_status\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.adaptive_autovacuum\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.queryid_counters_min_eviction_sec\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"unix_socket_permissions\" cannot be changed without restarting the server"
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.csd_test_parameter_3\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.apg_space_reclaim_thread_enabled\" changed to \"on\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.resource_manager_enabled\" changed to \"true\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.enable_buffer_pin_conflict_forking\" changed to \"on\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.resource_manager_high_memory_pressure\" changed to \"0.9,2.0,2.0,\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.aggressive_buffer_eviction_config\" changed to \"100,1000;130,1250\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  parameter \"rds.resource_manager_critical_memory_pressure\" changed to \"0.95,2.0,2.0,\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[729]:LOG:  configuration file \"/rdsdbdata/config/postgresql.conf\" contains errors; unaffected changes were applied"
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[736]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[753]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[757]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[730]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[759]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[754]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[758]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163230000,
+    "message": "2026-11-08 18:40:30 UTC::@:[760]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163234000,
+    "message": "2026-11-08 18:40:34 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163234000,
+    "message": "2026-11-08 18:40:34 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_43: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163234000,
+    "message": "2026-11-08 18:40:34 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '5a2e6c8d-102c-4e50-bf94-1ce7d1ed7556', $2 = '[<1024 floats>]', $3 = 'Public meteor night # Public meteor night Each August the co-op opens Gull Point to the public for the Perseids. Visitors park in the lower lot and walk up; no cars are allowed past the gate after 21:00. Volunteers hand out red-light torches at the gate. White lights, including phone screens, are not allowed on the observing field.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/meteor-night.html\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/meteor-night.html\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163234000,
+    "message": "2026-11-08 18:40:34 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_44: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_45: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '265fa06e-d8e9-4b98-96c2-956519701623', $2 = '[<1024 floats>]', $3 = '# Dew heater guide Dew forms on the secondary mirror when the mirror cools below the dew point. On Gull Point this happens on most nights between September and April. ## Procedure 1. Plug the heater strap into port DH-2 on the controller, never DH-1, which is reserved for the finder scope. 2. Set the controller to 40 percent output at the start of the session. 3. If the humidity reading passes 85 percent, raise the output to 70 percent. 4. Switch the heater off before closing the dome so the strap does not cook the baffle tube. ## Part numbers The replacement heater strap is part ZX-4471. The controller''s spare fuse is part ZX-0090, a 2-amp slow-blow fuse.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md\"}', $5 = '{\"tags\": [\"dew\", \"heater\", \"maintenance\"], \"revision\": 3.0, \"department\": \"operations\", \"effective_date\": 20261015.0, \"safety_critical\": true, \"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_46: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  statement: BEGIN"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_48: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '13aba810-1a80-4329-83e7-caf2640e458b', $2 = '[<1024 floats>]', $3 = 'Equipment inventory  Every item the co-op owns has an inventory number, a location, and a condition grade from 1 (poor) to 5 (new).  Item INV-001 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 12 of 2026. Item INV-002 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 23 of 2026. Item INV-003 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 34 of 2026. Item INV-004 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 45 of 2026. Item INV-005 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 4 of 2026. Item INV-006 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 15 of 2026. Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_49: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '11db17df-3acd-4dfa-873f-3ce5c8989216', $2 = '[<1024 floats>]', $3 = 'Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 37 of 2026. Item INV-009 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 48 of 2026. Item INV-010 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 7 of 2026. Item INV-011 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 18 of 2026. Item INV-012 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 29 of 2026. Item INV-013 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 40 of 2026. Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_50: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '0fec992d-f699-4d00-ad48-f398a7f80da1', $2 = '[<1024 floats>]', $3 = 'Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 10 of 2026. Item INV-016 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 21 of 2026. Item INV-017 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 32 of 2026. Item INV-018 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 43 of 2026. Item INV-019 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 2 of 2026. Item INV-020 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 13 of 2026. Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_51: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = 'afdbdb5e-042c-4bff-b6f6-1fe39857645f', $2 = '[<1024 floats>]', $3 = 'Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 35 of 2026. Item INV-023 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 46 of 2026. Item INV-024 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 5 of 2026. Item INV-025 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 16 of 2026. Item INV-026 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 27 of 2026. Item INV-027 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 38 of 2026. Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_52: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '688ab124-88ad-4a40-a1f8-f4808d868929', $2 = '[<1024 floats>]', $3 = 'Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 8 of 2026. Item INV-030 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 19 of 2026. Item INV-031 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 30 of 2026. Item INV-032 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 41 of 2026. Item INV-033 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 52 of 2026. Item INV-034 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 11 of 2026. Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_53: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '75054494-0e4d-4ee4-ac26-f190fda38013', $2 = '[<1024 floats>]', $3 = 'Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 33 of 2026. Item INV-037 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 44 of 2026. Item INV-038 is a spare fuse stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 3 of 2026. Item INV-039 is a dew strap stored in drawer A. Its condition grade is 4, and it was last checked in week 14 of 2026. Item INV-040 is a eyepiece stored in the north cabinet. Its condition grade is 1, and it was last checked in week 25 of 2026. Item INV-041 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 36 of 2026. Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_54: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = 'f8f2a60b-6803-4991-b1ab-0da7da9112ba', $2 = '[<1024 floats>]', $3 = 'Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 6 of 2026. Item INV-044 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 17 of 2026. Item INV-045 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 28 of 2026. Item INV-046 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 39 of 2026. Item INV-047 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 50 of 2026. Item INV-048 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 9 of 2026. Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_55: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '6a49417e-4cbb-4030-9ac6-c6857e42cad3', $2 = '[<1024 floats>]', $3 = 'Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 31 of 2026. Item INV-051 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 42 of 2026. Item INV-052 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 1 of 2026. Item INV-053 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 12 of 2026. Item INV-054 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 23 of 2026. Item INV-055 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 34 of 2026. Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_56: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '0bcdcae4-cb16-45eb-855f-5484e7a03b89', $2 = '[<1024 floats>]', $3 = 'Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 4 of 2026. Item INV-058 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 15 of 2026. Item INV-059 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 26 of 2026. Item INV-060 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 37 of 2026. Item INV-061 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 48 of 2026. Item INV-062 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 7 of 2026. Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_57: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '15cc661b-5292-4012-ab6a-6c9bf88b05c7', $2 = '[<1024 floats>]', $3 = 'Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 29 of 2026. Item INV-065 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 40 of 2026. Item INV-066 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 51 of 2026. Item INV-067 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 10 of 2026. Item INV-068 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 21 of 2026. Item INV-069 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 32 of 2026. Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_58: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = 'a8b89ffe-fef8-4965-8b62-b6b3b634ad97', $2 = '[<1024 floats>]', $3 = 'Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 2 of 2026. Item INV-072 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 13 of 2026. Item INV-073 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 24 of 2026. Item INV-074 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 35 of 2026. Item INV-075 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 46 of 2026. Item INV-076 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 5 of 2026. Item INV-077 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 16 of 2026. Item INV-078 is a spare fuse stored in the warm room shelf.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_59: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = 'bbecdc56-1c38-48ca-9a66-669cb036e006', $2 = '[<1024 floats>]', $3 = 'Item INV-077 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 16 of 2026. Item INV-078 is a spare fuse stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 27 of 2026. Item INV-079 is a dew strap stored in drawer A. Its condition grade is 4, and it was last checked in week 38 of 2026. Item INV-080 is a eyepiece stored in the north cabinet. Its condition grade is 1, and it was last checked in week 49 of 2026.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  statement: COMMIT"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_60: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_61: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '32a61861-10b4-4bae-822b-bd3de5021f7c', $2 = '[<1024 floats>]', $3 = 'Winter closure notice, 2025  The dome was closed from 20 December 2025 to 5 January 2026 for the annual mount service. No bookings were accepted during the closure.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/winter-closure-2025.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/winter-closure-2025.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_62: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_63: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '838deb8d-87ee-4ab0-84ac-4b92eaaf534e', $2 = '[<1024 floats>]', $3 = 'Tidewater Telescope Co-op - Member Handbook   1. Membership   The Tidewater Telescope Co-op is a volunteer-run observatory on Gull Point. Annual membership costs 85 dollars for adults and 30 dollars for students. Members receive a key card for the dome and may book the main instrument after completing the orientation course.   The orientation course runs on the first Saturday of every month and takes about three hours. It covers dome safety, the mount controls, and the dew heater procedure.2. The main instrument   The main instrument is a 16-inch Ritchey-Chretien reflector on an equatorial fork mount. Its focal ratio is f/8 and the native focal length is 3250 millimetres. The camera is a cooled monochrome sensor that must be cooled to minus 10 degrees Celsius before any science frames are taken.   Never slew the mount while the dome shutter is closed below 40 degrees altitude; the tube can strike the shutter lip. The emergency stop is the red button on the north pier.3. Booking and data   Bookings are made in two-hour blocks, at most three blocks per member per week. A booking is released automatically if the member has not badged into the dome within 30 minutes of the block start.   All raw frames are copied each morning to the co-op archive and kept for 18 months. Members who want their data kept longer must export it themselves before it expires.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf\"}', $5 = '{\"audience\": \"all-members\", \"department\": \"membership\", \"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-document-page-number\": 1, \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163235000,
+    "message": "2026-11-08 18:40:35 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_64: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163236000,
+    "message": "2026-11-08 18:40:36 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_65: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163236000,
+    "message": "2026-11-08 18:40:36 UTC:[local]:bedrock_user@bedrock:[923]:DETAIL:  Parameters: $1 = '6fe72d6f-481d-44bc-b6bc-986ac062a048', $2 = '[<1024 floats>]', $3 = 'Night log template  Record the following at the start of every session: observer name, booking block, sky transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.  At the end of the session record the number of frames taken, any faults, and whether the dew heater was used. Faults must also be reported in the co-op chat within 24 hours.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/night-log-template.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/night-log-template.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163236000,
+    "message": "2026-11-08 18:40:36 UTC:[local]:bedrock_user@bedrock:[923]:LOG:  execute sqlx_s_66: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 14244 AS oid , 4 AS attnum UNION ALL SELECT 14244, 8 UNION ALL SELECT 14244, 28 UNION ALL SELECT 14244, 7) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_29: SELECT column_name, data_type, udt_name, is_nullable FROM information_schema.columns WHERE table_schema = 'bedrock_integration' AND table_name = 'bedrock_kb' ORDER BY ordinal_position"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_30: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 12043 AS oid , 3 AS attnum UNION ALL SELECT 12043, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_32: SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = 'bedrock_integration' AND tablename = 'bedrock_kb'"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_33: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 3079 AS oid , 6 AS attnum) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_35: SELECT extversion FROM pg_extension WHERE extname = 'vector'"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_36: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 12104 AS oid , 1 AS attnum UNION ALL SELECT 12104, 2) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_38: SELECT name, setting FROM pg_settings WHERE name LIKE 'hnsw.%' OR name IN ('server_version', 'default_text_search_config')"
+  },
+  {
+    "timestamp": 1794163239000,
+    "message": "2026-11-08 18:40:39 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_39: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163360000,
+    "message": "2026-11-08 18:42:40 UTC:[local]:postgres@bedrock:[922]:ERROR:  syntax error at or near \"$1\" at character 190"
+  },
+  {
+    "timestamp": 1794163360000,
+    "message": "2026-11-08 18:42:40 UTC:[local]:postgres@bedrock:[922]:STATEMENT:  SELECT id::text AS id, chunks, metadata::text AS metadata, custom_metadata::text AS custom_metadata, vector_dims(embedding) AS dims, vector_norm(embedding) AS l2_norm, (embedding::real[])[1$1]::text AS first_8 FROM bedrock_integration.bedrock_kb ORDER BY metadata::text, chunks"
+  },
+  {
+    "timestamp": 1794163360000,
+    "message": "2026-11-08 18:42:40 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_41: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 14244 AS oid , 4 AS attnum UNION ALL SELECT 14244, 8 UNION ALL SELECT 14244, 28 UNION ALL SELECT 14244, 7) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_43: SELECT column_name, data_type, udt_name, is_nullable FROM information_schema.columns WHERE table_schema = 'bedrock_integration' AND table_name = 'bedrock_kb' ORDER BY ordinal_position"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_44: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 12043 AS oid , 3 AS attnum UNION ALL SELECT 12043, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_46: SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = 'bedrock_integration' AND tablename = 'bedrock_kb'"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_47: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 3079 AS oid , 6 AS attnum) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_49: SELECT extversion FROM pg_extension WHERE extname = 'vector'"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_50: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 12104 AS oid , 1 AS attnum UNION ALL SELECT 12104, 2) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_52: SELECT name, setting FROM pg_settings WHERE name LIKE 'hnsw.%' OR name IN ('server_version', 'default_text_search_config')"
+  },
+  {
+    "timestamp": 1794163379000,
+    "message": "2026-11-08 18:42:59 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_53: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_55: SELECT id::text AS id, chunks, metadata::text AS metadata, custom_metadata::text AS custom_metadata, vector_dims(embedding) AS dims, vector_norm(embedding) AS l2_norm, subvector(embedding, 1, 8)::text AS first_8 FROM bedrock_integration.bedrock_kb ORDER BY metadata::text, chunks"
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_56: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_2: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163500000,
+    "message": "2026-11-08 18:45:00 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_3: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_5: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_6: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_8: WITH hybrid AS (SELECT searches.id, (sum(COALESCE(1.0 / (60 + searches.rank), 0.0)) * 61.0/2) AS score FROM ( ( SELECT id, rank() OVER (ORDER BY embedding <=> '[<1024 floats>]'::vector) AS rank FROM bedrock_integration.bedrock_kb  ORDER BY embedding <=> '[<1024 floats>]'::vector LIMIT 10 ) UNION ALL ( SELECT id, rank() OVER (ORDER BY ts_rank(to_tsvector('simple', chunks), plainto_tsquery('simple', 'ZX-4471')) DESC) AS rank\n\tFROM bedrock_integration.bedrock_kb WHERE plainto_tsquery('simple', 'ZX-4471') @@ to_tsvector('simple', chunks)  ORDER BY rank LIMIT 10 )) searches GROUP BY searches.id ORDER BY score DESC LIMIT 5) SELECT m.chunks, m.metadata, hybrid.score, m.custom_metadata\n\tFROM bedrock_integration.bedrock_kb m JOIN hybrid ON m.id = hybrid.id ORDER by hybrid.score DESC"
+  },
+  {
+    "timestamp": 1794163501000,
+    "message": "2026-11-08 18:45:01 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_9: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_11: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb WHERE (( custom_metadata @> $1 or custom_metadata @> $2 )) ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '{\"department\": \"operations\"}', $2 = '{\"department\": [\"operations\"]}'"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_12: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_14: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb WHERE (custom_metadata @> $1) ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '{\"x-amz-bedrock-kb-document-page-number\": 2.0}'"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_15: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_17: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb WHERE ((custom_metadata ->> $1) like $2) ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = 'x-amz-bedrock-kb-source-uri', $2 = 's3://aws-ai-study-data-000000000000/kb/tidewater%'"
+  },
+  {
+    "timestamp": 1794163502000,
+    "message": "2026-11-08 18:45:02 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_18: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_20: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb WHERE (( custom_metadata @> $1 and (custom_metadata ->> $2)::double precision >= 20261001.000000 and custom_metadata @> $3 )) ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '{\"safety_critical\": true}', $2 = 'effective_date', $3 = '{\"tags\": [\"heater\"]}'"
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_21: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_23: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 10;"
+  },
+  {
+    "timestamp": 1794163503000,
+    "message": "2026-11-08 18:45:03 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_24: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163504000,
+    "message": "2026-11-08 18:45:04 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163504000,
+    "message": "2026-11-08 18:45:04 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_26: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163504000,
+    "message": "2026-11-08 18:45:04 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_27: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163505000,
+    "message": "2026-11-08 18:45:05 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163505000,
+    "message": "2026-11-08 18:45:05 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_29: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163505000,
+    "message": "2026-11-08 18:45:05 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_30: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163506000,
+    "message": "2026-11-08 18:45:06 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163506000,
+    "message": "2026-11-08 18:45:06 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_32: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163506000,
+    "message": "2026-11-08 18:45:06 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_33: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_35: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_36: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_38: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 5;"
+  },
+  {
+    "timestamp": 1794163508000,
+    "message": "2026-11-08 18:45:08 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_39: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163509000,
+    "message": "2026-11-08 18:45:09 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163509000,
+    "message": "2026-11-08 18:45:09 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_41: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 10;"
+  },
+  {
+    "timestamp": 1794163509000,
+    "message": "2026-11-08 18:45:09 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_42: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163510000,
+    "message": "2026-11-08 18:45:10 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163510000,
+    "message": "2026-11-08 18:45:10 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_44: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  ORDER BY score LIMIT 10;"
+  },
+  {
+    "timestamp": 1794163510000,
+    "message": "2026-11-08 18:45:10 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_45: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_47: SELECT embedding <=> '[<1024 floats>]'::vector as score FROM bedrock_integration.bedrock_kb LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_48: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_50: SELECT attname AS column_name, format_type(atttypid, atttypmod) AS data_type FROM pg_attribute WHERE attrelid = 'bedrock_integration.bedrock_kb'::regclass AND attnum > 0;"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_51: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_53: SELECT chunks, metadata, embedding <=> '[<1024 floats>]'::vector as score, custom_metadata FROM bedrock_integration.bedrock_kb  LIMIT 1;"
+  },
+  {
+    "timestamp": 1794163513000,
+    "message": "2026-11-08 18:45:13 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_54: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163515000,
+    "message": "2026-11-08 18:45:15 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_55: DELETE FROM bedrock_integration.bedrock_kb WHERE id IN ($1) RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163515000,
+    "message": "2026-11-08 18:45:15 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '32a61861-10b4-4bae-822b-bd3de5021f7c'"
+  },
+  {
+    "timestamp": 1794163515000,
+    "message": "2026-11-08 18:45:15 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_56: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_58: SELECT typname, typtype, typcategory, typrelid, typelem, typbasetype FROM pg_catalog.pg_type WHERE oid = $1"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '20539'"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 1 AS attnum UNION ALL SELECT 20868, 2 UNION ALL SELECT 20868, 3 UNION ALL SELECT 20868, 4 UNION ALL SELECT 20868, 5) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_59: SELECT id, embedding, chunks, metadata, custom_metadata FROM bedrock_integration.bedrock_kb WHERE id IN ('265fa06e-d8e9-4b98-96c2-956519701623')"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_60: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_61: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '265fa06e-d8e9-4b98-96c2-956519701623', $2 = '[<1024 floats>]', $3 = '# Dew heater guide Dew forms on the secondary mirror when the mirror cools below the dew point. On Gull Point this happens on most nights between September and April. ## Procedure 1. Plug the heater strap into port DH-2 on the controller, never DH-1, which is reserved for the finder scope. 2. Set the controller to 40 percent output at the start of the session. 3. If the humidity reading passes 85 percent, raise the output to 70 percent. 4. Switch the heater off before closing the dome so the strap does not cook the baffle tube. ## Part numbers The replacement heater strap is part ZX-4471. The controller''s spare fuse is part ZX-0090, a 2-amp slow-blow fuse.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md\"}', $5 = '{\"tags\": [\"dew\", \"heater\", \"maintenance\"], \"revision\": 4.0, \"department\": \"operations\", \"effective_date\": 20261015.0, \"safety_critical\": true, \"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163517000,
+    "message": "2026-11-08 18:45:17 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_62: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_63: DELETE FROM bedrock_integration.bedrock_kb WHERE id IN ($1) RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '6fe72d6f-481d-44bc-b6bc-986ac062a048'"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_64: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_65: INSERT INTO bedrock_integration.bedrock_kb (id, embedding, chunks, metadata, custom_metadata) VALUES ($1, $2::vector, $3, $4, $5) ON CONFLICT(id) DO UPDATE SET embedding=EXCLUDED.embedding, chunks=EXCLUDED.chunks, metadata=EXCLUDED.metadata, custom_metadata=EXCLUDED.custom_metadata RETURNING NULL"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:DETAIL:  Parameters: $1 = '1705aa7e-9d90-4552-b57f-312822d733c1', $2 = '[<1024 floats>]', $3 = 'Night log template  Record the following at the start of every session: observer name, booking block, sky transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.  At the end of the session record the number of frames taken, any faults, and whether the dew heater was used. Faults must also be reported in the co-op chat within 24 hours.  From November 2026, also record the moon phase.', $4 = '{\"sourceUrl\": \"s3://aws-ai-study-data-000000000000/kb/night-log-template.txt\"}', $5 = '{\"x-amz-bedrock-kb-source-uri\": \"s3://aws-ai-study-data-000000000000/kb/night-log-template.txt\", \"x-amz-bedrock-kb-data-source-id\": \"CCGSG5GOJA\", \"x-amz-bedrock-kb-source-file-modality\": \"TEXT\"}'"
+  },
+  {
+    "timestamp": 1794163518000,
+    "message": "2026-11-08 18:45:18 UTC:[local]:bedrock_user@bedrock:[1183]:LOG:  execute sqlx_s_66: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794163644000,
+    "message": "2026-11-08 18:47:24 UTC:[local]:postgres@bedrock:[922]:LOG:  statement: SELECT c.oid, a.attnum, a.attname, c.relname, n.nspname, a.attnotnull OR (t.typtype = 'd' AND t.typnotnull), a.attidentity != '' OR pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) JOIN (SELECT 20868 AS oid , 3 AS attnum) vals ON (c.oid = vals.oid AND a.attnum = vals.attnum) "
+  },
+  {
+    "timestamp": 1794163644000,
+    "message": "2026-11-08 18:47:24 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_58: SELECT id::text AS id, chunks, metadata::text AS metadata, custom_metadata::text AS custom_metadata, vector_dims(embedding) AS dims, vector_norm(embedding) AS l2_norm, subvector(embedding, 1, 8)::text AS first_8 FROM bedrock_integration.bedrock_kb ORDER BY metadata::text, chunks"
+  },
+  {
+    "timestamp": 1794163644000,
+    "message": "2026-11-08 18:47:24 UTC:[local]:postgres@bedrock:[922]:LOG:  execute sqlx_s_59: /* RDS Data API */ DISCARD ALL"
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  received SIGHUP, reloading configuration files"
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.enable_plan_management\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.babelfish_status\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.adaptive_autovacuum\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.queryid_counters_min_eviction_sec\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  parameter \"unix_socket_permissions\" cannot be changed without restarting the server"
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  invalid configuration parameter name \"rds.csd_test_parameter_3\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:DETAIL:  \"rds\" is a reserved prefix."
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  parameter \"shared_buffers\" cannot be changed without restarting the server"
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[729]:LOG:  configuration file \"/rdsdbdata/config/postgresql.conf\" contains errors; unaffected changes were applied"
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[730]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[760]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[758]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[753]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[736]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[759]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[757]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  },
+  {
+    "timestamp": 1794164694000,
+    "message": "2026-11-08 19:04:54 UTC::@:[754]:LOG:  skipping missing configuration file \"/rdsdbdata/config/recovery.conf\""
+  }
+]

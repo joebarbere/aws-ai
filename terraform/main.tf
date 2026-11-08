@@ -123,6 +123,17 @@ module "knowledge_base" {
   additional_data_access_principals = [data.aws_iam_session_context.current.issuer_arn]
 }
 
+module "knowledge_base_rds" {
+  source = "./modules/knowledge_base_rds"
+  count  = var.enable_knowledge_base_rds ? 1 : 0
+
+  name_prefix = var.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+  region      = data.aws_region.current.name
+  bucket_arn  = module.foundation.bucket_arn
+  kms_key_arn = module.foundation.kms_key_arn
+}
+
 # Per-request pricing, nothing hourly — on by default.
 module "conversational" {
   source = "./modules/conversational"
