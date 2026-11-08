@@ -1,0 +1,74 @@
+{
+  "request": {
+    "input": {
+      "text": "What temperature must the camera reach before science frames, and on which page is that?"
+    },
+    "retrieveAndGenerateConfiguration": {
+      "type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "JQQRYKM3SZ",
+        "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-pro-v1:0",
+        "retrievalConfiguration": {
+          "vectorSearchConfiguration": {
+            "numberOfResults": 10
+          }
+        }
+      }
+    }
+  },
+  "citations": [
+    {
+      "generatedResponsePart": {
+        "textResponsePart": {
+          "span": {
+            "end": 417,
+            "start": 0
+          },
+          "text": "The model cannot find sufficient information to answer the question about the temperature the camera must reach before science frames and the specific page where this information is located. The search results provide details about various items, their locations, condition grades, and last check dates, but they do not mention any temperature requirements for the camera or specify a page number for such information"
+        }
+      },
+      "retrievedReferences": [
+        {
+          "content": {
+            "text": "Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 6 of 2026. Item INV-044 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 17 of 2026. Item INV-045 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 28 of 2026. Item INV-046 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 39 of 2026. Item INV-047 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 50 of 2026. Item INV-048 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 9 of 2026. Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet.",
+            "type": "TEXT"
+          },
+          "location": {
+            "s3Location": {
+              "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+            },
+            "type": "S3"
+          },
+          "metadata": {
+            "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+            "x-amz-bedrock-kb-source-file-modality": "TEXT",
+            "x-amz-bedrock-kb-chunk-id": "1%3A0%3ArOaYuaEBYQaVZPWvKk7x",
+            "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+          }
+        },
+        {
+          "content": {
+            "text": "Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 29 of 2026. Item INV-065 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 40 of 2026. Item INV-066 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 51 of 2026. Item INV-067 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 10 of 2026. Item INV-068 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 21 of 2026. Item INV-069 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 32 of 2026. Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B.",
+            "type": "TEXT"
+          },
+          "location": {
+            "s3Location": {
+              "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+            },
+            "type": "S3"
+          },
+          "metadata": {
+            "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+            "x-amz-bedrock-kb-source-file-modality": "TEXT",
+            "x-amz-bedrock-kb-chunk-id": "1%3A0%3Ar-aYuaEBYQaVZPWvKk7x",
+            "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+          }
+        }
+      ]
+    }
+  ],
+  "output": {
+    "text": "The model cannot find sufficient information to answer the question about the temperature the camera must reach before science frames and the specific page where this information is located. The search results provide details about various items, their locations, condition grades, and last check dates, but they do not mention any temperature requirements for the camera or specify a page number for such information."
+  },
+  "sessionId": "357b99aa-7923-46d9-a4e0-27321f20687d"
+}

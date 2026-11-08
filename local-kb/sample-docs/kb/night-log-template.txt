@@ -1,0 +1,7 @@
+Night log template
+
+Record the following at the start of every session: observer name, booking block, sky
+transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.
+
+At the end of the session record the number of frames taken, any faults, and whether the dew
+heater was used. Faults must also be reported in the co-op chat within 24 hours.

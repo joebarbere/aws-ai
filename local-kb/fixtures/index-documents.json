@@ -1,0 +1,255 @@
+{
+  "total": {
+    "value": 17,
+    "relation": "eq"
+  },
+  "vector_probe": {
+    "length": 1024,
+    "l2_norm": 0.9999997142116437,
+    "first_8": [
+      -0.0434217,
+      -0.005514977,
+      -0.0032397064,
+      -0.006351836,
+      0.010616227,
+      0.012916471,
+      0.008828639,
+      -0.03698932
+    ]
+  },
+  "hits": [
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3ApeaYuaEBYQaVZPWvI07K",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md",
+        "safety_critical": true,
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/dew-heater-guide.md\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "effective_date": 20261015.0,
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "302f58c2-e7c0-4240-8d25-a480666448d5",
+        "department": "operations",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "# Dew heater guide Dew forms on the secondary mirror when the mirror cools below the dew point. On Gull Point this happens on most nights between September and April. ## Procedure 1. Plug the heater strap into port DH-2 on the controller, never DH-1, which is reserved for the finder scope. 2. Set the controller to 40 percent output at the start of the session. 3. If the humidity reading passes 85 percent, raise the output to 70 percent. 4. Switch the heater off before closing the dome so the strap does not cook the baffle tube. ## Part numbers The replacement heater strap is part ZX-4471. The controller's spare fuse is part ZX-0090, a 2-amp slow-blow fuse.",
+        "revision": 3.0,
+        "tags": [
+          "dew",
+          "heater",
+          "maintenance"
+        ]
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3Ap-aYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "ae617a1a-8667-43cb-8f52-eab2254e0c55",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 37 of 2026. Item INV-009 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 48 of 2026. Item INV-010 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 7 of 2026. Item INV-011 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 18 of 2026. Item INV-012 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 29 of 2026. Item INV-013 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 40 of 2026. Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AqeaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "921ea97f-0f87-4c59-9d45-bb19dbf580e4",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 35 of 2026. Item INV-023 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 46 of 2026. Item INV-024 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 5 of 2026. Item INV-025 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 16 of 2026. Item INV-026 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 27 of 2026. Item INV-027 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 38 of 2026. Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AquaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "4eaab45e-f8ec-46a4-ba5f-a70521e8569b",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 8 of 2026. Item INV-030 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 19 of 2026. Item INV-031 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 30 of 2026. Item INV-032 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 41 of 2026. Item INV-033 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 52 of 2026. Item INV-034 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 11 of 2026. Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3Aq-aYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "d570e209-131f-4c7f-8bed-36a8defa10fd",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 33 of 2026. Item INV-037 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 44 of 2026. Item INV-038 is a spare fuse stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 3 of 2026. Item INV-039 is a dew strap stored in drawer A. Its condition grade is 4, and it was last checked in week 14 of 2026. Item INV-040 is a eyepiece stored in the north cabinet. Its condition grade is 1, and it was last checked in week 25 of 2026. Item INV-041 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 36 of 2026. Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3ArOaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "79b1274f-11f3-4809-9f9d-287dcecf6a86",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 6 of 2026. Item INV-044 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 17 of 2026. Item INV-045 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 28 of 2026. Item INV-046 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 39 of 2026. Item INV-047 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 50 of 2026. Item INV-048 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 9 of 2026. Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AreaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "9e1f9022-8acf-4dec-9ef1-a92c99e4d184",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 31 of 2026. Item INV-051 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 42 of 2026. Item INV-052 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 1 of 2026. Item INV-053 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 12 of 2026. Item INV-054 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 23 of 2026. Item INV-055 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 34 of 2026. Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AruaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "060a3c56-e972-4ba4-9bd1-03243f58e118",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 4 of 2026. Item INV-058 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 15 of 2026. Item INV-059 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 26 of 2026. Item INV-060 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 37 of 2026. Item INV-061 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 48 of 2026. Item INV-062 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 7 of 2026. Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AsOaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "cf747bec-cfc5-4122-857f-b6dd0d5a041d",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 2 of 2026. Item INV-072 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 13 of 2026. Item INV-073 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 24 of 2026. Item INV-074 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 35 of 2026. Item INV-075 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 46 of 2026. Item INV-076 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 5 of 2026. Item INV-077 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 16 of 2026. Item INV-078 is a spare fuse stored in the warm room shelf."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AotKYuaEBkk9DUJscLbYD",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf",
+        "audience": "all-members",
+        "x-amz-bedrock-kb-document-page-number": 1,
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/tidewater-handbook.pdf\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "c0e4b43a-4064-4b9b-b91a-f97044ebe6e8",
+        "department": "membership",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Tidewater Telescope Co-op - Member Handbook   1. Membership   The Tidewater Telescope Co-op is a volunteer-run observatory on Gull Point. Annual membership costs 85 dollars for adults and 30 dollars for students. Members receive a key card for the dome and may book the main instrument after completing the orientation course.   The orientation course runs on the first Saturday of every month and takes about three hours. It covers dome safety, the mount controls, and the dew heater procedure.2. The main instrument   The main instrument is a 16-inch Ritchey-Chretien reflector on an equatorial fork mount. Its focal ratio is f/8 and the native focal length is 3250 millimetres. The camera is a cooled monochrome sensor that must be cooled to minus 10 degrees Celsius before any science frames are taken.   Never slew the mount while the dome shutter is closed below 40 degrees altitude; the tube can strike the shutter lip. The emergency stop is the red button on the north pier.3. Booking and data   Bookings are made in two-hour blocks, at most three blocks per member per week. A booking is released automatically if the member has not badged into the dome within 30 minutes of the block start.   All raw frames are copied each morning to the co-op archive and kept for 18 months. Members who want their data kept longer must export it themselves before it expires."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3Ao9KYuaEBkk9DUJscLrb0",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/night-log-template.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/night-log-template.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "ade4d8dd-ab4e-454c-b9ba-1c32aa3c0c30",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Night log template  Record the following at the start of every session: observer name, booking block, sky transparency on a scale of 1 to 5, seeing estimate in arcseconds, and the dome temperature.  At the end of the session record the number of frames taken, any faults, and whether the dew heater was used. Faults must also be reported in the co-op chat within 24 hours."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3ApOaYuaEBYQaVZPWvH07A",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/meteor-night.html",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/meteor-night.html\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "38ddbef9-3e08-4968-ae91-f0b6417ba403",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Public meteor night # Public meteor night Each August the co-op opens Gull Point to the public for the Perseids. Visitors park in the lower lot and walk up; no cars are allowed past the gate after 21:00. Volunteers hand out red-light torches at the gate. White lights, including phone screens, are not allowed on the observing field."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AodKYuaEBkk9DUJscJ7bL",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/winter-closure-2025.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/winter-closure-2025.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "966668ad-22d9-4d3e-8a98-30dd69dbee68",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Winter closure notice, 2025  The dome was closed from 20 December 2025 to 5 January 2026 for the annual mount service. No bookings were accepted during the closure."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3ApuaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "58ef5e07-e64d-4b90-8c90-4a5424174bf1",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Equipment inventory  Every item the co-op owns has an inventory number, a location, and a condition grade from 1 (poor) to 5 (new).  Item INV-001 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 12 of 2026. Item INV-002 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 23 of 2026. Item INV-003 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 34 of 2026. Item INV-004 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 45 of 2026. Item INV-005 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 4 of 2026. Item INV-006 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 15 of 2026. Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AqOaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "4fe6c3a0-34a1-432f-b0e2-6872aba32798",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 10 of 2026. Item INV-016 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 21 of 2026. Item INV-017 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 32 of 2026. Item INV-018 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 43 of 2026. Item INV-019 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 2 of 2026. Item INV-020 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 13 of 2026. Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3Ar-aYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "f123f1af-8328-41b6-81bf-78c9db68b536",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 29 of 2026. Item INV-065 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 40 of 2026. Item INV-066 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 51 of 2026. Item INV-067 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 10 of 2026. Item INV-068 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 21 of 2026. Item INV-069 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 32 of 2026. Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B."
+      }
+    },
+    {
+      "_index": "bedrock-knowledge-base-default-index",
+      "_id": "1%3A0%3AseaYuaEBYQaVZPWvKk7x",
+      "_score": 1.0,
+      "_source": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "AMAZON_BEDROCK_METADATA": "{\"source\":\"s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt\"}",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "id": "26d2bde8-0d43-45c1-b058-ac05fc6fc0cb",
+        "AMAZON_BEDROCK_TEXT_CHUNK": "Item INV-077 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 16 of 2026. Item INV-078 is a spare fuse stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 27 of 2026. Item INV-079 is a dew strap stored in drawer A. Its condition grade is 4, and it was last checked in week 38 of 2026. Item INV-080 is a eyepiece stored in the north cabinet. Its condition grade is 1, and it was last checked in week 49 of 2026."
+      }
+    }
+  ]
+}
