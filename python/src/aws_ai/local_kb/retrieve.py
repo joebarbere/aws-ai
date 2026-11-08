@@ -3,7 +3,7 @@
 The response matches local-kb/fixtures/retrieve-*.json: each result is exactly ``content``,
 ``location``, ``metadata`` and ``score`` — no ``documentId``, and no ``nextToken``. What goes in
 ``metadata`` and ``score``, and how SEMANTIC and HYBRID search, depends on the store; see
-store_opensearch.py.
+store_opensearch.py and store_rds.py.
 """
 
 from __future__ import annotations
@@ -60,8 +60,10 @@ def retrieve(
     else:
         hits = store.semantic(vector, fetch, compiled)
 
-    results = _parents(hits) if hierarchical else [hit.result for hit in hits]
-    return {"retrievalResults": results[:size]}
+    results = (_parents(hits) if hierarchical else [hit.result for hit in hits])[:size]
+    if search_type == "SEMANTIC" and store.semantic_worst_first:
+        results.reverse()
+    return {"retrievalResults": results}
 
 
 def _is_hierarchical(cp: ControlPlane, knowledge_base_id: str) -> bool:

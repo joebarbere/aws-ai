@@ -77,6 +77,7 @@ class OpenSearchStore:
         self.client = client
         self.target = target
         self.dimensions = target.dimensions
+        self.semantic_worst_first = False
 
     # ------------------------------------------------------------------ writes
 

@@ -163,10 +163,14 @@ def _merge(
     for rank in range(max((len(r) for r in lists), default=0)):
         for results in lists:
             if rank < len(results):
-                chunk = results[rank]["metadata"][index.CHUNK_ID]
+                result = results[rank]
+                # An RDS store's results carry no chunk id; the source and text identify one.
+                chunk = result["metadata"].get(index.CHUNK_ID) or (
+                    f"{result['location']['s3Location']['uri']}\n{result['content']['text']}"
+                )
                 if chunk not in seen:
                     seen.add(chunk)
-                    merged.append(results[rank])
+                    merged.append(result)
     return merged[:size]
 
 
