@@ -119,6 +119,23 @@ def _retrieve(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Any]:
     )
 
 
+def _retrieve_and_generate(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Any]:
+    from aws_ai.local_kb.generate import retrieve_and_generate
+
+    configuration = args.retrieve_and_generate_configuration or {
+        "type": "KNOWLEDGE_BASE",
+        "knowledgeBaseConfiguration": {
+            "knowledgeBaseId": args.knowledge_base_id,
+            "modelArn": args.model_arn,
+        },
+    }
+    if configuration["knowledgeBaseConfiguration"].get("knowledgeBaseId") is None:
+        raise SystemExit(
+            "Pass --knowledge-base-id or a full --retrieve-and-generate-configuration."
+        )
+    return retrieve_and_generate(cp, _services(), args.input, configuration, args.session_id)
+
+
 def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[[], Any]]:
     # Each command declares only the ids it needs; argparse requires those, so "" never reaches
     # the control plane.
@@ -169,6 +186,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "run-pending": lambda: _run_pending(cp),
         "watch": lambda: _watch(cp, args.poll_seconds, args.debounce),
         "retrieve": lambda: _retrieve(cp, args),
+        "retrieve-and-generate": lambda: _retrieve_and_generate(cp, args),
     }
 
 
@@ -234,6 +252,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--retrieval-configuration",
         type=_json_arg,
         help='JSON, e.g. {"vectorSearchConfiguration": {"overrideSearchType": "HYBRID"}}',
+    )
+
+    p = command("retrieve-and-generate")
+    p.add_argument("--input", type=_query_arg, required=True, help='text=... or {"text": ...}')
+    p.add_argument("--session-id", help="Continue a conversation (from an earlier response)")
+    p.add_argument("--retrieve-and-generate-configuration", type=_json_arg, help="JSON, as in AWS")
+    p.add_argument("--knowledge-base-id", help="Shorthand when no full configuration is given")
+    p.add_argument(
+        "--model-arn",
+        default=f"arn:aws:bedrock:{config.REGION}::foundation-model/kb-llm",
+        help="Chooses the prompt family: a nova model id gets Nova's prompt. kb-llm answers.",
     )
     return parser
 

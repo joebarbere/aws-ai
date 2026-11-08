@@ -1,0 +1,1 @@
+- Place citations as inline markers (e.g., %[1]%, %[2]%, etc.) directly within the relevant parts of the response text. Do not include a separate citation section after the response.

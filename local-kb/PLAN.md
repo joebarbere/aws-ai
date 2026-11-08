@@ -682,7 +682,61 @@ share a parent, so fewer than `numberOfResults` can come back, as on AWS.
 **Done when:** each filter operator has a test, and hybrid versus semantic visibly reorders an
 exact-keyword query, for example a product code.
 
-### Phase 6 — RetrieveAndGenerate (`generate.py`)
+### Phase 6 — RetrieveAndGenerate (`generate.py`) ✅ done 2026-11-08
+
+`local-kb retrieve-and-generate` answers in `bedrock-agent-runtime`'s shape: `citations`,
+`output`, `sessionId`.
+
+**The prompts are Bedrock's own.** `python/src/aws_ai/local_kb/prompts/` holds six templates
+cut programmatically from the Phase 0 invocation logs:
+
+- generic and Nova generation;
+- their two output-format blocks;
+- query rewrite;
+- query decomposition.
+
+A test re-renders each one from the logged inputs and compares it with the captured prompt
+**byte for byte**. Placing Nova's citation bullet as its `$output_format_instructions$` is the
+one inference.
+
+**The family follows `modelArn`.** A model id containing `nova` gets Nova's prompt and
+inference settings; anything else gets the generic XML prompt with `maxTokens 2048, temperature
+0, topP 1, stop ["\nObservation"]`. Whatever the ARN, `kb-llm` answers, so the ARN only
+chooses the prompt.
+
+**Parsing reproduces the fixtures:**
+
+- Nova's markers go along with the space before them (`dollars %[1]%.` becomes `dollars.`).
+- Spans are inclusive.
+- An answer without markers still gets one citation with `retrievedReferences: []`. The test
+  compares against `rag-default.json` exactly.
+- A generic answer that skips the XML becomes `"Sorry, I am unable to assist you with this
+  request."`, compared against `rag-llama3-8b.json` exactly.
+- Bedrock's own multi-part spans run past the end of its output (`rag-decomposition.json`). Local
+  spans are computed correctly instead of reproducing that bug.
+
+**Live runs with Qwen3.5-9B, 2–7 s each:**
+
+| Case | Result |
+|---|---|
+| Default | Student membership is 30 dollars, citing the handbook |
+| Follow-up in a session | Rewritten to "How long does the orientation take?", answered as three hours |
+| Decomposition | Split into sub-queries; both parts answered, citing the handbook and the dew guide |
+| Nova family | Fuse ZX-0090, markers stripped |
+| Custom template without format instructions | One citation, no references, as on AWS |
+
+**One divergence:** the camera question that AWS never answered (Titan never retrieved the
+handbook) is answered locally, because Qwen's embeddings put the handbook in the top 5. The
+model behaves as faithfully as AWS's would; the retrieval differs.
+
+**Sessions** are UUIDs in the control plane's SQLite, holding the user's turns and the answers.
+Decomposition merges the sub-queries' results round-robin, de-duplicates them by chunk, and cuts
+to `numberOfResults`.
+
+12 new offline tests, 116 in total.
+
+The sketch as first planned:
+
 
 1. **Session.** No `sessionId` means generate a `uuid4()` and return it (that is the observed
    format); a supplied one means load its history.

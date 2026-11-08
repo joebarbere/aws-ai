@@ -8,7 +8,12 @@ import boto3
 
 from aws_ai.local_kb import config, index
 from aws_ai.local_kb.control import ControlPlane
-from aws_ai.local_kb.embed import lm_studio_embedder, model_id, qwen_token_counter
+from aws_ai.local_kb.embed import (
+    lm_studio_chat,
+    lm_studio_embedder,
+    model_id,
+    qwen_token_counter,
+)
 from aws_ai.local_kb.ingest import Services, Target
 from aws_ai.local_kb.opensearch import OpenSearch
 
@@ -37,6 +42,7 @@ def local_services(env: dict[str, str] | None = None) -> Services:
         embedder=lambda arn, dims: lm_studio_embedder(model_id(arn), dims),
         # Loaded on first use: only chunking needs the tokenizer, and it downloads once.
         count_tokens=lambda text: qwen_token_counter()(text),
+        chat=lm_studio_chat(),
     )
 
 

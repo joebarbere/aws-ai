@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+import uuid
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -54,6 +55,10 @@ CREATE TABLE IF NOT EXISTS documents (
     embedding_prefix TEXT NOT NULL DEFAULT '',
     chunk_ids     TEXT NOT NULL,
     PRIMARY KEY (ds_id, uri)
+);
+CREATE TABLE IF NOT EXISTS sessions (
+    id    TEXT PRIMARY KEY,
+    turns TEXT NOT NULL
 );
 """
 
@@ -407,6 +412,29 @@ class ControlPlane:
         with self.db:
             self.db.execute(
                 "DELETE FROM documents WHERE ds_id = ? AND uri = ?", (data_source_id, uri)
+            )
+
+    # ------------------------------------------------------------------ sessions
+
+    def create_session(self) -> str:
+        """A RetrieveAndGenerate session. Bedrock issues the id (a UUID, per Phase 0);
+        callers can only pass back one it gave them."""
+        session_id = str(uuid.uuid4())
+        with self.db:
+            self.db.execute("INSERT INTO sessions (id, turns) VALUES (?, '[]')", (session_id,))
+        return session_id
+
+    def session_turns(self, session_id: str) -> list[tuple[str, str]]:
+        row = self.db.execute("SELECT turns FROM sessions WHERE id = ?", (session_id,)).fetchone()
+        if row is None:
+            raise ResourceNotFoundException(f"Session {session_id} does not exist.")
+        return [(user, bot) for user, bot in json.loads(row[0])]
+
+    def append_turn(self, session_id: str, user: str, bot: str) -> None:
+        turns = [*self.session_turns(session_id), (user, bot)]
+        with self.db:
+            self.db.execute(
+                "UPDATE sessions SET turns = ? WHERE id = ?", (json.dumps(turns), session_id)
             )
 
     def _now(self) -> str:

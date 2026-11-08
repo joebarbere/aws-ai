@@ -48,6 +48,8 @@ class Services:
     opensearch: OpenSearch
     embedder: Callable[[str, int], Embed]
     count_tokens: CountTokens
+    # (system, user, inference settings) -> the model's reply; only RetrieveAndGenerate needs it.
+    chat: Callable[[str, str, dict[str, Any]], str] | None = None
 
 
 @dataclass(frozen=True)
