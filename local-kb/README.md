@@ -146,6 +146,8 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 | `make local-serve` | `local-kb serve --watch` |
 | `make local-eval KB=<id>` | `local-kb evaluate`, writing `eval/report.json` |
 | `make local-psql` | psql into the local Postgres as `bedrock_user`, the role Bedrock connects as |
+| `make local-corpus` | [`radio_corpus.py`](../python/scripts/radio_corpus.py): downloads the bench's radio astronomy papers and abstracts from arXiv (slow, one request per 3 s) |
+| `make local-bench CORPUS=sample\|medium\|large` | `local-kb bench`: the OpenSearch and RDS stores on the same chunks and vectors; writes `bench/report-<corpus>.json` ([method and first results](PGVECTOR_PLAN.md#3-the-comparison-phases-p6p7)) |
 | `make local-pg-inspect [TABLE=…]` | [`pg/inspect.sql`](pg/inspect.sql): chunks per file, Bedrock's `x-amz-bedrock-kb-*` fields, sidecar attributes, vectors, indexes and sizes, search settings |
 | `make local-down` / `make local-wipe` | Stop the containers / also delete their volumes (the local `terraform destroy`; delete `local-kb/.state/` too) |
 | [`capture_kb_fixtures.py`](../python/scripts/capture_kb_fixtures.py) | Phase 0: records a real KB's behaviour into `fixtures/` (needs the cloud module applied) |
@@ -346,6 +348,7 @@ local-kb/
   events/queue.py      kb-events, the bucket-event queue
   dashboards/          saved objects + Dev Tools queries
   pg/inspect.sql       the RDS store's internals in psql (the Dashboards view's counterpart)
+  bench/               radio-papers.tsv (the medium corpus's arXiv ids) + report-<corpus>.json
   eval/                qa.jsonl (20 questions) + report.json
   fixtures/            what a real Bedrock KB wrote and returned (Phase 0; rds/ for Aurora)
   sample-docs/         the corpus used by Phase 0, the tests, and the evaluation
@@ -364,4 +367,5 @@ python/src/aws_ai/local_kb/
   retrieve.py          Retrieve: validation, embedding, HIERARCHICAL collapse
   generate.py, prompts/   RetrieveAndGenerate and Bedrock's six prompt templates
   evaluate.py          the evaluation harness
+  bench.py, bench_resources.py   local-kb bench: OpenSearch vs pgvector, and what each costs
 ```

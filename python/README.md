@@ -59,6 +59,8 @@ uv run local-kb serve --watch      # bedrock-agent + bedrock-agent-runtime for b
 | `store` | The vector-store seam: store-neutral chunks and hits, and `store_for()` by storage type |
 | `store_opensearch` | The OpenSearch store: Bedrock's document layout, k-NN and hybrid search, result shape |
 | `store_rds` | The RDS (Aurora PostgreSQL + pgvector) store: Bedrock's table layout and the SQL it runs |
+| `bench` | `local-kb bench`: both stores on the same chunks and vectors; recall, latency, load and build times |
+| `bench_resources` | The bench's resource sampler: container RSS and CPU per phase, image and volume sizes |
 | `index`, `opensearch` | The vector index Bedrock expects, and a minimal OpenSearch client |
 | `trigger` | Bucket events and an ETag poll, debounced into ingestion jobs |
 | `filters`, `retrieve` | `RetrievalFilter` → OpenSearch, and Retrieve (SEMANTIC and HYBRID) |

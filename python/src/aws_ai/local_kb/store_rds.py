@@ -38,6 +38,23 @@ BEDROCK_FIELD_PREFIX = "x-amz-bedrock-kb-"
 Connect = Callable[[str], Any]
 
 
+def table_sql(table: str, dimensions: int) -> list[str]:
+    """AWS's table and its three indexes, verbatim from the Aurora setup guide, with IF NOT
+    EXISTS so a rerun is harmless; run as bedrock_user, so it owns them. Index names follow
+    the table's (``bedrock_kb_embedding_idx`` for ``bedrock_kb``)."""
+    name = table.rpartition(".")[2]
+    return [
+        f"CREATE TABLE IF NOT EXISTS {table} (id uuid PRIMARY KEY, "
+        f"embedding vector({dimensions}), chunks text, metadata json, custom_metadata jsonb)",
+        f"CREATE INDEX IF NOT EXISTS {name}_embedding_idx ON {table} "
+        "USING hnsw (embedding vector_cosine_ops) WITH (ef_construction=256)",
+        f"CREATE INDEX IF NOT EXISTS {name}_chunks_idx ON {table} "
+        "USING gin (to_tsvector('simple', chunks))",
+        f"CREATE INDEX IF NOT EXISTS {name}_custom_metadata_idx ON {table} "
+        "USING gin (custom_metadata)",
+    ]
+
+
 @dataclass(frozen=True)
 class RdsTarget:
     """Where a knowledge base keeps its rows, read from its storageConfiguration."""

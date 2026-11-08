@@ -102,11 +102,12 @@ def postgres_checks() -> int:
     and delete through the store itself, on a throwaway table."""
     import uuid
 
-    from rds_kb import TABLE, table_sql
+    from rds_kb import TABLE
 
     from aws_ai.local_kb import cli, config
     from aws_ai.local_kb.services import local_services
     from aws_ai.local_kb.store import StoredChunk, store_for
+    from aws_ai.local_kb.store_rds import table_sql
 
     failures = 0
 
