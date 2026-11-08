@@ -6,7 +6,7 @@ from typing import Any
 
 import boto3
 
-from aws_ai.local_kb import config, index
+from aws_ai.local_kb import config
 from aws_ai.local_kb.control import ControlPlane
 from aws_ai.local_kb.embed import (
     lm_studio_chat,
@@ -14,8 +14,9 @@ from aws_ai.local_kb.embed import (
     model_id,
     qwen_token_counter,
 )
-from aws_ai.local_kb.ingest import Services, Target
+from aws_ai.local_kb.ingest import Services
 from aws_ai.local_kb.opensearch import OpenSearch
+from aws_ai.local_kb.store import store_for
 
 OPENSEARCH_USER = "bedrock-kb"  # the least-privilege user python/scripts/local_init.py creates
 
@@ -47,10 +48,10 @@ def local_services(env: dict[str, str] | None = None) -> Services:
 
 
 def purger(cp: ControlPlane, services: Services) -> Any:
-    """The ``purge`` callback for deletes: drop a data source's chunks from its KB's index."""
+    """The ``purge`` callback for deletes: drop a data source's chunks from its KB's store."""
 
     def purge(data_source: dict[str, Any]) -> None:
-        target = Target.of(cp.get_knowledge_base(data_source["knowledgeBaseId"]))
-        index.delete_chunks(services.opensearch, target.index, data_source["dataSourceId"], None)
+        knowledge_base = cp.get_knowledge_base(data_source["knowledgeBaseId"])
+        store_for(knowledge_base, services).delete_data_source(data_source["dataSourceId"])
 
     return purge

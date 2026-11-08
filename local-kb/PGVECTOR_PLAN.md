@@ -152,30 +152,47 @@ Today OpenSearch is wired into three places:
 
 `index.py` and `opensearch.py` hold the rest.
 
-**Phase P1: extract a `VectorStore` protocol** (no behaviour change; all 141 tests must still
-pass):
+**Phase P1: extract a `VectorStore` protocol** ✅ done 2026-11-08. There is no behaviour change,
+and all 141 tests pass unchanged.
+
+- `store.py` holds the protocol, `StoredChunk`, `Hit` and `store_for()`.
+- `store_opensearch.py` holds the code that moved out of `ingest.py` and `retrieve.py`.
+- Live check against the running stack:
+  - a sidecar-only round trip counted `MetadataDocumentsModified` 1 each way and kept the
+    `_id`;
+  - the evaluation scored 90/85/90 for SEMANTIC and 100/95/100 for HYBRID, as before, with
+    SEMANTIC returning identical lists.
+- HYBRID returned different lists for 5 of the 20 questions. The cause is the index, not the
+  code: the rewritten chunk's deleted copies shift BM25 statistics until segments merge. Old and
+  new code return identical results on the same index.
+
+The interface as built:
 
 ```python
 class VectorStore(Protocol):
+    dimensions: int
     def ensure(self) -> None: ...
+    def new_id(self) -> str: ...                       # "1%3A0%3A…" on OpenSearch, uuid4 on RDS
     def write(self, chunks: list[StoredChunk]) -> None: ...
-    def read(self, chunk_ids: list[str]) -> list[StoredChunk]: ...   # for sidecar-only rewrites
+    def rewrite_attributes(self, chunk_ids: list[str], attributes: dict) -> None: ...  # sidecar-only
     def delete(self, chunk_ids: list[str]) -> None: ...
-    def delete_source(self, data_source_id: str, uri: str | None) -> None: ...
-    def semantic(self, vector, k, filter) -> list[Hit]: ...
-    def hybrid(self, text, vector, k, pool, filter) -> list[Hit]: ...
+    def delete_data_source(self, data_source_id: str) -> None: ...
+    def compile_filter(self, retrieval_filter: dict) -> Any: ...   # validates; store's own form
+    def semantic(self, vector, k, compiled_filter) -> list[Hit]: ...
+    def hybrid(self, text, vector, k, compiled_filter) -> list[Hit]: ...
 ```
 
 - `StoredChunk` is a store-neutral record holding:
   - the id, vector and text;
-  - the Bedrock fields (source URI, data source, page, modality);
+  - the source URI, data source and page;
   - the sidecar attributes;
   - the parent text.
 - Each store serializes it its own way.
-- `Target.of(kb)` becomes `store_for(kb, services)`, which dispatches on
-  `storageConfiguration.type`.
-- The filter translation moves behind the store. `filters.py` keeps the validation;
-  `to_query` stays as the OpenSearch backend, and a new `to_sql` is added next to it.
+- `Hit` is a Retrieve result already shaped the way Bedrock returns it from that store, plus the
+  parent text for HIERARCHICAL collapsing.
+- `store_for(kb, services)` dispatches on `storageConfiguration.type`.
+- `compile_filter` validates, then translates. OpenSearch uses `filters.to_query`; RDS gets
+  `to_sql`.
 
 **Phase P2: the Postgres service.**
 
@@ -462,7 +479,7 @@ These are hypotheses for P7 to confirm or overturn:
 | Phase | Deliverable | Gate |
 |---|---|---|
 | 0b ✅ | `fixtures/rds/` from a real Aurora knowledge base; plan updated with what it settles | done 2026-11-08 |
-| P1 | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged |
+| P1 ✅ | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged; live sync, sidecar rewrite and retrieve unchanged; eval 90/85/90 · 100/95/100 as before |
 | P2 | `postgres` service, `local_init.py pg`, RDS storage config accepted | `local-kb create-knowledge-base --store rds` works |
 | P3 | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
 | P4 | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
