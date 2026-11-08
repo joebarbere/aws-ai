@@ -19,12 +19,13 @@ dev = [
     "boto3-stubs[bedrock-runtime,comprehend]>=1.35",
     "httpx>=0.27",  # FastAPI's TestClient, for the local-kb server tests
 ]
-# Only scripts/enable_pgvector.py needs a Postgres driver; keep it out of the default install.
+# scripts/enable_pgvector.py's Postgres driver, without the rest of `local`.
 db = ["psycopg[binary]>=3.2"]
 local = [
     "beautifulsoup4>=4.12",
     "fastapi>=0.115",
     "markdownify>=0.13",
+    "psycopg[binary]>=3.2",  # the RDS (pgvector) store
     "pypdf>=5",
     "tokenizers>=0.20",
     "uvicorn>=0.32",

@@ -25,6 +25,17 @@ VECTOR_FIELD = "bedrock-knowledge-base-default-vector"
 TEXT_FIELD = "AMAZON_BEDROCK_TEXT_CHUNK"
 METADATA_FIELD = "AMAZON_BEDROCK_METADATA"
 
+# The RDS store: the local Postgres, with the database, table and role AWS's Aurora guide uses
+# (local_init.py pg creates them). The ARNs are placeholders for the cluster and the secret
+# holding bedrock_user's password; the password itself is BEDROCK_PG_PASSWORD in .env.
+PG_HOST = "127.0.0.1"
+PG_PORT = 5432
+PG_USER = "bedrock_user"
+RDS_DATABASE = "bedrock"
+RDS_TABLE = "bedrock_integration.bedrock_kb"
+RDS_CLUSTER_ARN = f"arn:aws:rds:{REGION}:{ACCOUNT_ID}:cluster:local-kb"
+RDS_SECRET_ARN = f"arn:aws:secretsmanager:{REGION}:{ACCOUNT_ID}:secret:local-kb-bedrock-user"
+
 # The embedding model is named by an AWS-shaped ARN whose model id is the LM Studio identifier.
 EMBEDDING_MODEL_ARN = f"arn:aws:bedrock:{REGION}::foundation-model/kb-embed"
 EMBEDDING_DIMENSIONS = 1024

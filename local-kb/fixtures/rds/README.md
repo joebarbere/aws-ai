@@ -12,7 +12,7 @@ recorded it, because `rds_kb.py` sets it with `ALTER ROLE`.
 
 | File | What it settles |
 |---|---|
-| `table-schema.json` | the columns and indexes as AWS's guide creates them; pgvector version; `hnsw.*` settings |
+| `table-schema.json` | the columns and indexes as AWS's guide creates them; pgvector version; `hnsw.*` settings (`iterative_scan` reads `off` because the dump's pooled connection predates the `ALTER DATABASE`; see PGVECTOR_PLAN.md P2) |
 | `index-documents*.json` | every row, with `metadata` and `custom_metadata` parsed and a vector probe (dimensions, norm, first 8 values) |
 | `postgresql-statements.json` | **every SQL statement Bedrock ran**: validation, inserts, deletes, searches, filters |
 | everything else | the same files as `../`, for the RDS store |

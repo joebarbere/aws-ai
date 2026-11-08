@@ -4,6 +4,7 @@
 #   kb-events   SQS: bucket events, polled       :8098
 #   opensearch  OpenSearch Serverless            :9200 (HTTPS, security plugin on)
 #   dashboards  the AOSS dashboards endpoint     :5601
+#   postgres    Aurora PostgreSQL + pgvector     :5432 (the RDS store; PGVECTOR_PLAN.md)
 #
 # Credentials come from .env (copy .env.example; make local-up does it for you). Ports bind to
 # 127.0.0.1 only. The ingestion worker and runtime API run on the host, where LM Studio is.
@@ -75,6 +76,37 @@ services:
     depends_on:
       - opensearch
 
+  # Bedrock's RDS vector store. Same pgvector as the Phase 0b Aurora capture (0.8.2); Postgres
+  # 17.10 against Aurora's 17.11. Bedrock talks to Aurora through the Data API; locally the
+  # store connects directly. To measure one store alone, start only the services it needs:
+  #   podman-compose up -d rustfs kb-events postgres
+  postgres:
+    image: docker.io/pgvector/pgvector:0.8.2-pg17
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: bedrock
+      # Only read on first start with an empty volume, like OpenSearch's admin password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    # shared_buffers holds the HNSW graph; maintenance_work_mem lets an index build stay in
+    # memory instead of spilling. Aurora's text search default is simple, the image's english.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - maintenance_work_mem=512MB
+      - -c
+      - default_text_search_config=pg_catalog.simple
+    shm_size: 1g
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bedrock"]
+      interval: 10s
+      retries: 6
+
 volumes:
   rustfs-data:
   opensearch-data:
+  postgres-data:

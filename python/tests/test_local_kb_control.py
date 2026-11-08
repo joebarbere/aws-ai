@@ -110,6 +110,53 @@ def test_storage_other_than_a_managed_cluster_is_refused(cp: ControlPlane) -> No
         )
 
 
+def rds_storage(**changes: Any) -> dict[str, Any]:
+    """The storageConfiguration of the Phase 0b Aurora knowledge base, with ``changes`` applied
+    to its rdsConfiguration (a ``fieldMapping`` change replaces the whole mapping)."""
+    storage = fixture("rds/knowledge-base.json")["storageConfiguration"]
+    storage["rdsConfiguration"].update(changes)
+    return storage
+
+
+def test_rds_storage_is_accepted_as_bedrock_describes_it(cp: ControlPlane) -> None:
+    for storage in (rds_storage(), cli.default_rds_storage_configuration()):
+        kb = cp.create_knowledge_base(
+            name="kb",
+            knowledge_base_configuration=cli.default_knowledge_base_configuration(1024),
+            storage_configuration=storage,
+        )
+        assert kb["storageConfiguration"] == storage
+
+
+@pytest.mark.parametrize(
+    "storage",
+    [
+        rds_storage(resourceArn="arn:aws:rds:us-east-1:000000000000:db:not-a-cluster"),
+        rds_storage(credentialsSecretArn="arn:aws:ssm:us-east-1:000000000000:parameter/p"),
+        rds_storage(tableName="bedrock_integration.bedrock kb"),
+        rds_storage(databaseName=""),
+        rds_storage(fieldMapping={"primaryKeyField": "id", "vectorField": "embedding"}),
+        # Valid on AWS (one column per attribute), but not a layout local-kb copies.
+        rds_storage(
+            fieldMapping={
+                "primaryKeyField": "id",
+                "vectorField": "embedding",
+                "textField": "chunks",
+                "metadataField": "metadata",
+            }
+        ),
+    ],
+    ids=["db-arn", "not-a-secret", "space", "empty", "partial-mapping", "no-custom-metadata"],
+)
+def test_bad_rds_storage_is_refused(cp: ControlPlane, storage: dict[str, Any]) -> None:
+    with pytest.raises(ValidationException):
+        cp.create_knowledge_base(
+            name="kb",
+            knowledge_base_configuration=cli.default_knowledge_base_configuration(1024),
+            storage_configuration=storage,
+        )
+
+
 @pytest.mark.parametrize("name", ["", "has space", "double--dash", "-leading", "x" * 101])
 def test_bad_names_are_refused(cp: ControlPlane, name: str) -> None:
     with pytest.raises(ValidationException):
@@ -326,6 +373,17 @@ def run_cli(tmp_path: Path, capsys: pytest.CaptureFixture[str], *argv: str) -> A
     code = cli.main(["--state-dir", str(tmp_path), *argv])
     out, err = capsys.readouterr()
     return code, (json.loads(out) if out else None), err
+
+
+def test_cli_store_rds_describes_the_local_postgres_as_aurora(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _, out, _ = run_cli(tmp_path, capsys, "create-knowledge-base", "--name", "kb", "--store", "rds")
+    rds = out["knowledgeBase"]["storageConfiguration"]["rdsConfiguration"]
+    aurora = fixture("rds/knowledge-base.json")["storageConfiguration"]["rdsConfiguration"]
+    assert rds["fieldMapping"] == aurora["fieldMapping"]
+    assert (rds["databaseName"], rds["tableName"]) == (aurora["databaseName"], aurora["tableName"])
+    assert rds["resourceArn"].endswith(":cluster:local-kb")
 
 
 def test_cli_walks_the_aws_cli_flow(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
