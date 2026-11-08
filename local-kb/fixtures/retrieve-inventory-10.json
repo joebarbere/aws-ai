@@ -1,0 +1,200 @@
+{
+  "request": {
+    "query": "Which items are in drawer B?",
+    "vectorSearchConfiguration": {
+      "numberOfResults": 10
+    }
+  },
+  "retrievalResults": [
+    {
+      "content": {
+        "text": "Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 4 of 2026. Item INV-058 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 15 of 2026. Item INV-059 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 26 of 2026. Item INV-060 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 37 of 2026. Item INV-061 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 48 of 2026. Item INV-062 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 7 of 2026. Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AruaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.47315875
+    },
+    {
+      "content": {
+        "text": "Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet. Its condition grade is 5, and it was last checked in week 35 of 2026. Item INV-023 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 46 of 2026. Item INV-024 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 5 of 2026. Item INV-025 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 16 of 2026. Item INV-026 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 27 of 2026. Item INV-027 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 38 of 2026. Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AqeaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.47194377
+    },
+    {
+      "content": {
+        "text": "Item INV-049 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 20 of 2026. Item INV-050 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 31 of 2026. Item INV-051 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 42 of 2026. Item INV-052 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 1 of 2026. Item INV-053 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 12 of 2026. Item INV-054 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 23 of 2026. Item INV-055 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 34 of 2026. Item INV-056 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 45 of 2026. Item INV-057 is a filter stored in the south cabinet.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AreaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.46405417
+    },
+    {
+      "content": {
+        "text": "Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet. Its condition grade is 1, and it was last checked in week 10 of 2026. Item INV-016 is a eyepiece stored in drawer B. Its condition grade is 3, and it was last checked in week 21 of 2026. Item INV-017 is a filter stored in the south cabinet. Its condition grade is 5, and it was last checked in week 32 of 2026. Item INV-018 is a camera stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 43 of 2026. Item INV-019 is a mount part stored in drawer A. Its condition grade is 4, and it was last checked in week 2 of 2026. Item INV-020 is a cable stored in the north cabinet. Its condition grade is 1, and it was last checked in week 13 of 2026. Item INV-021 is a tool stored in drawer B. Its condition grade is 3, and it was last checked in week 24 of 2026. Item INV-022 is a spare fuse stored in the south cabinet.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AqOaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.46047655
+    },
+    {
+      "content": {
+        "text": "Item INV-063 is a dew strap stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 18 of 2026. Item INV-064 is a eyepiece stored in drawer A. Its condition grade is 4, and it was last checked in week 29 of 2026. Item INV-065 is a filter stored in the north cabinet. Its condition grade is 1, and it was last checked in week 40 of 2026. Item INV-066 is a camera stored in drawer B. Its condition grade is 3, and it was last checked in week 51 of 2026. Item INV-067 is a mount part stored in the south cabinet. Its condition grade is 5, and it was last checked in week 10 of 2026. Item INV-068 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 21 of 2026. Item INV-069 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 32 of 2026. Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3Ar-aYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.45538175
+    },
+    {
+      "content": {
+        "text": "Item INV-028 is a cable stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 49 of 2026. Item INV-029 is a tool stored in drawer A. Its condition grade is 4, and it was last checked in week 8 of 2026. Item INV-030 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 19 of 2026. Item INV-031 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 30 of 2026. Item INV-032 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 41 of 2026. Item INV-033 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 52 of 2026. Item INV-034 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 11 of 2026. Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AquaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.45521948
+    },
+    {
+      "content": {
+        "text": "Item INV-035 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 22 of 2026. Item INV-036 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 33 of 2026. Item INV-037 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 44 of 2026. Item INV-038 is a spare fuse stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 3 of 2026. Item INV-039 is a dew strap stored in drawer A. Its condition grade is 4, and it was last checked in week 14 of 2026. Item INV-040 is a eyepiece stored in the north cabinet. Its condition grade is 1, and it was last checked in week 25 of 2026. Item INV-041 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 36 of 2026. Item INV-042 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 47 of 2026. Item INV-043 is a mount part stored in the warm room shelf.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3Aq-aYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.4532695
+    },
+    {
+      "content": {
+        "text": "Item INV-070 is a spare fuse stored in the north cabinet. Its condition grade is 1, and it was last checked in week 43 of 2026. Item INV-071 is a dew strap stored in drawer B. Its condition grade is 3, and it was last checked in week 2 of 2026. Item INV-072 is a eyepiece stored in the south cabinet. Its condition grade is 5, and it was last checked in week 13 of 2026. Item INV-073 is a filter stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 24 of 2026. Item INV-074 is a camera stored in drawer A. Its condition grade is 4, and it was last checked in week 35 of 2026. Item INV-075 is a mount part stored in the north cabinet. Its condition grade is 1, and it was last checked in week 46 of 2026. Item INV-076 is a cable stored in drawer B. Its condition grade is 3, and it was last checked in week 5 of 2026. Item INV-077 is a tool stored in the south cabinet. Its condition grade is 5, and it was last checked in week 16 of 2026. Item INV-078 is a spare fuse stored in the warm room shelf.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3AsOaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.4485477
+    },
+    {
+      "content": {
+        "text": "Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 37 of 2026. Item INV-009 is a filter stored in drawer A. Its condition grade is 4, and it was last checked in week 48 of 2026. Item INV-010 is a camera stored in the north cabinet. Its condition grade is 1, and it was last checked in week 7 of 2026. Item INV-011 is a mount part stored in drawer B. Its condition grade is 3, and it was last checked in week 18 of 2026. Item INV-012 is a cable stored in the south cabinet. Its condition grade is 5, and it was last checked in week 29 of 2026. Item INV-013 is a tool stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 40 of 2026. Item INV-014 is a spare fuse stored in drawer A. Its condition grade is 4, and it was last checked in week 51 of 2026. Item INV-015 is a dew strap stored in the north cabinet.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3Ap-aYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.4465685
+    },
+    {
+      "content": {
+        "text": "Equipment inventory  Every item the co-op owns has an inventory number, a location, and a condition grade from 1 (poor) to 5 (new).  Item INV-001 is a filter stored in drawer B. Its condition grade is 3, and it was last checked in week 12 of 2026. Item INV-002 is a camera stored in the south cabinet. Its condition grade is 5, and it was last checked in week 23 of 2026. Item INV-003 is a mount part stored in the warm room shelf. Its condition grade is 2, and it was last checked in week 34 of 2026. Item INV-004 is a cable stored in drawer A. Its condition grade is 4, and it was last checked in week 45 of 2026. Item INV-005 is a tool stored in the north cabinet. Its condition grade is 1, and it was last checked in week 4 of 2026. Item INV-006 is a spare fuse stored in drawer B. Its condition grade is 3, and it was last checked in week 15 of 2026. Item INV-007 is a dew strap stored in the south cabinet. Its condition grade is 5, and it was last checked in week 26 of 2026. Item INV-008 is a eyepiece stored in the warm room shelf.",
+        "type": "TEXT"
+      },
+      "location": {
+        "s3Location": {
+          "uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt"
+        },
+        "type": "S3"
+      },
+      "metadata": {
+        "x-amz-bedrock-kb-source-uri": "s3://aws-ai-study-data-000000000000/kb/equipment-inventory.txt",
+        "x-amz-bedrock-kb-source-file-modality": "TEXT",
+        "x-amz-bedrock-kb-chunk-id": "1%3A0%3ApuaYuaEBYQaVZPWvKk7x",
+        "x-amz-bedrock-kb-data-source-id": "9WZXXZH6ZH"
+      },
+      "score": 0.44505763
+    }
+  ]
+}

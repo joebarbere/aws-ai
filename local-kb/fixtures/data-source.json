@@ -1,0 +1,18 @@
+{
+  "knowledgeBaseId": "JQQRYKM3SZ",
+  "dataSourceId": "9WZXXZH6ZH",
+  "name": "aws-ai-study-s3",
+  "status": "AVAILABLE",
+  "dataSourceConfiguration": {
+    "type": "S3",
+    "s3Configuration": {
+      "bucketArn": "arn:aws:s3:::aws-ai-study-data-000000000000",
+      "inclusionPrefixes": [
+        "kb/"
+      ]
+    }
+  },
+  "dataDeletionPolicy": "DELETE",
+  "createdAt": "2026-11-08 05:18:08.743871+00:00",
+  "updatedAt": "2026-11-08 05:18:08.743871+00:00"
+}

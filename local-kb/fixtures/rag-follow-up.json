@@ -1,0 +1,33 @@
+{
+  "request": {
+    "input": {
+      "text": "And what happens if I try to slew it with the shutter closed?"
+    },
+    "retrieveAndGenerateConfiguration": {
+      "type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "JQQRYKM3SZ",
+        "modelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0"
+      }
+    },
+    "sessionId": "62aea66b-2a5e-4cd9-a97e-39bd312a504a"
+  },
+  "citations": [
+    {
+      "generatedResponsePart": {
+        "textResponsePart": {
+          "span": {
+            "end": 67,
+            "start": 0
+          },
+          "text": "The model cannot find sufficient information to answer the question."
+        }
+      },
+      "retrievedReferences": []
+    }
+  ],
+  "output": {
+    "text": "The model cannot find sufficient information to answer the question."
+  },
+  "sessionId": "62aea66b-2a5e-4cd9-a97e-39bd312a504a"
+}

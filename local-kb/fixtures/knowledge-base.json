@@ -1,0 +1,27 @@
+{
+  "knowledgeBaseId": "JQQRYKM3SZ",
+  "name": "aws-ai-study-kb",
+  "knowledgeBaseArn": "arn:aws:bedrock:us-east-1:000000000000:knowledge-base/JQQRYKM3SZ",
+  "roleArn": "arn:aws:iam::000000000000:role/aws-ai-study-kb",
+  "knowledgeBaseConfiguration": {
+    "type": "VECTOR",
+    "vectorKnowledgeBaseConfiguration": {
+      "embeddingModelArn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+    }
+  },
+  "storageConfiguration": {
+    "type": "OPENSEARCH_SERVERLESS",
+    "opensearchServerlessConfiguration": {
+      "collectionArn": "arn:aws:aoss:us-east-1:000000000000:collection/7h2j2zbfw93depq22vak",
+      "vectorIndexName": "bedrock-knowledge-base-default-index",
+      "fieldMapping": {
+        "vectorField": "bedrock-knowledge-base-default-vector",
+        "textField": "AMAZON_BEDROCK_TEXT_CHUNK",
+        "metadataField": "AMAZON_BEDROCK_METADATA"
+      }
+    }
+  },
+  "status": "ACTIVE",
+  "createdAt": "2026-11-08 05:18:06.782075+00:00",
+  "updatedAt": "2026-11-08 05:18:06.782075+00:00"
+}

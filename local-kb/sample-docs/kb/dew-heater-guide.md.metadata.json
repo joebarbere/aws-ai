@@ -1,0 +1,9 @@
+{
+  "metadataAttributes": {
+    "department": { "value": { "type": "STRING", "stringValue": "operations" }, "includeForEmbedding": true },
+    "revision": { "value": { "type": "NUMBER", "numberValue": 3 }, "includeForEmbedding": false },
+    "effective_date": { "value": { "type": "NUMBER", "numberValue": 20261015 }, "includeForEmbedding": false },
+    "safety_critical": { "value": { "type": "BOOLEAN", "booleanValue": true }, "includeForEmbedding": false },
+    "tags": { "value": { "type": "STRING_LIST", "stringListValue": ["dew", "heater", "maintenance"] }, "includeForEmbedding": false }
+  }
+}
