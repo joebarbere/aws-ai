@@ -327,6 +327,74 @@ def test_every_captured_query_runs_bedrocks_sql() -> None:
         assert search_shape(ours) in captured, request
 
 
+@pytest.mark.parametrize(
+    ("node", "sql", "params"),
+    [
+        (
+            {"equals": {"key": "department", "value": "operations"}},
+            "( custom_metadata @> %s or custom_metadata @> %s )",
+            [{"department": "operations"}, {"department": ["operations"]}],
+        ),
+        (
+            {"equals": {"key": "x-amz-bedrock-kb-document-page-number", "value": 2}},
+            "custom_metadata @> %s",
+            [{"x-amz-bedrock-kb-document-page-number": 2}],
+        ),
+        (
+            {"startsWith": {"key": "k", "value": "s3://b/kb/50%_off"}},
+            "(custom_metadata ->> %s) like %s",
+            ["k", "s3://b/kb/50\\%\\_off%"],
+        ),
+        (
+            {"greaterThanOrEquals": {"key": "effective_date", "value": 20261001}},
+            "(custom_metadata ->> %s)::double precision >= 20261001.000000",
+            ["effective_date"],
+        ),
+        (
+            {"lessThan": {"key": "revision", "value": 2.5}},
+            "(custom_metadata ->> %s)::double precision < 2.500000",
+            ["revision"],
+        ),
+        (
+            {"listContains": {"key": "tags", "value": "heater"}},
+            "custom_metadata @> %s",
+            [{"tags": ["heater"]}],
+        ),
+        (
+            {
+                "andAll": [
+                    {"equals": {"key": "safety_critical", "value": True}},
+                    {"listContains": {"key": "tags", "value": "heater"}},
+                ]
+            },
+            "( custom_metadata @> %s and custom_metadata @> %s )",
+            [{"safety_critical": True}, {"tags": ["heater"]}],
+        ),
+        (
+            {"notIn": {"key": "d", "value": ["a", 1]}},
+            "NOT ( ( custom_metadata @> %s or custom_metadata @> %s ) or custom_metadata @> %s )",
+            [{"d": "a"}, {"d": ["a"]}, {"d": 1}],
+        ),
+    ],
+    ids=[
+        "equals-string",
+        "equals-number",
+        "startsWith-escaped",
+        "gte",
+        "lt",
+        "listContains",
+        "andAll",
+        "notIn",
+    ],
+)
+def test_filter_sql(node: dict[str, Any], sql: str, params: list[Any]) -> None:
+    """The captured forms (equals, startsWith, ranges with %f, listContains, andAll) and how
+    the GUESS forms compose. jsonb operands are bound as Jsonb, like Bedrock's ``$n``."""
+    got_sql, got_params = to_sql(node, "custom_metadata")
+    assert got_sql == sql
+    assert [getattr(p, "obj", p) for p in got_params] == params
+
+
 def aurora_row(text: str, score: float) -> tuple[Any, ...]:
     custom = {"x-amz-bedrock-kb-source-uri": "s3://kb-data/kb/a.txt", "revision": 3.0}
     return (text, {"sourceUrl": "s3://kb-data/kb/a.txt"}, score, custom)
@@ -407,12 +475,8 @@ def live_table() -> Iterator[tuple[Any, str]]:
     rds_kb = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(rds_kb)
     name = f"test_{uuid.uuid4().hex[:12]}"
-    for sql in rds_kb.TABLE_SQL:
-        db.execute(
-            sql.replace("bedrock_kb", name).replace(
-                f"vector({rds_kb.DIMENSIONS})", f"vector({DIMS})"
-            )
-        )
+    for sql in rds_kb.table_sql(f"bedrock_integration.{name}", DIMS):
+        db.execute(sql)
     try:
         yield db, f"bedrock_integration.{name}"
     finally:

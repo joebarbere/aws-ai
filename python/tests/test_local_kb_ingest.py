@@ -241,6 +241,16 @@ class FakeOpenSearch:
                     {"_id": i, "found": i in docs, "_source": docs.get(i)} for i in body["ids"]
                 ]
             }
+        if "/_delete_by_query" in path:  # term filters on .keyword fields, all must match
+            wanted = {
+                k.removesuffix(".keyword"): v
+                for term in body["query"]["bool"]["filter"]
+                for k, v in term["term"].items()
+            }
+            docs = self.indexes.get(name, {})
+            for i in [i for i, d in docs.items() if all(d.get(k) == v for k, v in wanted.items())]:
+                del docs[i]
+            return {"deleted": True}
         raise AssertionError(f"unexpected {method} {path}")
 
     def bulk(self, actions: list[dict[str, Any]]) -> None:

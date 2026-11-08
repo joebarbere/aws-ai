@@ -139,12 +139,14 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 |---|---|
 | `make local-up` | Writes `local-kb/.env` (random credentials), starts the containers, runs `local-init` |
 | `make local-init` | [`local_init.py`](../python/scripts/local_init.py): bucket, bucket event, `bedrock-kb` user and role, Dashboards saved objects, and the Postgres schema, role and table. Idempotent. |
-| `make local-smoke` | [`local_smoke.py`](../python/scripts/local_smoke.py): 8 checks on the storage behaviours sync relies on (MD5 ETags, listings, events under the prefix only) |
+| `make local-smoke` | [`local_smoke.py`](../python/scripts/local_smoke.py): 8 checks on the storage behaviours sync relies on (MD5 ETags, listings, events under the prefix only), then 8 on the Postgres the RDS store needs (pgvector 0.8+, its settings, Bedrock's table checks, a write-search-rewrite-delete round trip) |
 | `make local-models` | Starts LM Studio's server and loads `kb-embed` and `kb-llm` with the right flags |
 | `make local-sample-docs` | Uploads [`sample-docs/kb/`](sample-docs/) to `s3://kb-data/kb/` |
 | `make local-watch` | `local-kb watch` |
 | `make local-serve` | `local-kb serve --watch` |
 | `make local-eval KB=<id>` | `local-kb evaluate`, writing `eval/report.json` |
+| `make local-psql` | psql into the local Postgres as `bedrock_user`, the role Bedrock connects as |
+| `make local-pg-inspect [TABLE=…]` | [`pg/inspect.sql`](pg/inspect.sql): chunks per file, Bedrock's `x-amz-bedrock-kb-*` fields, sidecar attributes, vectors, indexes and sizes, search settings |
 | `make local-down` / `make local-wipe` | Stop the containers / also delete their volumes (the local `terraform destroy`; delete `local-kb/.state/` too) |
 | [`capture_kb_fixtures.py`](../python/scripts/capture_kb_fixtures.py) | Phase 0: records a real KB's behaviour into `fixtures/` (needs the cloud module applied) |
 | [`create_vector_index.py`](../python/scripts/create_vector_index.py) | The cloud module's index-creation step (now sends the payload hash AOSS requires) |
@@ -317,6 +319,12 @@ come from AWS and are reproduced on purpose:
   20-question evaluation it scored 90/85/90, the same as SEMANTIC, where the OpenSearch store's
   hybrid scores 100/95/100.
 
+To use it, give the knowledge base `--store rds` (or an RDS `storageConfiguration` from boto3).
+Each RDS knowledge base needs a table of its own, as on AWS: `make local-init` creates
+`bedrock_integration.bedrock_kb`, and `local_init.py pg --table bedrock_integration.<name>`
+creates another. Dashboards cannot see this store; `make local-pg-inspect` shows the same
+internals in psql, and `make local-psql` opens a prompt as `bedrock_user`.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -337,6 +345,7 @@ local-kb/
   .env.example         the credentials local_init.py generates into .env
   events/queue.py      kb-events, the bucket-event queue
   dashboards/          saved objects + Dev Tools queries
+  pg/inspect.sql       the RDS store's internals in psql (the Dashboards view's counterpart)
   eval/                qa.jsonl (20 questions) + report.json
   fixtures/            what a real Bedrock KB wrote and returned (Phase 0; rds/ for Aurora)
   sample-docs/         the corpus used by Phase 0, the tests, and the evaluation
@@ -349,7 +358,8 @@ python/src/aws_ai/local_kb/
   store.py             the vector-store seam: StoredChunk, Hit, store_for()
   store_opensearch.py  the OpenSearch store: layout, k-NN, hybrid pipeline, result shape
   store_rds.py         the RDS (pgvector) store: Bedrock's SQL, captured on Aurora
-  index.py, opensearch.py, filters.py   OpenSearch index body, client, RetrievalFilter → query
+  index.py, opensearch.py   OpenSearch index body and client
+  filters.py           RetrievalFilter → OpenSearch query, and → SQL for the RDS store
   trigger.py           queue + ETag poll → ingestion jobs
   retrieve.py          Retrieve: validation, embedding, HIERARCHICAL collapse
   generate.py, prompts/   RetrieveAndGenerate and Bedrock's six prompt templates
