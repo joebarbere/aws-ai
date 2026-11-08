@@ -120,7 +120,7 @@ module "knowledge_base" {
   vector_index_ready = var.kb_vector_index_ready
 
   # You need collection data access too, or you cannot create the index in the first place.
-  additional_data_access_principals = [data.aws_caller_identity.current.arn]
+  additional_data_access_principals = [data.aws_iam_session_context.current.issuer_arn]
 }
 
 # Per-request pricing, nothing hourly — on by default.

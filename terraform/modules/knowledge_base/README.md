@@ -33,7 +33,7 @@ terraform apply -var enable_knowledge_base=true -var kb_vector_index_ready=true
 
 Skipping step 2 makes step 3 fail with a validation error that does not mention the missing index.
 
-## Two things that catch people
+## Three things that catch people
 
 **Dimensions must match.** Titan Text Embeddings V2 emits 1024 dimensions. The index created in
 step 2 uses 1024. Change `embedding_model_id` and you must change the index to match, or ingestion
@@ -41,7 +41,13 @@ fails per-document.
 
 **IAM is not enough.** OpenSearch Serverless has its own data-access policy layer. A role with
 `aoss:APIAccessAll` in IAM still reads nothing unless a data-access policy names that principal —
-which is why `additional_data_access_principals` exists for your own user.
+which is why `additional_data_access_principals` exists for your own user. It must be a *role*
+ARN: under SSO the caller's ARN is a session (`sts:…:assumed-role/…`), so the root module passes
+`aws_iam_session_context.issuer_arn` instead.
+
+**A signed request with a body needs `x-amz-content-sha256`.** Without that header OpenSearch
+Serverless answers a bare 403 to every PUT and POST, while GETs succeed. That looks exactly like
+a missing data-access grant. `create_vector_index.py` sends it.
 
 ## Ingesting
 

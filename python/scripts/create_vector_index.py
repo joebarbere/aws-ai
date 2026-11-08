@@ -15,6 +15,7 @@ It uses botocore's signer directly, so it needs no dependency beyond boto3.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import urllib.error
@@ -74,9 +75,13 @@ def create_index(endpoint: str, region: str, index_name: str, dimensions: int) -
     if credentials is None:
         raise SystemExit("No AWS credentials found. Configure a profile or SSO session first.")
 
-    request = AWSRequest(
-        method="PUT", url=url, data=payload, headers={"Content-Type": "application/json"}
-    )
+    # OpenSearch Serverless rejects any signed request with a body unless the payload hash is
+    # sent as x-amz-content-sha256 — a bare 403 that looks exactly like a data-access problem.
+    headers = {
+        "Content-Type": "application/json",
+        "x-amz-content-sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    request = AWSRequest(method="PUT", url=url, data=payload, headers=headers)
     SigV4Auth(credentials.get_frozen_credentials(), "aoss", region).add_auth(request)
 
     signed = urllib.request.Request(  # noqa: S310 - fixed https endpoint from terraform output
