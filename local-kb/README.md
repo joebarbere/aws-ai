@@ -40,6 +40,7 @@ flowchart LR
         events["kb-events :8098<br/>bucket-event queue"]
         opensearch[("OpenSearch :9200<br/>bedrock-knowledge-base-default-index")]
         dashboards["OpenSearch Dashboards :5601"]
+        postgres[("Postgres + pgvector :5432<br/>bedrock_integration.bedrock_kb")]
     end
 
     boto3 -->|"HTTP, SigV4 ignored"| server
@@ -111,6 +112,7 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 | **kb-events** | container `kb-events` ([`events/queue.py`](events/queue.py)) | `:8098` | The SQS stand-in. RustFS POSTs bucket events here, and the sync trigger long-polls `GET /messages`. It exists because RustFS refuses to call link-local addresses, which are the only route back to the host under rootless podman. |
 | **OpenSearch** | container `opensearch` | `:9200` (HTTPS, self-signed) | The vector store. Security is on, and the worker uses the least-privilege `bedrock-kb` user. |
 | **OpenSearch Dashboards** | container `dashboards` | `:5601` | Inspect the index the way the course video does ([below](#see-bedrocks-internal-fields-in-dashboards)). |
+| **Postgres + pgvector** | container `postgres` | `:5432` | The Aurora stand-in for the `RDS` vector store, set up with AWS's own SQL (`local_init.py pg`). Being built: see [PGVECTOR_PLAN.md](PGVECTOR_PLAN.md). |
 | **LM Studio** | desktop app + `lms` CLI | `:1234` (OpenAI-compatible) | Serves `kb-embed` (Qwen3-Embedding-0.6B) and `kb-llm` (Qwen3.5-9B Q6_K). |
 | **`local-kb` CLI** | `uv run local-kb …` in `python/` | — | The `aws bedrock-agent` and `aws bedrock-agent-runtime` verbs, plus `sync`, `run-pending`, `watch`, `serve` and `evaluate`. |
 | **`local-kb serve`** | host process | `:8099` | Bedrock's REST API for stock boto3, plus a background worker that runs ingestion jobs (and, with `--watch`, the sync trigger). |
@@ -136,7 +138,7 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 | | What it does |
 |---|---|
 | `make local-up` | Writes `local-kb/.env` (random credentials), starts the containers, runs `local-init` |
-| `make local-init` | [`local_init.py`](../python/scripts/local_init.py): bucket, bucket event, `bedrock-kb` user and role, Dashboards saved objects. Idempotent. |
+| `make local-init` | [`local_init.py`](../python/scripts/local_init.py): bucket, bucket event, `bedrock-kb` user and role, Dashboards saved objects, and the Postgres schema, role and table. Idempotent. |
 | `make local-smoke` | [`local_smoke.py`](../python/scripts/local_smoke.py): 8 checks on the storage behaviours sync relies on (MD5 ETags, listings, events under the prefix only) |
 | `make local-models` | Starts LM Studio's server and loads `kb-embed` and `kb-llm` with the right flags |
 | `make local-sample-docs` | Uploads [`sample-docs/kb/`](sample-docs/) to `s3://kb-data/kb/` |
@@ -180,6 +182,8 @@ Credentials are in `local-kb/.env`, which is gitignored:
 - Log in to the RustFS console with `RUSTFS_ACCESS_KEY` / `RUSTFS_SECRET_KEY`.
 - The worker and server use the `bedrock-kb` user with `BEDROCK_KB_PASSWORD`, never `admin`. It
   is the local version of the AOSS data-access policy.
+- Postgres: `postgres` with `POSTGRES_PASSWORD` is the superuser (Aurora's master user). The
+  RDS store connects as `bedrock_user` with `BEDROCK_PG_PASSWORD`, the role AWS's guide creates.
 
 ## Use it from boto3
 
@@ -312,7 +316,7 @@ Where it differs, on purpose or by necessity:
 local-kb/
   README.md            this guide
   PLAN.md              design, Phase 0 findings, phase-by-phase results
-  compose.yaml         rustfs, kb-events, opensearch, dashboards
+  compose.yaml         rustfs, kb-events, opensearch, dashboards, postgres
   .env.example         the credentials local_init.py generates into .env
   events/queue.py      kb-events, the bucket-event queue
   dashboards/          saved objects + Dev Tools queries

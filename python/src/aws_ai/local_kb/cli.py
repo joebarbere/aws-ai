@@ -57,6 +57,26 @@ def default_storage_configuration(index_name: str) -> dict[str, Any]:
     }
 
 
+def default_rds_storage_configuration() -> dict[str, Any]:
+    """The local Postgres, described the way Bedrock describes Aurora (fixtures/rds)."""
+    return {
+        "type": "RDS",
+        "rdsConfiguration": {
+            "resourceArn": config.RDS_CLUSTER_ARN,
+            "credentialsSecretArn": config.RDS_SECRET_ARN,
+            "databaseName": config.RDS_DATABASE,
+            "tableName": config.RDS_TABLE,
+            "fieldMapping": {
+                "primaryKeyField": "id",
+                "vectorField": "embedding",
+                "textField": "chunks",
+                "metadataField": "metadata",
+                "customMetadataField": "custom_metadata",
+            },
+        },
+    }
+
+
 def _query_arg(text: str) -> Any:
     """``--retrieval-query`` as JSON, or the AWS CLI shorthand ``text=...``."""
     if text.startswith("text="):
@@ -185,7 +205,11 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
                 knowledge_base_configuration=args.knowledge_base_configuration
                 or default_knowledge_base_configuration(args.dimensions),
                 storage_configuration=args.storage_configuration
-                or default_storage_configuration(args.index_name),
+                or (
+                    default_rds_storage_configuration()
+                    if args.store == "rds"
+                    else default_storage_configuration(args.index_name)
+                ),
             )
         },
         "get-knowledge-base": lambda: {"knowledgeBase": cp.get_knowledge_base(kb)},
@@ -244,7 +268,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--name", required=True)
     p.add_argument("--description")
     p.add_argument("--dimensions", type=int, default=config.EMBEDDING_DIMENSIONS)
-    p.add_argument("--index-name", default=config.INDEX_NAME)
+    p.add_argument(
+        "--store",
+        choices=["opensearch", "rds"],
+        default="opensearch",
+        help="Default storage: the local OpenSearch, or the local Postgres as Aurora (RDS)",
+    )
+    p.add_argument("--index-name", default=config.INDEX_NAME, help="OpenSearch only")
     p.add_argument("--knowledge-base-configuration", type=_json_arg, help="JSON, as in AWS")
     p.add_argument("--storage-configuration", type=_json_arg, help="JSON, as in AWS")
 

@@ -63,6 +63,19 @@ CREATE TABLE IF NOT EXISTS sessions (
 """
 
 _NAME = re.compile(r"([0-9a-zA-Z][_-]?){1,100}")
+# RdsConfiguration's member patterns, from the botocore bedrock-agent model.
+_RDS_PATTERNS = {
+    "resourceArn": re.compile(
+        r"arn:aws(|-cn|-us-gov):rds:[a-zA-Z0-9-]*:[0-9]{12}:cluster:[a-zA-Z0-9-]{1,63}"
+    ),
+    "credentialsSecretArn": re.compile(
+        r"arn:aws(|-cn|-us-gov):secretsmanager:[a-z0-9-]{1,20}:([0-9]{12}|):secret:"
+        r"[a-zA-Z0-9!/_+=.@-]{1,512}"
+    ),
+    "databaseName": re.compile(r"[a-zA-Z0-9_\-]{1,63}"),
+    "tableName": re.compile(r"[a-zA-Z0-9_.\-]{1,63}"),
+}
+_RDS_FIELD = re.compile(r"[a-zA-Z0-9_\-]{1,63}")
 _TIMESTAMPS = ("createdAt", "updatedAt", "startedAt")
 ACTIVE_JOB_STATUSES = ("STARTING", "IN_PROGRESS", "STOPPING")
 STATISTICS = (
@@ -473,14 +486,47 @@ def _check_vector_configuration(configuration: dict[str, Any]) -> None:
 
 
 def _check_storage(configuration: dict[str, Any]) -> None:
+    kind = configuration.get("type")
+    if kind == "RDS":
+        _check_rds(configuration.get("rdsConfiguration", {}))
+        return
+    if kind != "OPENSEARCH_MANAGED_CLUSTER":
+        raise ValidationException(
+            "local-kb supports OPENSEARCH_MANAGED_CLUSTER and RDS storage only."
+        )
     cluster = configuration.get("opensearchManagedClusterConfiguration", {})
-    if configuration.get("type") != "OPENSEARCH_MANAGED_CLUSTER":
-        raise ValidationException("local-kb supports OPENSEARCH_MANAGED_CLUSTER storage only.")
     missing = [k for k in ("domainEndpoint", "domainArn", "vectorIndexName") if k not in cluster]
     fields = cluster.get("fieldMapping", {})
     missing += [k for k in ("vectorField", "textField", "metadataField") if k not in fields]
     if missing:
         raise ValidationException(f"storageConfiguration is missing {', '.join(missing)}.")
+
+
+def _check_rds(rds: dict[str, Any]) -> None:
+    """The documented shape. Bedrock also checks the table itself here — columns, the three
+    indexes, a ``<=>`` probe — but the control plane has no database connection; the store
+    runs those checks when a sync starts, as Bedrock does too."""
+    fields = rds.get("fieldMapping", {})
+    missing = [k for k in _RDS_PATTERNS if k not in rds]
+    missing += [
+        k
+        for k in ("primaryKeyField", "vectorField", "textField", "metadataField")
+        if k not in fields
+    ]
+    if missing:
+        raise ValidationException(f"rdsConfiguration is missing {', '.join(missing)}.")
+    for key, pattern in _RDS_PATTERNS.items():
+        if not isinstance(rds[key], str) or not pattern.fullmatch(rds[key]):
+            raise ValidationException(f"rdsConfiguration.{key} must match {pattern.pattern}.")
+    for key, value in fields.items():
+        if not isinstance(value, str) or not _RDS_FIELD.fullmatch(value):
+            raise ValidationException(f"fieldMapping.{key} must match {_RDS_FIELD.pattern}.")
+    # Without customMetadataField, Bedrock maps each metadata attribute to a column of its
+    # own. AWS's guide recommends the jsonb column, and it is the only layout local-kb copies.
+    if "customMetadataField" not in fields:
+        raise ValidationException(
+            "local-kb supports RDS storage with fieldMapping.customMetadataField only."
+        )
 
 
 def _check_s3_source(configuration: dict[str, Any]) -> None:

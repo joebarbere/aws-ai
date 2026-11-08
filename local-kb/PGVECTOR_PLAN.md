@@ -194,24 +194,39 @@ class VectorStore(Protocol):
 - `compile_filter` validates, then translates. OpenSearch uses `filters.to_query`; RDS gets
   `to_sql`.
 
-**Phase P2: the Postgres service.**
+**Phase P2: the Postgres service** ✅ done 2026-11-08.
 
-- Add `postgres` to `compose.yaml`:
-  - image `docker.io/pgvector/pgvector:0.8.1-pg17` (pin the exact tag when implementing);
-  - port `127.0.0.1:5432`;
-  - a named volume;
-  - `shared_buffers=256MB` and `maintenance_work_mem=512MB` for HNSW builds.
-- It runs alongside OpenSearch, so both stores can be benchmarked on the same machine at the
-  same time. A compose profile (`--profile pg`) lets either one run alone for clean resource
-  numbers.
-- `local_init.py pg` runs the AWS SQL above verbatim, as `bedrock_user`.
-- The control plane accepts `type: "RDS"` and validates `rdsConfiguration` against the
-  documented ARN and name patterns. `local-kb create-knowledge-base --store rds` fills in a
-  local default:
+- `postgres` in `compose.yaml`:
+  - image `docker.io/pgvector/pgvector:0.8.2-pg17`: the pgvector version the Aurora capture
+    reported (0.8.2), on Postgres 17.10 against Aurora's 17.11;
+  - port `127.0.0.1:5432`, the `postgres-data` volume, database `bedrock`;
+  - `shared_buffers=256MB` and `maintenance_work_mem=512MB` for HNSW builds, and
+    `default_text_search_config=simple`, as on Aurora (the image defaults to english).
+- It starts with the rest of the stack, so both stores can be benchmarked side by side. There
+  is no compose profile: to run one store alone, start only its services, for example
+  `podman-compose up -d rustfs kb-events postgres`.
+- `local_init.py pg` runs `rds_kb.py`'s SQL, so AWS's setup lives in one place. The extension,
+  schema and `bedrock_user` are created as the superuser (Aurora's master user), then the table
+  and its three indexes as `bedrock_user`, so it owns them as on AWS. `init` runs it too.
+  `local_init.py env` now adds `POSTGRES_PASSWORD` and `BEDROCK_PG_PASSWORD` to an existing
+  `.env`, without touching the keys already there.
+- Against the capture's own schema queries, the columns, the indexes and the pgvector version
+  are identical to Aurora's, and all three of Bedrock's `pg_indexes LIKE` checks match. The
+  `<=>` probe runs.
+- **`hnsw.iterative_scan`:** `table-schema.json` shows `off`, but that dump came from a pooled
+  Data API connection (pid 922) opened before `rds_kb.py`'s `ALTER DATABASE`. Bedrock's own
+  session (pid 923) connected a second after the `ALTER`, so it most likely ran with
+  `relaxed_order`. Local sessions get `relaxed_order` too.
+- The control plane accepts `type: "RDS"`. It checks `rdsConfiguration` against the botocore
+  model's patterns and requires `customMetadataField`, the only layout local-kb copies. The
+  table checks Bedrock also runs at create time need a database connection, so the store runs
+  them at the start of each sync instead, which Bedrock also does.
+- `local-kb create-knowledge-base --store rds` describes the local Postgres as Aurora:
   - `arn:aws:rds:us-east-1:000000000000:cluster:local-kb`;
-  - a fake secret ARN, with the real password kept in `.env`.
-- Dependency: `psycopg[binary]` 3, in the `local` extra. Connection pooling is not needed at
-  this scale.
+  - a placeholder secret ARN, with the real password kept in `.env`;
+  - the database, table and field mapping from `fixtures/rds/knowledge-base.json`.
+- `psycopg[binary]` 3 is in the `local` extra.
+- A sync of an RDS knowledge base fails until P3 adds the store.
 
 **Phase P3: the pgvector store, ingest side.**
 
@@ -480,7 +495,7 @@ These are hypotheses for P7 to confirm or overturn:
 |---|---|---|
 | 0b ✅ | `fixtures/rds/` from a real Aurora knowledge base; plan updated with what it settles | done 2026-11-08 |
 | P1 ✅ | `VectorStore` seam, OpenSearch behind it | 141 tests pass unchanged; live sync, sidecar rewrite and retrieve unchanged; eval 90/85/90 · 100/95/100 as before |
-| P2 | `postgres` service, `local_init.py pg`, RDS storage config accepted | `local-kb create-knowledge-base --store rds` works |
+| P2 ✅ | `postgres` service, `local_init.py pg`, RDS storage config accepted | `create-knowledge-base --store rds` works; schema identical to Aurora's; 149 tests pass |
 | P3 | pgvector ingest with Bedrock's own INSERT, DELETE and read-and-upsert | Phase 0b replay: same 8 counters, same 17 chunk texts, the same `metadata` and `custom_metadata` keys |
 | P4 | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
