@@ -66,6 +66,18 @@ def stats(names: list[str]) -> dict[str, dict[str, float]]:
     return out
 
 
+def stop(names: list[str]) -> None:
+    """Stop those of ``names`` that are running; OpenSearch gets a minute to shut down."""
+    up = [n for n in names if n in set(running().values())]
+    if up:
+        _run("podman", "stop", "-t", "60", *up)
+
+
+def start(names: list[str]) -> None:
+    if names:
+        _run("podman", "start", *names)
+
+
 def cpu_seconds(name: str) -> float | None:
     """The container's cumulative CPU time, from cgroup v2."""
     try:
@@ -109,7 +121,8 @@ class Sampler:
 
     def __init__(self, interval: float = 1.0) -> None:
         self.interval = interval
-        self.names = list(running().values())
+        # Every container the stack can run; ones stopped (by --isolate) simply have no samples.
+        self.names = list(CONTAINERS.values())
         self.label = "idle"
         self.samples: list[dict[str, Any]] = []
         self.cpu: dict[str, dict[str, float | None]] = {}
@@ -140,7 +153,7 @@ class Sampler:
     def _loop(self) -> None:
         while not self._stop.is_set():
             try:
-                reading = stats(self.names)
+                reading = stats(list(running().values()))
             except (subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
                 reading = {}
             t = round(time.monotonic() - self._started, 1)
@@ -155,6 +168,8 @@ class Sampler:
             phase: dict[str, Any] = {"seconds": round(seconds, 2), "containers": {}}
             for name in self.names:
                 rows = [s for s in self.samples if s["phase"] == label and s["container"] == name]
+                if not rows and self.cpu.get(label, {}).get(name) is None:
+                    continue  # stopped throughout this phase
                 rss = [s["rss"] for s in rows]
                 cpu = [s["cpu_percent"] for s in rows]
                 phase["containers"][name] = {

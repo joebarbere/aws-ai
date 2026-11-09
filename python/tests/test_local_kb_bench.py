@@ -7,7 +7,18 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from aws_ai.local_kb.bench import VectorCache, _percentiles, _recall, exact_top_k, overlap
+from aws_ai.local_kb.bench import (
+    BenchChunk,
+    Corpus,
+    VectorCache,
+    _percentiles,
+    _recall,
+    exact_top_k,
+    fuse_minmax,
+    fuse_rrf,
+    overlap,
+    relevance,
+)
 from aws_ai.local_kb.bench_resources import _bytes, _delta
 
 
@@ -66,3 +77,35 @@ def test_podman_units() -> None:
     assert _bytes("2GiB") == 2 * 2**30
     assert _bytes("512kB") == 512e3
     assert _delta(1.5, 4.0) == 2.5 and _delta(None, 4.0) is None
+
+
+def test_rrf_is_bedrocks_formula() -> None:
+    vector = [(1, 0.9), (2, 0.8), (3, 0.7)]
+    lexical = [(3, 12.0), (4, 5.0)]
+    # 3: 1/63 + 1/61 beats 1: 1/61 alone, which beats 2 and 4 (1/62 each)
+    assert fuse_rrf(vector, lexical, 2) == [3, 1]
+    assert fuse_rrf(vector, [], 2) == [1, 2]
+    # each side contributes only its top 2k: chunk 9, 5th by keywords, is not counted for k=2
+    lexical_deep = [(n, 1.0) for n in (20, 21, 22, 23, 9)]
+    vector_tail = [(n, 1.0) for n in (30, 31, 32, 33, 9)]
+    assert 9 not in fuse_rrf(vector_tail, lexical_deep, 2)
+
+
+def test_minmax_normalises_each_side_then_averages() -> None:
+    vector = [(1, 0.9), (2, 0.5), (3, 0.1)]  # 1.0, 0.5, 0.0
+    lexical = [(3, 10.0), (2, 6.0)]  # 1.0, 0.0
+    # 1: .5*1 = .5   2: .5*.5 + 0 = .25   3: 0 + .5*1 = .5 -> tie broken by chunk number
+    assert fuse_minmax(vector, lexical, 3) == [1, 3, 2]
+    assert fuse_minmax([(5, 0.3)], [], 1) == [5]  # a single score normalises to 1
+
+
+def test_relevance_finds_the_target_document() -> None:
+    chunks = [BenchChunk("t", f"s3://b/{d}", None, {"arxiv_id": d}) for d in ["a", "a", "b", "c"]]
+    corpus = Corpus("x", chunks, ["q1", "q2", "q3"], ["a", "c", "z"])
+    r = relevance(corpus, [[0, 2], [2, 1, 0, 2, 2, 3], [0]])
+    # q1 first, q2 at rank 6 (hit@10 only), q3 never
+    assert r == {
+        "hit@5": round(1 / 3, 4),
+        "hit@10": round(2 / 3, 4),
+        "mrr@10": round((1 + 1 / 6) / 3, 4),
+    }

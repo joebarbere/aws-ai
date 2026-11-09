@@ -12,8 +12,8 @@ export.arxiv.org, one request every 3 seconds, a single connection.
 - **medium** is full papers from astro-ph.IM (instrumentation and methods) whose abstracts are
   about radio telescopes: interferometry, calibration, RFI, receivers, beamforming. About 40-50
   chunks each, through the same PDF parser and chunker as any upload.
-- **large** is one chunk per abstract: every radio-related paper across astro-ph, submitted in
-  the date window below.
+- **large** is one chunk per abstract: every radio-related astro-ph paper from 1993 to October
+  2026, fetched one year at a time.
 """
 
 from __future__ import annotations
@@ -49,11 +49,13 @@ RADIO = (
     'abs:"radio array" OR abs:"21 cm"'
 )
 MEDIUM_QUERY = f"cat:astro-ph.IM AND ({RADIO}) AND {WINDOW}"
+# astro-ph split into subcategories in 2009; papers before that carry plain astro-ph.
 LARGE_QUERY = (
-    "(cat:astro-ph.IM OR cat:astro-ph.GA OR cat:astro-ph.HE OR cat:astro-ph.CO OR "
-    f"cat:astro-ph.SR) AND ({RADIO} OR abs:radio OR abs:pulsar) AND "
+    "(cat:astro-ph OR cat:astro-ph.IM OR cat:astro-ph.GA OR cat:astro-ph.HE OR "
+    f"cat:astro-ph.CO OR cat:astro-ph.SR) AND ({RADIO} OR abs:radio OR abs:pulsar) AND "
 )
-LARGE_YEARS = range(2015, 2027)  # one query per year keeps each under the API's 30k cap
+LARGE_YEARS = range(1993, 2027)  # one query per year keeps each under the API's 30k cap
+DONE_YEARS = CORPUS / "radio-abstracts.years"  # years already fetched, so a rerun resumes
 
 NS = {
     "a": "http://www.w3.org/2005/Atom",
@@ -158,21 +160,34 @@ def fetch() -> None:
 
 
 def abstracts() -> None:
-    seen: set[str] = set()
+    """Append each missing year's abstracts; years already fetched are skipped."""
     ABSTRACTS.parent.mkdir(parents=True, exist_ok=True)
-    with ABSTRACTS.open("w") as out:
-        for year in LARGE_YEARS:
-            window = f"submittedDate:[{year}01010000 TO {year}12312359]"
-            if year == 2026:
-                window = f"submittedDate:[{year}01010000 TO {year}10312359]"
-            before = len(seen)
+    seen = (
+        {json.loads(line)["id"] for line in ABSTRACTS.read_text().splitlines()}
+        if ABSTRACTS.exists()
+        else set()
+    )
+    done = set(DONE_YEARS.read_text().split()) if DONE_YEARS.exists() else set()
+    if seen and not done:  # fetched before this file existed: 2015-2026
+        done = {str(y) for y in range(2015, 2027)}
+        DONE_YEARS.write_text("\n".join(sorted(done)) + "\n")
+    for year in LARGE_YEARS:
+        if str(year) in done:
+            continue
+        end = "10312359" if year == 2026 else "12312359"
+        window = f"submittedDate:[{year}01010000 TO {year}{end}]"
+        added = 0
+        with ABSTRACTS.open("a") as out:
             for entry in search(LARGE_QUERY + window, 30000, page=2000):
                 if entry["id"] not in seen:
                     seen.add(entry["id"])
                     out.write(json.dumps(entry, ensure_ascii=False) + "\n")
-            print(f"{year}: {len(seen) - before} abstracts", flush=True)
-            time.sleep(PAUSE)
-    print(f"wrote {ABSTRACTS.relative_to(REPO)}: {len(seen)} abstracts")
+                    added += 1
+        with DONE_YEARS.open("a") as out:
+            out.write(f"{year}\n")
+        print(f"{year}: {added} abstracts", flush=True)
+        time.sleep(PAUSE)
+    print(f"{ABSTRACTS.relative_to(REPO)}: {len(seen)} abstracts")
 
 
 def main() -> int:

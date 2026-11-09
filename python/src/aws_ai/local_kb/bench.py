@@ -55,6 +55,7 @@ STORES = ("opensearch", "rds")
 SHARDS = 50  # bench_shard = n % 50: an equals filter keeps 2% of the rows
 FILTER = {"equals": {"key": "bench_shard", "value": 7}}
 BATCH = 100
+LEXICAL_POOL = 50  # candidates per side for the fusion matrix, as the OpenSearch store's pool
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,16 @@ class Corpus:
     name: str
     chunks: list[BenchChunk]
     queries: list[str]
+    # The document each query is about: a paper's arXiv id (the query is its title) or, for
+    # sample, the evaluation question's source file. Scores hit@k and MRR.
+    targets: list[str]
+
+    def doc(self, n: int) -> str:
+        return doc_of(self.chunks[n])
+
+
+def doc_of(c: BenchChunk) -> str:
+    return str(c.attributes.get("arxiv_id") or c.source_uri.rsplit("/", 1)[-1])
 
 
 def repo_dir() -> Path:
@@ -90,10 +101,12 @@ def load_corpus(name: str, count_tokens: Callable[[str], int], queries: int = 20
     cache = bench_dir() / f"{name}-corpus.json"
     if cache.exists():
         data = json.loads(cache.read_text())
-        chunks = [BenchChunk(**c) for c in data["chunks"]]
-        return Corpus(name, chunks, data["queries"][:queries])
+        if "targets" in data:
+            chunks = [BenchChunk(**c) for c in data["chunks"]]
+            return Corpus(name, chunks, data["queries"][:queries], data["targets"][:queries])
     build = {"sample": _sample, "medium": _medium, "large": _large}[name]
-    chunks, all_queries = build(count_tokens)
+    chunks, pairs = build(count_tokens)
+    all_queries, targets = [q for q, _ in pairs], [t for _, t in pairs]
     chunks = [
         BenchChunk(
             c.text, c.source_uri, c.page, {**c.attributes, "bench_n": n, "bench_shard": n % SHARDS}
@@ -102,10 +115,11 @@ def load_corpus(name: str, count_tokens: Callable[[str], int], queries: int = 20
     ]
     cache.write_text(
         json.dumps(
-            {"chunks": [asdict(c) for c in chunks], "queries": all_queries}, ensure_ascii=False
+            {"chunks": [asdict(c) for c in chunks], "queries": all_queries, "targets": targets},
+            ensure_ascii=False,
         )
     )
-    return Corpus(name, chunks, all_queries[:queries])
+    return Corpus(name, chunks, all_queries[:queries], targets[:queries])
 
 
 def _parse_and_chunk(
@@ -119,7 +133,10 @@ def _parse_and_chunk(
     ]
 
 
-def _sample(count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[str]]:
+Built = tuple[list[BenchChunk], list[tuple[str, str]]]  # chunks, (query, target doc) pairs
+
+
+def _sample(count_tokens: Callable[[str], int]) -> Built:
     docs = repo_dir() / "sample-docs" / "kb"
     chunks = []
     for path in sorted(docs.iterdir()):
@@ -128,10 +145,11 @@ def _sample(count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[
         for text, page in _parse_and_chunk(path.name, path.read_bytes(), count_tokens):
             chunks.append(BenchChunk(text, f"s3://kb-data/kb/{path.name}", page))
     lines = (repo_dir() / "eval" / "qa.jsonl").read_text().splitlines()
-    return chunks, [json.loads(line)["question"] for line in lines if line.strip()]
+    rows = [json.loads(line) for line in lines if line.strip()]
+    return chunks, [(r["question"], r["source"]) for r in rows]
 
 
-def _medium(count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[str]]:
+def _medium(count_tokens: Callable[[str], int]) -> Built:
     listing = repo_dir() / "bench" / "radio-papers.tsv"
     pdfs = config.default_state_dir() / "corpus" / "radio"
     papers = [
@@ -152,13 +170,15 @@ def _medium(count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[
         attributes = {"arxiv_id": arxiv_id, "year": int(published[:4]), "category": category}
         uri = f"s3://kb-data/bench/radio/{arxiv_id}.pdf"
         chunks += [BenchChunk(text, uri, page, attributes) for text, page in pieces]
-        titles.append(title)
+        titles.append((title, arxiv_id))
     if failed:
         print(f"{len(failed)} papers failed to parse: {failed[:3]}")
     return chunks, _spread(titles)
 
 
-def _large(_count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[str]]:
+def _large(_count_tokens: Callable[[str], int]) -> Built:
+    """One chunk per abstract, "title. abstract". Queries are titles, so each query's text
+    opens its target chunk: easy for keyword search, a fair test of ranking at scale."""
     path = config.default_state_dir() / "corpus" / "radio-abstracts.jsonl"
     chunks, titles = [], []
     for line in path.read_text().splitlines():
@@ -172,11 +192,11 @@ def _large(_count_tokens: Callable[[str], int]) -> tuple[list[BenchChunk], list[
         chunks.append(
             BenchChunk(text, f"s3://kb-data/bench/abstracts/{paper['id']}", None, attributes)
         )
-        titles.append(paper["title"])
+        titles.append((paper["title"], paper["id"]))
     return chunks, _spread(titles)
 
 
-def _spread(items: list[str], count: int = 1000) -> list[str]:
+def _spread(items: list[tuple[str, str]], count: int = 1000) -> list[tuple[str, str]]:
     """Up to ``count`` items evenly spaced through the list: queries from across the corpus."""
     step = max(1, len(items) // count)
     return items[::step][:count]
@@ -423,6 +443,50 @@ class Bench:
             ],
         }
 
+    def lexical(self, kind: str) -> dict[str, list[list[tuple[int, float]]]]:
+        """Each store's keyword ranking alone, top LEXICAL_POOL per query with its score:
+        OpenSearch's BM25 ``match``; Postgres's ``ts_rank`` under Bedrock's ``plainto_tsquery``
+        (every term required) and under the same terms OR'd (not what Bedrock runs)."""
+        if kind == "opensearch":
+            ranked = []
+            for q in self.corpus.queries:
+                body = {
+                    "size": LEXICAL_POOL,
+                    "query": {"match": {config.TEXT_FIELD: q}},
+                    "_source": ["bench_n"],
+                }
+                hits = self.admin.request("POST", f"/{self._index()}/_search", body)["hits"]
+                ranked.append(
+                    [(int(h["_source"]["bench_n"]), float(h["_score"])) for h in hits["hits"]]
+                )
+            return {"opensearch_bm25": ranked}
+        db = self.store("rds").db
+        queries = {
+            "pg_plainto": "plainto_tsquery('simple', %s)",
+            "pg_or": "replace(plainto_tsquery('simple', %s)::text, '&', '|')::tsquery",
+        }
+        out = {}
+        for name, tsquery in queries.items():
+            sql = (
+                "SELECT (custom_metadata->>'bench_n')::float::int, "
+                f"ts_rank(to_tsvector('simple', chunks), {tsquery}) AS r FROM {self._table()} "
+                f"WHERE {tsquery} @@ to_tsvector('simple', chunks) ORDER BY r DESC "
+                f"LIMIT {LEXICAL_POOL}"
+            )
+            out[name] = [
+                [(int(n), float(r)) for n, r in db.execute(sql, [q, q]).fetchall()]
+                for q in self.corpus.queries
+            ]
+        return out
+
+    def vector_ranking(self) -> list[list[tuple[int, float]]]:
+        """The exact cosine top LEXICAL_POOL, shared by every fusion in the matrix."""
+        top = exact_top_k(self.unit_queries, self.unit, LEXICAL_POOL)
+        return [
+            [(n, float(self.unit_queries[i] @ self.unit[n])) for n in row]
+            for i, row in enumerate(top)
+        ]
+
     def latency(self, kind: str, calls: int, concurrency: int) -> dict[str, Any]:
         out: dict[str, Any] = {}
         compiled = self.store(kind).compile_filter(FILTER)
@@ -478,6 +542,34 @@ class Bench:
             f"WHERE indrelid = '{table}'::regclass"
         ).fetchall()
         return {"total_bytes": total, "heap_bytes": heap, "indexes": {n: b for n, b in indexes}}
+
+    def cold_start(self, kind: str, container: str) -> float:
+        """Seconds from ``podman start`` to the store answering."""
+        started = time.perf_counter()
+        bench_resources.start([container])
+        self.wait_ready(kind)
+        return round(time.perf_counter() - started, 2)
+
+    def wait_ready(self, kind: str, timeout: float = 300) -> float:
+        """Seconds until the store answers: OpenSearch's cluster health yellow or green (the
+        security plugin initialised, since the request authenticates); Postgres accepting
+        bedrock_user."""
+        started = time.perf_counter()
+        while True:
+            try:
+                if kind == "opensearch":
+                    health = self.admin.request("GET", "/_cluster/health")
+                    if health and health.get("status") in ("green", "yellow"):
+                        break
+                else:
+                    self.services.postgres(config.RDS_DATABASE).close()  # type: ignore[misc]
+                    break
+            except Exception:  # noqa: BLE001 - refused, reset, 503: all mean "not yet"
+                pass
+            if time.perf_counter() - started > timeout:
+                raise TimeoutError(f"{kind} was not ready after {timeout:.0f} s")
+            time.sleep(0.25)
+        return round(time.perf_counter() - started, 2)
 
     # ----------------------------------------------------------------- helpers
 
@@ -579,6 +671,69 @@ def exact_top_k(queries: Any, matrix: Any, k: int, rows: Any = None) -> list[lis
     return [[int(rows[i]) if rows is not None else int(i) for i in row] for row in best]
 
 
+def relevance(corpus: Corpus, ranked: list[list[int]]) -> dict[str, float]:
+    """hit@5, hit@10 and MRR@10 against each query's target document."""
+    hits5, hits10, rr = [], [], []
+    for target, row in zip(corpus.targets, ranked, strict=True):
+        docs = [corpus.doc(n) for n in row[:10]]
+        first = docs.index(target) + 1 if target in docs else None
+        hits5.append(first is not None and first <= 5)
+        hits10.append(first is not None)
+        rr.append(1 / first if first else 0.0)
+    count = max(len(rr), 1)
+    return {
+        "hit@5": round(sum(hits5) / count, 4),
+        "hit@10": round(sum(hits10) / count, 4),
+        "mrr@10": round(sum(rr) / count, 4),
+    }
+
+
+def fuse_rrf(
+    vector: list[tuple[int, float]], lexical: list[tuple[int, float]], k: int
+) -> list[int]:
+    """Bedrock's fusion on Aurora: each side's top 2k by rank, ``Σ 1/(60 + rank)``."""
+    score: dict[int, float] = {}
+    for side in (vector, lexical):
+        for rank, (n, _) in enumerate(side[: 2 * k], 1):
+            score[n] = score.get(n, 0.0) + 1 / (60 + rank)
+    return [n for n, _ in sorted(score.items(), key=lambda kv: (-kv[1], kv[0]))[:k]]
+
+
+def fuse_minmax(
+    vector: list[tuple[int, float]], lexical: list[tuple[int, float]], k: int
+) -> list[int]:
+    """The OpenSearch store's fusion: each side min-max normalised over its pool, then the
+    mean with equal weights; a document missing from one side scores 0 there."""
+
+    def normalise(side: list[tuple[int, float]]) -> dict[int, float]:
+        if not side:
+            return {}
+        low, high = min(s for _, s in side), max(s for _, s in side)
+        return {n: (s - low) / (high - low) if high > low else 1.0 for n, s in side}
+
+    v, x = normalise(vector), normalise(lexical)
+    score = {n: 0.5 * v.get(n, 0.0) + 0.5 * x.get(n, 0.0) for n in v.keys() | x.keys()}
+    return [n for n, _ in sorted(score.items(), key=lambda kv: (-kv[1], kv[0]))[:k]]
+
+
+def fusion_matrix(
+    corpus: Corpus,
+    vector: list[list[tuple[int, float]]],
+    lexical: dict[str, list[list[tuple[int, float]]]],
+) -> dict[str, Any]:
+    """Every keyword engine with every fusion, over the same exact vector ranking, so the
+    engine's contribution and the fusion's can be told apart."""
+    out: dict[str, Any] = {
+        "vector_only": relevance(corpus, [[n for n, _ in row] for row in vector])
+    }
+    for engine, ranked in lexical.items():
+        out[f"{engine}_only"] = relevance(corpus, [[n for n, _ in row] for row in ranked])
+        for name, fuse in (("rrf", fuse_rrf), ("minmax", fuse_minmax)):
+            fused = [fuse(v, x, 10) for v, x in zip(vector, ranked, strict=True)]
+            out[f"{engine}+{name}"] = relevance(corpus, fused)
+    return out
+
+
 def _nothing(_store: Any) -> None:
     return None
 
@@ -670,7 +825,10 @@ def run(
     calls: int = 500,
     concurrency: int = 8,
     log: Callable[[str], None] = print,
+    isolate: bool = False,
 ) -> dict[str, Any]:
+    """With ``isolate``, Dashboards and the store not being measured are stopped, each store is
+    started cold (timed), and everything that was running is started again at the end."""
     from aws_ai.local_kb.embed import model_id, qwen_token_counter
 
     log(f"corpus {corpus_name}: building or loading chunks")
@@ -687,6 +845,7 @@ def run(
     bench = Bench(services, corpus, vectors, query_vectors, log)
 
     report: dict[str, Any] = {
+        "isolated": isolate,
         "corpus": {
             "name": corpus_name,
             "chunks": len(corpus.chunks),
@@ -698,37 +857,76 @@ def run(
         "stores": {},
     }
     top: dict[str, dict[str, list[list[int]]]] = {}
-    with bench_resources.Sampler() as sampler:
-        time.sleep(3)  # an idle baseline
-        for kind in stores:
-            result: dict[str, Any] = {}
+    lexical: dict[str, list[list[tuple[int, float]]]] = {}
+    containers = {
+        "opensearch": bench_resources.CONTAINERS["opensearch"],
+        "rds": bench_resources.CONTAINERS["postgres"],
+    }
+    was_running = bench_resources.running()
+    try:
+        with bench_resources.Sampler() as sampler:
+            if isolate:  # Dashboards and both stores down; each store comes up on its own
+                log("isolate: stopping Dashboards and both stores")
+                bench_resources.stop(list(bench_resources.CONTAINERS.values()))
+            sampler.phase("idle")
+            time.sleep(3)
+            for kind in stores:
+                result: dict[str, Any] = {}
 
-            def phase(
-                name: str,
-                step: Callable[[], Any],
-                kind: str = kind,
-                result: dict[str, Any] = result,
-            ) -> None:
-                sampler.phase(f"{kind}:{name}")
-                log(f"{kind}: {name}")
-                result[name] = step()
+                def phase(
+                    name: str,
+                    step: Callable[[], Any],
+                    kind: str = kind,
+                    result: dict[str, Any] = result,
+                ) -> None:
+                    sampler.phase(f"{kind}:{name}")
+                    log(f"{kind}: {name}")
+                    result[name] = step()
 
-            phase("reset", partial(bench.reset, kind))
-            phase("load", partial(bench.load, kind))
-            phase("build", partial(bench.build, kind))
-            phase("quality", partial(bench.quality, kind))
-            top[kind] = bench.results(kind)
-            phase("latency", partial(bench.latency, kind, calls, concurrency))
-            phase("sidecar_rewrite", partial(bench.sidecar_rewrite, kind))
-            phase("disk", partial(bench.disk, kind))
-            if kind == "rds":
-                phase("bulk_build", bench.pg_bulk_build)
-            del result["reset"]
-            report["stores"][kind] = result
-        sampler.phase("idle-after")
-        time.sleep(3)
+                if isolate:
+                    phase("cold_start_seconds", partial(bench.cold_start, kind, containers[kind]))
+                    phase("idle", partial(time.sleep, 10))
+                    del result["idle"]
+                phase("reset", partial(bench.reset, kind))
+                phase("load", partial(bench.load, kind))
+                phase("build", partial(bench.build, kind))
+                phase("quality", partial(bench.quality, kind))
+                top[kind] = bench.results(kind)
+                phase("lexical", partial(bench.lexical, kind))
+                lexical.update(result.pop("lexical"))
+                phase("latency", partial(bench.latency, kind, calls, concurrency))
+                phase("sidecar_rewrite", partial(bench.sidecar_rewrite, kind))
+                phase("disk", partial(bench.disk, kind))
+                if kind == "rds":
+                    phase("bulk_build", bench.pg_bulk_build)
+                phase("idle_loaded", partial(time.sleep, 10))
+                for transient in ("reset", "idle_loaded"):
+                    del result[transient]
+                report["stores"][kind] = result
+                if isolate:
+                    bench_resources.stop([containers[kind]])
+            sampler.phase("idle-after")
+            time.sleep(3)
+    finally:
+        if isolate:  # leave the stack as it was found
+            log("isolate: restarting what was running")
+            order = ["postgres", "opensearch", "dashboards"]
+            bench_resources.start([was_running[r] for r in order if r in was_running])
+            for kind, role in (("rds", "postgres"), ("opensearch", "opensearch")):
+                if role in was_running:
+                    bench.wait_ready(kind)
     report["resources"] = sampler.summary()
     report["volumes"] = bench_resources.volume_bytes()
+    report["relevance"] = {
+        kind: {mode: relevance(corpus, lists) for mode, lists in ranked.items()}
+        for kind, ranked in top.items()
+    }
+    if "rds" in top:  # as Bedrock hands it back: the top 5 reversed
+        reversed5 = [row[:5][::-1] for row in top["rds"]["semantic"]]
+        report["relevance"]["rds"]["semantic_as_bedrock_returns_top5"] = relevance(
+            corpus, reversed5
+        )
+    report["fusion"] = fusion_matrix(corpus, bench.vector_ranking(), lexical)
     if set(STORES) <= set(top):
         report["overlap@10"] = {
             mode: overlap(top["opensearch"][mode], top["rds"][mode])
@@ -743,6 +941,8 @@ def iter_lines(report: dict[str, Any]) -> Iterator[str]:
     yield f"{c['name']}: {c['chunks']} chunks, {c['queries']} queries"
     for kind, r in report["stores"].items():
         yield f"\n{kind}"
+        if "cold_start_seconds" in r:
+            yield f"  cold start {r['cold_start_seconds']} s"
         yield f"  load      {r['load']['chunks_per_second']} chunks/s ({r['load']['seconds']} s)"
         yield f"  build     {r['build']}"
         if "bulk_build" in r:
@@ -757,6 +957,11 @@ def iter_lines(report: dict[str, Any]) -> Iterator[str]:
             )
         yield f"  sidecar   {r['sidecar_rewrite']}"
         yield f"  disk      {r['disk']}"
+    for kind, modes in report.get("relevance", {}).items():
+        for mode, r in modes.items():
+            yield f"relevance {kind:<10} {mode:<34} {r}"
+    for name, r in report.get("fusion", {}).items():
+        yield f"fusion    {name:<38} {r}"
     for mode, o in report.get("overlap@10", {}).items():
         yield f"\noverlap@10 {mode}: {o}"
     yield "\nresources (peak RSS MB, CPU-s):"
