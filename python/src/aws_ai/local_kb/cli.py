@@ -192,6 +192,12 @@ def _evaluate(cp: ControlPlane, args: argparse.Namespace) -> None:
         print(f"wrote {args.output}")
 
 
+def _mcp(args: argparse.Namespace) -> None:
+    from aws_ai.local_kb.mcp_server import run
+
+    run(args)
+
+
 def _bench(args: argparse.Namespace) -> None:
     from aws_ai.local_kb.bench import iter_lines, run
 
@@ -270,6 +276,7 @@ def _commands(cp: ControlPlane, args: argparse.Namespace) -> dict[str, Callable[
         "serve": lambda: _serve(args),
         "evaluate": lambda: _evaluate(cp, args),
         "bench": lambda: _bench(args),
+        "mcp": lambda: _mcp(args),
     }
 
 
@@ -390,6 +397,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--output", type=Path, help="Report path (default: local-kb/bench/report-<corpus>.json)"
+    )
+
+    from aws_ai.local_kb import mcp_server  # argparse only; the MCP SDK loads in run()
+
+    mcp_server.add_arguments(
+        sub.add_parser("mcp", help="The knowledge base as MCP tools for agents (stdio or HTTP)")
     )
     return parser
 

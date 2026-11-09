@@ -49,8 +49,9 @@ uv run local-kb serve --watch      # bedrock-agent + bedrock-agent-runtime for b
 
 | Module | What it does |
 |---|---|
-| `cli` | The `local-kb` command: `aws bedrock-agent` / `bedrock-agent-runtime` verbs, plus `sync`, `run-pending`, `watch`, `serve` and `evaluate` |
+| `cli` | The `local-kb` command: `aws bedrock-agent` / `bedrock-agent-runtime` verbs, plus `sync`, `run-pending`, `watch`, `serve`, `evaluate`, `bench` and `mcp` |
 | `server` | Bedrock's REST routes (FastAPI), plus a background ingestion worker |
+| `mcp_server` | `local-kb mcp`: the knowledge base as MCP tools (search, ask, list) for agents, over stock boto3 |
 | `control` | Knowledge bases, data sources, ingestion jobs, the document ledger and sessions, in SQLite |
 | `ingest` | The ingestion job: list → diff → parse → chunk → embed → write, with Bedrock's counters |
 | `parse` | The default parser, reproducing Bedrock's text normalization per file type; `.metadata.json` sidecars |

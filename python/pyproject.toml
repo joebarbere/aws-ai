@@ -25,6 +25,7 @@ local = [
     "beautifulsoup4>=4.12",
     "fastapi>=0.115",
     "markdownify>=0.13",
+    "mcp>=2.3,<3",  # local-kb mcp (2.x: MCPServer): the knowledge base as tools for agents
     # local-kb bench: brute-force ground truth. <2.5: its stubs need Python 3.12 syntax,
     # and mypy checks this project as 3.11.
     "numpy>=2,<2.5",

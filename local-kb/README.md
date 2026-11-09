@@ -132,6 +132,7 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 | `watch` | the S3 event → Lambda wiring | `--poll-seconds 60 --debounce 10` |
 | `serve` | the Bedrock endpoints | `--port 8099 --watch` |
 | `evaluate` | Bedrock's RAG evaluation | 20 questions, SEMANTIC vs HYBRID |
+| `mcp` | — | The knowledge base as MCP tools for agents; see [Use it from an agent](#use-it-from-an-agent-mcp) |
 
 ### Scripts and Make targets
 
@@ -226,6 +227,56 @@ print(answer["output"]["text"], answer["citations"][0]["retrievedReferences"][0]
 
 Errors come back as boto3's own `ValidationException`, `ResourceNotFoundException` and
 `ConflictException`.
+
+## Use it from an agent (MCP)
+
+Bedrock's RetrieveAndGenerate answers only from the chunks it retrieved: its prompt tells the
+model to, and to say "Sorry, I am unable to assist" otherwise. To combine the knowledge base with
+web search, other tools and the model's own knowledge, give an agent the knowledge base as tools
+instead. `local-kb mcp` is an MCP server with three read-only tools:
+
+| Tool | Calls | Returns |
+|---|---|---|
+| `list_knowledge_bases` | ListKnowledgeBases, GetKnowledgeBase | id, name, description, status, store |
+| `search_knowledge_base` | Retrieve | passages best-first, each with its source, page and attributes |
+| `ask_knowledge_base` | RetrieveAndGenerate | the knowledge base's own grounded answer and its sources |
+
+- **Searches default to HYBRID,** which the [bench](#opensearch-or-pgvector) found as good as
+  or better than SEMANTIC on both stores.
+- **RDS SEMANTIC results are put back best-first.** Bedrock returns them worst-first, and an agent
+  would otherwise trust the worst passage most. The result says when its scores are distances.
+- **It calls Bedrock's API with stock boto3,** so it needs `make local-serve` running. With
+  `--endpoint aws` the same tools use real Bedrock and your AWS credentials, and
+  `ask_knowledge_base` then needs `--model-arn` set to a Bedrock model.
+- **Failures reach the agent with their reason,** for example a missing knowledge base id or
+  the server not running.
+
+It speaks stdio by default, so the agent launches it. `--knowledge-base-id` sets a default
+knowledge base, and `--http` serves `http://127.0.0.1:8097/mcp` instead.
+
+**Hermes Agent** (`~/.hermes/config.yaml`, then `/reload-mcp`). Hermes passes no environment
+to MCP servers, so give `uv`'s full path:
+
+```yaml
+mcp_servers:
+  local-kb:
+    command: /home/<you>/.local/bin/uv
+    args: [run, --directory, /path/to/aws-ai/python, local-kb, mcp]
+```
+
+**LM Studio** (Program → Install → Edit `mcp.json`), so its chat with a tool-calling model can
+search the knowledge base:
+
+```json
+{"mcpServers": {"local-kb": {
+  "command": "/home/<you>/.local/bin/uv",
+  "args": ["run", "--directory", "/path/to/aws-ai/python", "local-kb", "mcp"]}}}
+```
+
+**Claude Code:** `claude mcp add local-kb -- uv run --directory /path/to/aws-ai/python local-kb mcp`
+
+Pair it with a web-search MCP server and the agent can answer from your documents, the web or
+what it already knows. Ask it to say which, so the answer still has sources.
 
 ## See Bedrock's internal fields in Dashboards
 
@@ -384,6 +435,7 @@ local-kb/
 python/src/aws_ai/local_kb/
   cli.py               the local-kb command
   server.py            Bedrock's REST routes (FastAPI)
+  mcp_server.py        local-kb mcp: the knowledge base as MCP tools, over boto3
   control.py           the control plane (SQLite)
   ingest.py            the ingestion job and its counters
   parse.py, chunking.py, embed.py
