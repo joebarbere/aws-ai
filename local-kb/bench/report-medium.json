@@ -1,4 +1,5 @@
 {
+  "isolated": true,
   "corpus": {
     "name": "medium",
     "chunks": 13602,
@@ -7,7 +8,7 @@
     "filtered_rows": 272
   },
   "environment": {
-    "date": "2026-11-08T23:08:41+00:00",
+    "date": "2026-11-08T23:22:30+00:00",
     "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
     "cores": 12,
     "ram_bytes": 67319570432,
@@ -60,17 +61,18 @@
   },
   "stores": {
     "opensearch": {
+      "cold_start_seconds": 13.54,
       "load": {
         "chunks": 13602,
-        "seconds": 10.74,
-        "chunks_per_second": 1266.1
+        "seconds": 12.08,
+        "chunks_per_second": 1126.1
       },
       "build": {
-        "force_merge_seconds": 10.38
+        "force_merge_seconds": 11.29
       },
       "quality": {
         "recall@5": 1.0,
-        "recall@20": 0.9995,
+        "recall@20": 0.9992,
         "filtered_recall@10": 1.0,
         "filtered_returned@10": 10
       },
@@ -78,74 +80,75 @@
         "semantic": {
           "single": {
             "calls": 500,
-            "p50_ms": 1.49,
-            "p95_ms": 1.74,
-            "mean_ms": 1.53
+            "p50_ms": 2.03,
+            "p95_ms": 2.35,
+            "mean_ms": 2.05
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 4.99,
-            "p95_ms": 8.42,
-            "mean_ms": 5.18,
+            "p50_ms": 5.72,
+            "p95_ms": 10.15,
+            "mean_ms": 6.24,
             "workers": 8,
-            "qps": 1501.8
+            "qps": 1246.6
           }
         },
         "hybrid": {
           "single": {
             "calls": 500,
-            "p50_ms": 5.05,
-            "p95_ms": 5.65,
-            "mean_ms": 5.08
+            "p50_ms": 5.91,
+            "p95_ms": 7.3,
+            "mean_ms": 6.02
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 9.33,
-            "p95_ms": 14.04,
-            "mean_ms": 9.76,
+            "p50_ms": 10.43,
+            "p95_ms": 14.79,
+            "mean_ms": 11.03,
             "workers": 8,
-            "qps": 799.7
+            "qps": 710.3
           }
         },
         "filtered_semantic": {
           "single": {
             "calls": 500,
-            "p50_ms": 1.16,
-            "p95_ms": 1.26,
-            "mean_ms": 1.17
+            "p50_ms": 1.44,
+            "p95_ms": 1.62,
+            "mean_ms": 1.48
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 4.64,
-            "p95_ms": 8.14,
+            "p50_ms": 4.65,
+            "p95_ms": 7.93,
             "mean_ms": 4.83,
             "workers": 8,
-            "qps": 1603.5
+            "qps": 1586.3
           }
         }
       },
       "sidecar_rewrite": {
         "chunks": 100,
-        "seconds": 0.109
+        "seconds": 0.124
       },
       "disk": {
-        "store_bytes": 131368668,
+        "store_bytes": 131437246,
         "docs": 13602,
         "deleted_docs": 0,
         "segments": 1
       }
     },
     "rds": {
+      "cold_start_seconds": 0.21,
       "load": {
         "chunks": 13602,
-        "seconds": 44.38,
-        "chunks_per_second": 306.5
+        "seconds": 43.99,
+        "chunks_per_second": 309.2
       },
       "build": {
         "analyze_seconds": 1.39
       },
       "quality": {
-        "recall@5/ef_search=40": 0.992,
+        "recall@5/ef_search=40": 0.993,
         "recall@5/ef_search=512": 1.0,
         "recall@20/ef_search=40": 0.986,
         "recall@20/ef_search=512": 0.9998,
@@ -160,529 +163,476 @@
         "semantic": {
           "single": {
             "calls": 500,
-            "p50_ms": 1.13,
-            "p95_ms": 1.31,
-            "mean_ms": 1.14
+            "p50_ms": 1.11,
+            "p95_ms": 1.35,
+            "mean_ms": 1.12
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 4.11,
-            "p95_ms": 8.11,
-            "mean_ms": 4.44,
+            "p50_ms": 4.32,
+            "p95_ms": 7.44,
+            "mean_ms": 4.39,
             "workers": 8,
-            "qps": 1704.6
+            "qps": 1756.9
           }
         },
         "hybrid": {
           "single": {
             "calls": 500,
-            "p50_ms": 2.57,
-            "p95_ms": 3.27,
-            "mean_ms": 2.64
+            "p50_ms": 1.81,
+            "p95_ms": 2.65,
+            "mean_ms": 1.9
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 5.02,
-            "p95_ms": 7.2,
-            "mean_ms": 5.13,
+            "p50_ms": 4.51,
+            "p95_ms": 7.76,
+            "mean_ms": 4.76,
             "workers": 8,
-            "qps": 1529.4
+            "qps": 1627.6
           }
         },
         "filtered_semantic": {
           "single": {
             "calls": 500,
-            "p50_ms": 2.32,
-            "p95_ms": 2.4,
-            "mean_ms": 2.32
+            "p50_ms": 1.76,
+            "p95_ms": 1.84,
+            "mean_ms": 1.77
           },
           "concurrent": {
             "calls": 500,
-            "p50_ms": 4.74,
-            "p95_ms": 6.88,
-            "mean_ms": 4.86,
+            "p50_ms": 4.42,
+            "p95_ms": 7.88,
+            "mean_ms": 4.66,
             "workers": 8,
-            "qps": 1611.3
+            "qps": 1643.8
           }
         }
       },
       "sidecar_rewrite": {
         "chunks": 100,
-        "seconds": 0.349
+        "seconds": 0.407
       },
       "disk": {
-        "total_bytes": 228556800,
-        "heap_bytes": 21970944,
+        "total_bytes": 228761600,
+        "heap_bytes": 21979136,
         "indexes": {
-          "bedrock_integration.bench_medium_pkey": 573440,
+          "bedrock_integration.bench_medium_pkey": 589824,
           "bedrock_integration.bench_medium_embedding_idx": 111165440,
-          "bedrock_integration.bench_medium_chunks_idx": 13877248,
+          "bedrock_integration.bench_medium_chunks_idx": 14057472,
           "bedrock_integration.bench_medium_custom_metadata_idx": 5062656
         }
       },
       "bulk_build": {
-        "copy_seconds": 5.39,
-        "create_index_seconds": 3.63,
-        "total_seconds": 9.02
+        "copy_seconds": 5.26,
+        "create_index_seconds": 3.69,
+        "total_seconds": 8.95
       }
     }
   },
   "resources": {
     "idle": {
-      "seconds": 3.3,
+      "seconds": 4.42,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 4,
-          "rss_peak": 3414000000.0,
-          "rss_mean": 3414000000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.018632000000025073
+          "samples": 1,
+          "rss_peak": 2690000000.0,
+          "rss_mean": 2690000000.0,
+          "cpu_percent_mean": 19.9,
+          "cpu_seconds": null
         },
         "local-kb_dashboards_1": {
-          "samples": 4,
-          "rss_peak": 252900000.0,
-          "rss_mean": 252750000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.003026999999995894
+          "samples": 1,
+          "rss_peak": 235900000.0,
+          "rss_mean": 235900000.0,
+          "cpu_percent_mean": 3.3,
+          "cpu_seconds": null
         },
         "local-kb_postgres_1": {
-          "samples": 4,
-          "rss_peak": 46370000.0,
-          "rss_mean": 46215000.0,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.028133000000000408
+          "samples": 1,
+          "rss_peak": 30100000.0,
+          "rss_mean": 30100000.0,
+          "cpu_percent_mean": 0.3,
+          "cpu_seconds": null
+        }
+      }
+    },
+    "opensearch:cold_start_seconds": {
+      "seconds": 13.66,
+      "containers": {
+        "local-kb_opensearch_1": {
+          "samples": 12,
+          "rss_peak": 2682000000.0,
+          "rss_mean": 2290626666.6666665,
+          "cpu_percent_mean": 317.8,
+          "cpu_seconds": null
+        }
+      }
+    },
+    "opensearch:idle": {
+      "seconds": 10.19,
+      "containers": {
+        "local-kb_opensearch_1": {
+          "samples": 9,
+          "rss_peak": 2688000000.0,
+          "rss_mean": 2687666666.6666665,
+          "cpu_percent_mean": 217.7,
+          "cpu_seconds": 0.1902770000000018
         }
       }
     },
     "opensearch:reset": {
-      "seconds": 0.36,
+      "seconds": 0.26,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.11892999999997755
-        },
-        "local-kb_dashboards_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.0028930000000002565
-        },
-        "local-kb_postgres_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.0025149999999989348
+          "samples": 1,
+          "rss_peak": 2699000000.0,
+          "rss_mean": 2699000000.0,
+          "cpu_percent_mean": 165.6,
+          "cpu_seconds": 0.2610039999999998
         }
       }
     },
     "opensearch:load": {
-      "seconds": 11.1,
+      "seconds": 12.58,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 10,
-          "rss_peak": 3407000000.0,
-          "rss_mean": 3388600000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 10.844283000000019
-        },
-        "local-kb_dashboards_1": {
-          "samples": 10,
-          "rss_peak": 252800000.0,
-          "rss_mean": 252510000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.0064869999999999095
-        },
-        "local-kb_postgres_1": {
-          "samples": 10,
-          "rss_peak": 46350000.0,
-          "rss_mean": 46146000.0,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.03153899999999865
+          "samples": 11,
+          "rss_peak": 2831000000.0,
+          "rss_mean": 2797818181.818182,
+          "cpu_percent_mean": 175.2,
+          "cpu_seconds": 22.141078
         }
       }
     },
     "opensearch:build": {
-      "seconds": 10.68,
+      "seconds": 11.47,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 11,
-          "rss_peak": 3484000000.0,
-          "rss_mean": 3460181818.181818,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 10.954451000000006
-        },
-        "local-kb_dashboards_1": {
-          "samples": 11,
-          "rss_peak": 252600000.0,
-          "rss_mean": 252527272.72727272,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.0076350000000005025
-        },
-        "local-kb_postgres_1": {
-          "samples": 11,
-          "rss_peak": 46370000.0,
-          "rss_mean": 46127272.72727273,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.02962400000000187
+          "samples": 10,
+          "rss_peak": 2965000000.0,
+          "rss_mean": 2941200000.0,
+          "cpu_percent_mean": 165.1,
+          "cpu_seconds": 14.113951999999998
         }
       }
     },
     "opensearch:quality": {
-      "seconds": 2.88,
+      "seconds": 4.4,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 2,
-          "rss_peak": 3507000000.0,
-          "rss_mean": 3496500000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 2.5348040000000083
-        },
-        "local-kb_dashboards_1": {
-          "samples": 2,
-          "rss_peak": 252900000.0,
-          "rss_mean": 252750000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.0038930000000050313
-        },
-        "local-kb_postgres_1": {
-          "samples": 2,
-          "rss_peak": 46740000.0,
-          "rss_mean": 46480000.0,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.007676000000000016
+          "samples": 4,
+          "rss_peak": 3019000000.0,
+          "rss_mean": 3003250000.0,
+          "cpu_percent_mean": 160.1,
+          "cpu_seconds": 8.644638999999998
+        }
+      }
+    },
+    "opensearch:lexical": {
+      "seconds": 0.85,
+      "containers": {
+        "local-kb_opensearch_1": {
+          "samples": 1,
+          "rss_peak": 3030000000.0,
+          "rss_mean": 3030000000.0,
+          "cpu_percent_mean": 162.0,
+          "cpu_seconds": 1.9652109999999965
         }
       }
     },
     "opensearch:latency": {
-      "seconds": 5.68,
+      "seconds": 6.68,
       "containers": {
         "local-kb_opensearch_1": {
           "samples": 6,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3510166666.6666665,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 8.475150999999983
-        },
-        "local-kb_dashboards_1": {
-          "samples": 6,
-          "rss_peak": 253000000.0,
-          "rss_mean": 252750000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.00357400000000041
-        },
-        "local-kb_postgres_1": {
-          "samples": 6,
-          "rss_peak": 46470000.0,
-          "rss_mean": 46350000.0,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.031154999999998267
+          "rss_peak": 3079000000.0,
+          "rss_mean": 3059833333.3333335,
+          "cpu_percent_mean": 166.0,
+          "cpu_seconds": 15.851437000000004
         }
       }
     },
     "opensearch:sidecar_rewrite": {
-      "seconds": 0.41,
+      "seconds": 0.32,
       "containers": {
         "local-kb_opensearch_1": {
           "samples": 0,
           "rss_peak": null,
           "rss_mean": null,
           "cpu_percent_mean": null,
-          "cpu_seconds": 0.16953399999999874
-        },
-        "local-kb_dashboards_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.003433999999998605
-        },
-        "local-kb_postgres_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.0026970000000012817
+          "cpu_seconds": 0.35791799999999796
         }
       }
     },
     "opensearch:disk": {
-      "seconds": 0.3,
+      "seconds": 0.21,
       "containers": {
         "local-kb_opensearch_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.008309999999994488
-        },
-        "local-kb_dashboards_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.002615999999996177
-        },
+          "samples": 1,
+          "rss_peak": 3086000000.0,
+          "rss_mean": 3086000000.0,
+          "cpu_percent_mean": 170.0,
+          "cpu_seconds": 0.18153999999999826
+        }
+      }
+    },
+    "opensearch:idle_loaded": {
+      "seconds": 10.7,
+      "containers": {
+        "local-kb_opensearch_1": {
+          "samples": 9,
+          "rss_peak": 3087000000.0,
+          "rss_mean": 3085777777.7777777,
+          "cpu_percent_mean": 156.5,
+          "cpu_seconds": null
+        }
+      }
+    },
+    "rds:cold_start_seconds": {
+      "seconds": 0.34,
+      "containers": {
         "local-kb_postgres_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.001881999999998385
+          "samples": 1,
+          "rss_peak": 26640000.0,
+          "rss_mean": 26640000.0,
+          "cpu_percent_mean": 61.3,
+          "cpu_seconds": null
+        }
+      }
+    },
+    "rds:idle": {
+      "seconds": 10.19,
+      "containers": {
+        "local-kb_postgres_1": {
+          "samples": 9,
+          "rss_peak": 26940000.0,
+          "rss_mean": 26721111.111111112,
+          "cpu_percent_mean": 2.5,
+          "cpu_seconds": 0.004154999999999992
         }
       }
     },
     "rds:reset": {
-      "seconds": 0.36,
+      "seconds": 0.24,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 1,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3515000000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.006341000000020358
-        },
-        "local-kb_dashboards_1": {
-          "samples": 1,
-          "rss_peak": 252500000.0,
-          "rss_mean": 252500000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.0037769999999994752
-        },
         "local-kb_postgres_1": {
-          "samples": 1,
-          "rss_peak": 46340000.0,
-          "rss_mean": 46340000.0,
-          "cpu_percent_mean": 0.4,
-          "cpu_seconds": 0.012503999999999849
+          "samples": 0,
+          "rss_peak": null,
+          "rss_mean": null,
+          "cpu_percent_mean": null,
+          "cpu_seconds": 0.076736
         }
       }
     },
     "rds:load": {
-      "seconds": 44.68,
+      "seconds": 44.19,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 42,
-          "rss_peak": 3516000000.0,
-          "rss_mean": 3514976190.4761906,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.25728099999997767
-        },
-        "local-kb_dashboards_1": {
-          "samples": 42,
-          "rss_peak": 252900000.0,
-          "rss_mean": 252561904.76190478,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.016951000000005934
-        },
         "local-kb_postgres_1": {
-          "samples": 42,
-          "rss_peak": 277700000.0,
-          "rss_mean": 175512619.04761904,
-          "cpu_percent_mean": 0.7,
-          "cpu_seconds": 38.17046900000001
+          "samples": 40,
+          "rss_peak": 267100000.00000003,
+          "rss_mean": 163938500.0,
+          "cpu_percent_mean": 50.4,
+          "cpu_seconds": 37.751431
         }
       }
     },
     "rds:build": {
-      "seconds": 1.69,
+      "seconds": 1.72,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 2,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3514500000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.021179000000017822
-        },
-        "local-kb_dashboards_1": {
-          "samples": 2,
-          "rss_peak": 253100000.0,
-          "rss_mean": 253000000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.003360999999998171
-        },
         "local-kb_postgres_1": {
           "samples": 2,
-          "rss_peak": 328100000.0,
-          "rss_mean": 313250000.0,
-          "cpu_percent_mean": 1.0,
-          "cpu_seconds": 1.390784999999994
+          "rss_peak": 319100000.0,
+          "rss_mean": 303250000.0,
+          "cpu_percent_mean": 69.2,
+          "cpu_seconds": 1.3835150000000027
         }
       }
     },
     "rds:quality": {
-      "seconds": 4.78,
+      "seconds": 5.22,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 5,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3515000000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.029201999999997952
-        },
-        "local-kb_dashboards_1": {
-          "samples": 5,
-          "rss_peak": 252900000.0,
-          "rss_mean": 252680000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.004263999999999157
-        },
         "local-kb_postgres_1": {
           "samples": 5,
-          "rss_peak": 272400000.0,
-          "rss_mean": 271440000.0,
-          "cpu_percent_mean": 1.1,
-          "cpu_seconds": 3.3785919999999976
+          "rss_peak": 263000000.0,
+          "rss_mean": 262060000.0,
+          "cpu_percent_mean": 69.7,
+          "cpu_seconds": 3.881890999999996
+        }
+      }
+    },
+    "rds:lexical": {
+      "seconds": 256.37,
+      "containers": {
+        "local-kb_postgres_1": {
+          "samples": 235,
+          "rss_peak": 270600000.0,
+          "rss_mean": 264045957.44680852,
+          "cpu_percent_mean": 95.1,
+          "cpu_seconds": 267.703289
         }
       }
     },
     "rds:latency": {
-      "seconds": 4.7,
+      "seconds": 3.85,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 4,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3514500000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.025689999999997326
-        },
-        "local-kb_dashboards_1": {
-          "samples": 4,
-          "rss_peak": 252600000.0,
-          "rss_mean": 252450000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.00498100000000079
-        },
         "local-kb_postgres_1": {
           "samples": 4,
-          "rss_peak": 293700000.0,
-          "rss_mean": 281175000.0,
-          "cpu_percent_mean": 1.1,
-          "cpu_seconds": 5.392009999999999
+          "rss_peak": 286400000.0,
+          "rss_mean": 270950000.0,
+          "cpu_percent_mean": 97.7,
+          "cpu_seconds": 4.110955000000047
         }
       }
     },
     "rds:sidecar_rewrite": {
-      "seconds": 0.66,
+      "seconds": 0.6,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 1,
-          "rss_peak": 3516000000.0,
-          "rss_mean": 3516000000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.007515000000012151
-        },
-        "local-kb_dashboards_1": {
-          "samples": 1,
-          "rss_peak": 252900000.0,
-          "rss_mean": 252900000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.002853000000001771
-        },
         "local-kb_postgres_1": {
-          "samples": 1,
-          "rss_peak": 269100000.0,
-          "rss_mean": 269100000.0,
-          "cpu_percent_mean": 1.2,
-          "cpu_seconds": 0.3472280000000012
+          "samples": 0,
+          "rss_peak": null,
+          "rss_mean": null,
+          "cpu_percent_mean": null,
+          "cpu_seconds": 0.40166899999996986
         }
       }
     },
     "rds:disk": {
-      "seconds": 0.31,
+      "seconds": 0.19,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.002999999999985903
-        },
-        "local-kb_dashboards_1": {
-          "samples": 0,
-          "rss_peak": null,
-          "rss_mean": null,
-          "cpu_percent_mean": null,
-          "cpu_seconds": 0.002739999999995746
-        },
         "local-kb_postgres_1": {
           "samples": 0,
           "rss_peak": null,
           "rss_mean": null,
           "cpu_percent_mean": null,
-          "cpu_seconds": 0.00788000000000011
+          "cpu_seconds": 0.007711000000028889
         }
       }
     },
     "rds:bulk_build": {
-      "seconds": 9.37,
+      "seconds": 9.2,
       "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 5,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3515000000.0,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.04465499999997746
-        },
-        "local-kb_dashboards_1": {
-          "samples": 5,
-          "rss_peak": 252700000.0,
-          "rss_mean": 252580000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.006075000000002717
-        },
         "local-kb_postgres_1": {
           "samples": 5,
-          "rss_peak": 844000000.0,
-          "rss_mean": 658300000.0,
-          "cpu_percent_mean": 1.3,
-          "cpu_seconds": 12.144306
+          "rss_peak": 841700000.0,
+          "rss_mean": 640960000.0,
+          "cpu_percent_mean": 97.7,
+          "cpu_seconds": 12.269522999999992
+        }
+      }
+    },
+    "rds:idle_loaded": {
+      "seconds": 10.69,
+      "containers": {
+        "local-kb_postgres_1": {
+          "samples": 9,
+          "rss_peak": 298400000.0,
+          "rss_mean": 298066666.6666667,
+          "cpu_percent_mean": 97.3,
+          "cpu_seconds": null
         }
       }
     },
     "idle-after": {
-      "seconds": 3.3,
-      "containers": {
-        "local-kb_opensearch_1": {
-          "samples": 3,
-          "rss_peak": 3515000000.0,
-          "rss_mean": 3514666666.6666665,
-          "cpu_percent_mean": 0.8,
-          "cpu_seconds": 0.01975300000003699
-        },
-        "local-kb_dashboards_1": {
-          "samples": 3,
-          "rss_peak": 252700000.0,
-          "rss_mean": 252600000.0,
-          "cpu_percent_mean": 0.1,
-          "cpu_seconds": 0.0028730000000010136
-        },
-        "local-kb_postgres_1": {
-          "samples": 3,
-          "rss_peak": 299800000.0,
-          "rss_mean": 203833333.33333334,
-          "cpu_percent_mean": 1.4,
-          "cpu_seconds": 0.015448000000006346
-        }
-      }
+      "seconds": 3.13,
+      "containers": {}
     }
   },
   "volumes": {
-    "opensearch": 145133124,
-    "postgres": 681587571
+    "opensearch": 135860749,
+    "postgres": 664742443
+  },
+  "relevance": {
+    "opensearch": {
+      "semantic": {
+        "hit@5": 0.98,
+        "hit@10": 0.985,
+        "mrr@10": 0.9192
+      },
+      "hybrid": {
+        "hit@5": 1.0,
+        "hit@10": 1.0,
+        "mrr@10": 0.9671
+      }
+    },
+    "rds": {
+      "semantic": {
+        "hit@5": 0.98,
+        "hit@10": 0.985,
+        "mrr@10": 0.9192
+      },
+      "hybrid": {
+        "hit@5": 1.0,
+        "hit@10": 1.0,
+        "mrr@10": 0.97
+      },
+      "semantic_as_bedrock_returns_top5": {
+        "hit@5": 0.98,
+        "hit@10": 0.98,
+        "mrr@10": 0.6925
+      }
+    }
+  },
+  "fusion": {
+    "vector_only": {
+      "hit@5": 0.98,
+      "hit@10": 0.985,
+      "mrr@10": 0.9192
+    },
+    "opensearch_bm25_only": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9304
+    },
+    "opensearch_bm25+rrf": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9654
+    },
+    "opensearch_bm25+minmax": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9668
+    },
+    "pg_plainto_only": {
+      "hit@5": 0.75,
+      "hit@10": 0.75,
+      "mrr@10": 0.7292
+    },
+    "pg_plainto+rrf": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.975
+    },
+    "pg_plainto+minmax": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9621
+    },
+    "pg_or_only": {
+      "hit@5": 0.99,
+      "hit@10": 0.99,
+      "mrr@10": 0.9277
+    },
+    "pg_or+rrf": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9679
+    },
+    "pg_or+minmax": {
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "mrr@10": 0.9663
+    }
   },
   "overlap@10": {
     "semantic": {
-      "jaccard": 0.9881,
-      "same_first": 0.995
+      "jaccard": 0.9872,
+      "same_first": 1.0
     },
     "hybrid": {
-      "jaccard": 0.5638,
-      "same_first": 0.83
+      "jaccard": 0.5644,
+      "same_first": 0.82
     }
   }
 }

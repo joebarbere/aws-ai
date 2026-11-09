@@ -195,7 +195,15 @@ def _evaluate(cp: ControlPlane, args: argparse.Namespace) -> None:
 def _bench(args: argparse.Namespace) -> None:
     from aws_ai.local_kb.bench import iter_lines, run
 
-    report = run(_services(), args.corpus, args.stores, args.queries, args.calls, args.concurrency)
+    report = run(
+        _services(),
+        args.corpus,
+        args.stores,
+        args.queries,
+        args.calls,
+        args.concurrency,
+        isolate=args.isolate,
+    )
     output = args.output or (
         config.default_state_dir().parent / "bench" / f"report-{args.corpus}.json"
     )
@@ -375,6 +383,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--queries", type=int, default=200, help="Queries for recall and overlap")
     p.add_argument("--calls", type=int, default=500, help="Timed calls per latency mode")
     p.add_argument("--concurrency", type=int, default=8)
+    p.add_argument(
+        "--isolate",
+        action="store_true",
+        help="Stop Dashboards and the other store while measuring each one; restart after",
+    )
     p.add_argument(
         "--output", type=Path, help="Report path (default: local-kb/bench/report-<corpus>.json)"
     )

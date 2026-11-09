@@ -147,7 +147,7 @@ Everything runs on one machine. Containers are started by `make local-up`, LM St
 | `make local-eval KB=<id>` | `local-kb evaluate`, writing `eval/report.json` |
 | `make local-psql` | psql into the local Postgres as `bedrock_user`, the role Bedrock connects as |
 | `make local-corpus` | [`radio_corpus.py`](../python/scripts/radio_corpus.py): downloads the bench's radio astronomy papers and abstracts from arXiv (slow, one request per 3 s) |
-| `make local-bench CORPUS=sample\|medium\|large` | `local-kb bench`: the OpenSearch and RDS stores on the same chunks and vectors; writes `bench/report-<corpus>.json` ([method and first results](PGVECTOR_PLAN.md#3-the-comparison-phases-p6p7)) |
+| `make local-bench CORPUS=sample\|medium\|large` | `local-kb bench`: the OpenSearch and RDS stores on the same chunks and vectors; writes `bench/report-<corpus>.json` ([results](#opensearch-or-pgvector); `ISOLATE=1` measures each store alone) |
 | `make local-pg-inspect [TABLE=…]` | [`pg/inspect.sql`](pg/inspect.sql): chunks per file, Bedrock's `x-amz-bedrock-kb-*` fields, sidecar attributes, vectors, indexes and sizes, search settings |
 | `make local-down` / `make local-wipe` | Stop the containers / also delete their volumes (the local `terraform destroy`; delete `local-kb/.state/` too) |
 | [`capture_kb_fixtures.py`](../python/scripts/capture_kb_fixtures.py) | Phase 0: records a real KB's behaviour into `fixtures/` (needs the cloud module applied) |
@@ -326,6 +326,35 @@ Each RDS knowledge base needs a table of its own, as on AWS: `make local-init` c
 `bedrock_integration.bedrock_kb`, and `local_init.py pg --table bedrock_integration.<name>`
 creates another. Dashboards cannot see this store; `make local-pg-inspect` shows the same
 internals in psql, and `make local-psql` opens a prompt as `bedrock_user`.
+
+### OpenSearch or pgvector?
+
+`make local-bench CORPUS=… ISOLATE=1` loads the same chunks and vectors into both stores and
+measures each one alone. The corpora are radio astronomy papers from arXiv: 232 PDFs (13,602
+chunks) and 49,950 abstracts. These figures are for the 50k-abstract corpus, on a Ryzen 5 5600X:
+
+| | OpenSearch 3.9 | Postgres 17 + pgvector 0.8.2 |
+|---|---|---|
+| RSS idle → loaded | 2.7 → 3.4 GB | 27 → 300 MB |
+| Cold start | 13.6 s | 0.4 s |
+| Images | 1.7 GB (+1.8 GB Dashboards) | 0.45 GB |
+| Load through Bedrock's write path | 43 s (+81 s force merge) | 232 s (one INSERT per chunk) |
+| recall@20 against exact | 0.986 | 0.964 at `ef_search` 40; 1.000 at 512 |
+| SEMANTIC / HYBRID / filtered p50 | 2.2 / 7.3 / 1.6 ms | 1.7 / 5.5 / 4.2 ms |
+| On disk | 496 MB | 826 MB |
+| HYBRID MRR@10: 20 questions / 200 titles | 0.975 / 0.968 | 0.814 / 0.988 |
+
+- **Pick pgvector** to keep the stack running next to a local LLM. It idles at 1% of
+  OpenSearch's memory, starts in under a second, and serves unfiltered queries faster.
+- **Pick OpenSearch** for hybrid search on natural-language questions. Bedrock's RDS hybrid
+  uses `plainto_tsquery`, which needs every word of the query, so a question rarely matches
+  lexically. OpenSearch also ingests 4–5× faster through Bedrock's write path, filters faster,
+  takes less disk, and comes with Dashboards.
+- On the RDS store, Bedrock's worst-first SEMANTIC order costs more than any store difference.
+  Read in the order returned, MRR@10 falls from 0.93 to 0.22.
+
+The full tables, the fusion matrix and the pros and cons are in
+[PGVECTOR_PLAN.md §3 and §5](PGVECTOR_PLAN.md#5-pros-and-cons-of-running-each-locally-measured-in-p7).
 
 ## Troubleshooting
 

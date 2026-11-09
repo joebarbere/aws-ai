@@ -393,9 +393,10 @@ are kept as written.
   - `medium`: 240 astro-ph.IM papers on radio instrumentation, every 7th of 1,666 matches from
     2015 to October 2026. 232 downloaded (8 were over 20 MB) and gave **13,602 chunks** through
     the normal PDF parser and default chunking. The queries are 200 paper titles.
-  - `large`: **26,278 abstracts**, one chunk each, of radio-related astro-ph papers from 2015
-    to October 2026, with 200 titles as queries. That is about 2× medium, not the 10× planned;
-    widening the window back to 1993 would roughly double it.
+  - `large`: **49,950 abstracts**, one chunk each ("title. abstract"), of radio-related astro-ph
+    papers from 1993 to October 2026, with 200 titles as queries. That is about 3.7× medium
+    (68 M characters against 14.6 M), not the 10× planned: arXiv has no more radio abstracts.
+    It was 26,278 from 2015 until P7 widened the window.
   - `sample`: the 17 Phase 0 chunks, with the 20 evaluation questions as queries.
 - **`local-kb bench --corpus … [--stores …]`** (`make local-bench CORPUS=…`, `bench.py`):
   - Vectors are cached in SQLite by model and sha256 of the text (`.state/bench/vectors.sqlite`),
@@ -429,8 +430,18 @@ are kept as written.
 
     The parser now replaces NUL and surrogates with U+FFFD, one character for one, in every
     format.
-- **Deferred to P7:** cross-fusion (RRF on OpenSearch, min-max on Postgres), the cold-start
-  timing, and runs with one store's containers stopped.
+- **Added in P7:**
+  - `--isolate` (`make local-bench ISOLATE=1`) stops Dashboards and both stores, then starts
+    one store at a time, so each is measured alone. It restarts whatever was running when it
+    finishes. Cold start is timed from `podman start` to ready: Postgres accepting a
+    `bedrock_user` connection, or an authenticated cluster-health call returning yellow or
+    green, which also means the security plugin has initialised.
+  - **Relevance** against each query's own paper: hit@5, hit@10 and MRR@10 for SEMANTIC and
+    HYBRID on each store. RDS SEMANTIC is also scored in the order Bedrock returns it,
+    worst-first.
+  - **A fusion matrix:** the exact vector ranking fused with each lexical engine (OpenSearch BM25,
+    Bedrock's `plainto_tsquery`, and the same terms OR'd), under RRF and under min-max, and each
+    engine alone. This separates the lexical engine from the fusion method.
 
 **First medium run, 2026-11-08.** This validates the tooling; P7 repeats it under clean
 conditions. It ran on a Ryzen 5 5600X (6 cores, 12 threads) with 64 GB of RAM, with the whole
@@ -458,6 +469,69 @@ rows.
 - The data volumes are 145 MB for OpenSearch and 682 MB for Postgres. The Postgres volume also
   holds the WAL, the `pg-kb` table and space the bulk-build table freed but has not returned;
   the store's own figure (229 MB) is the one to compare.
+
+**Phase P7: the isolated runs** ✅ done 2026-11-08, with `local-kb bench --corpus … --isolate`
+on the same machine. The reports are `local-kb/bench/report-{sample,medium,large}.json`. Each store
+ran alone, Dashboards was stopped, and each store was measured straight after a cold start. A cold
+JVM is why OpenSearch's medium SEMANTIC p50 here (2.03 ms) is slower than in the first run
+(1.49 ms).
+
+| | medium (13,602 chunks) | | large (49,950 chunks) | |
+|---|---|---|---|---|
+| | **OpenSearch** | **Postgres** | **OpenSearch** | **Postgres** |
+| Cold start to ready | 13.5 s | 0.2 s | 13.6 s | 0.4 s |
+| Load through the store | 12.1 s (1,126/s) | 44.0 s (309/s) | 43.2 s (1,157/s) | 232.5 s (215/s) |
+| Build after load | merge 11.3 s | ANALYZE 1.4 s | merge 81.5 s | ANALYZE 3.9 s |
+| Bulk path instead (COPY + CREATE INDEX) | — | 5.3 + 3.7 s | — | 19.6 + 28.6 s |
+| CPU-s, load + build | 36 | 39; 12 bulk | 156 | 223; 90 bulk |
+| recall@5 / @20 | 1.000 / 0.999 | 0.993 / 0.986 (ef 40); 1.000 / 1.000 (ef 512) | 0.997 / 0.986 | 0.991 / 0.964 (ef 40); 1.000 / 1.000 (ef 512) |
+| Filtered (2%) recall@10, rows | 1.0, 10 | 1.0, 10 (GIN + exact sort) | 1.0, 10 | 1.0, 10 (GIN + exact sort) |
+| SEMANTIC p50 / p95 | 2.03 / 2.35 ms | 1.11 / 1.35 ms | 2.15 / 2.56 ms | 1.71 / 2.27 ms |
+| HYBRID p50 / p95 | 5.91 / 7.30 ms | 1.81 / 2.65 ms | 7.34 / 9.16 ms | 5.49 / 7.36 ms |
+| Filtered SEMANTIC p50 | 1.44 ms | 1.76 ms | 1.55 ms | 4.23 ms |
+| 8 workers: SEMANTIC / HYBRID / filtered, qps | 1,247 / 710 / 1,586 | 1,757 / 1,628 / 1,644 | 1,174 / 638 / 1,508 | 1,680 / 609 / 985 |
+| Sidecar rewrite, 100 chunks | 0.12 s | 0.41 s | 0.13 s | 0.62 s |
+| On disk (store's figure) | 131 MB | 229 MB | 496 MB | 826 MB (HNSW 409, heap 85, GIN 53, rest TOAST) |
+| RSS: idle after start → loaded | 2.69 → 3.09 GB | 27 → 298 MB | 2.68 → 3.41 GB | 27 → 300 MB |
+| RSS peak | 3.09 GB | 842 MB (CREATE INDEX) | 3.41 GB | 849 MB (CREATE INDEX) |
+
+On `sample` (17 chunks), cold start was 13.3 s for OpenSearch and 0.4 s for Postgres. Idle RSS
+was 2.66 GB and 27 MB, and both reached recall 1.0. The images are 1.70 GB for OpenSearch, plus
+1.80 GB for Dashboards, against 0.45 GB for Postgres.
+
+**Relevance** (MRR@10 for each query's own paper, or for the eval's file on `sample`). SEMANTIC
+is identical on both stores, since they hold the same vectors. HYBRID and fusion differ:
+
+| | sample (20 questions) | medium (200 titles) | large (200 titles) |
+|---|---|---|---|
+| SEMANTIC, either store | 0.814 | 0.919 | 0.925 |
+| RDS SEMANTIC in Bedrock's worst-first order | **0.236** | **0.693** | **0.219** |
+| OpenSearch HYBRID (BM25, min-max) | **0.975** | 0.967 | 0.968 |
+| RDS HYBRID (Bedrock: `plainto_tsquery`, RRF) | 0.814 | 0.970 | **0.988** |
+| `plainto_tsquery` alone | 0.05 | 0.729 | 0.990 |
+| Terms OR'd, alone / + min-max | 1.0 / 0.975 | 0.928 / 0.966 | 0.964 / 0.978 |
+| BM25 alone / + RRF | 1.0 / 0.875 | 0.930 / 0.965 | 0.955 / 0.968 |
+
+- **The lexical engine matters; the fusion method barely does.** Bedrock's RDS hybrid either
+  ties or wins when the query's words all appear in the target (titles), and it adds nothing
+  for questions (`sample`: 1 of 20 matched).
+  - `plainto_tsquery` ANDs every term, so a title finds its own abstract, and on `large` it beats
+    BM25.
+  - A question has words such as "the" and "how" that are not in the answer, and the `simple`
+    configuration Aurora uses keeps every stop word.
+
+  OR'ing the same terms recovers OpenSearch's quality everywhere: with min-max, 0.975, 0.966 and
+  0.978.
+- **But OR'd `ts_rank` is not affordable on Bedrock's schema.** On `large`, an OR of a title's
+  words matches all 49,950 rows: stop words again. `ts_rank` then re-tokenises every row's
+  `chunks`, because Bedrock's schema indexes `to_tsvector(chunks)` as an expression and stores
+  no tsvector. The 200 OR'd queries took 1,257 s, about 6 s each, against 1 s in all for OpenSearch's
+  200 BM25 queries. Bedrock's own `plainto_tsquery` is
+  fast because the AND is selective.
+- **Bedrock's worst-first order is the biggest quality effect measured.** The right top 5 come
+  back, but read in the order returned, MRR@10 is 0.22–0.69 instead of 0.81–0.93.
+  RetrieveAndGenerate is exposed too, since the prompt lists the results in that order.
+- The stores' HYBRID top 10 overlap with Jaccard 0.56, and their SEMANTIC top 10 with 0.97–1.0.
 
 ### What to keep identical
 
@@ -559,80 +633,96 @@ The expectation for pgvector (a hypothesis to test, not a result): roughly 30–
 for the sample corpus, and an image of about 450 MB. With `shared_buffers=256MB`, the RSS grows
 toward 256 MB plus per-connection memory as data is touched.
 
-## 5. Pros and cons of running each locally (expected; P7 confirms or corrects)
+## 5. Pros and cons of running each locally (measured in P7)
+
+The figures come from §3's P7 tables: a Ryzen 5 5600X, one store running at a time.
 
 ### OpenSearch
 
 **Pros**
 - It is the store Bedrock quick-creates by default. Its field layout and the Dashboards
-  prefix-filter view are what the AIF-C01 material shows, and they are already reproduced
-  exactly.
-- Real BM25 plus a built-in hybrid normalization pipeline. Exact codes and rare terms rank
-  well.
-- Dynamic mapping: a new sidecar attribute becomes a filterable field with no schema change.
-- faiss efficient filtering returns k results under selective filters without tuning.
-- Dashboards gives visual inspection, saved searches, charts and Dev Tools for free.
-- It scales out (shards and replicas) if a corpus ever outgrows one machine.
+  prefix-filter view are what the AIF-C01 material shows, and they are reproduced exactly.
+- **Real BM25 and a hybrid pipeline.** HYBRID MRR is 0.97–0.98 on every corpus, questions
+  included. The 200 BM25 queries took 1 s on 50k chunks.
+- **Faster ingest through Bedrock's write path:** 1,126–1,157 chunks/s, against Postgres's
+  215–309. Postgres gets this because Bedrock writes one INSERT per chunk.
+- Filtered search stays flat: 1.55 ms p50 on `large`, against 4.23 ms for Postgres.
+- Sidecar-only updates are 3–5× faster: 0.13 s per 100 chunks on `large`.
+- Smaller on disk: 496 MB against 826 MB on `large`. Postgres TOASTs each 4 KB vector beside
+  its HNSW copy.
+- Dynamic mapping, Dashboards, Dev Tools; it scales out if a corpus ever outgrows one machine.
 
 **Cons**
-- Memory: the JVM heap is reserved up front. It uses about 3 GB at idle for 17 chunks; with
-  Dashboards it is about 3.2 GB, and it competes with LM Studio for RAM.
-- Images total about 3.5 GB, and startup takes tens of seconds before the security plugin is
-  ready.
-- Operational sharp edges seen in this repo: the disk watermark locked index creation on a
-  94%-full disk and needed absolute watermarks; the persistent `create_index` block had to be
-  cleared; and the security plugin's roles needed `indices:admin/get` and mapping permissions.
-- `refresh_interval` makes newly written chunks visible only after about 1 s. The test and smoke
-  scripts have to `_refresh`.
-- A sidecar-only update means reading the chunk back and re-indexing it, vector included.
-- Backups and snapshots need a repository plugin or `elasticdump`-style tooling.
+- **Memory:** 2.7 GB RSS idle with no data, 3.1–3.4 GB loaded, plus 0.24 GB for Dashboards.
+  That is 100× Postgres at idle and about 11× once loaded, and it competes with LM Studio.
+- **Startup:** 13.3–13.6 s from `podman start` to ready, every time.
+- **Images:** 3.5 GB with Dashboards.
+- Force merge is the slow step at scale: 81 s and 90 CPU-seconds for 50k chunks. Without it,
+  queries hit many segments.
+- Operational sharp edges seen in this repo: the disk watermarks, the persistent
+  `create_index` block, and the security plugin's role permissions.
+- `refresh_interval`: writes become visible after about 1 s.
 
 ### PostgreSQL + pgvector
 
 **Pros**
-- It is also a first-class Bedrock store (`RDS`), so it is just as faithful a target, with a
-  documented, fixed schema.
-- Small footprint: one process of tens of MB at idle, a single ~450 MB image, and startup in
-  about 1–2 s.
-- ACID: delete-and-replace and sidecar updates are atomic, with no stale-read window.
-  Phase 0 caught AOSS in exactly that kind of window.
-- Plain SQL. The vectors can be joined with anything, even the local-kb control plane, which
-  could move from SQLite into the same database. `pg_dump` is the backup, and the tools are
-  familiar (psql, any SQL client).
-- Exact search is just a query with no index. That gives free ground truth, and is fine below
-  roughly 50k rows.
-- The `halfvec` type (fp16) halves vector storage, which is easy to try.
+- It is also a first-class Bedrock store (`RDS`), with a fixed, documented schema, reproduced
+  exactly (§1).
+- **Tiny when idle:** 27 MB RSS, and 300 MB with 50k chunks loaded. **Cold start 0.2–0.4 s.** A
+  0.45 GB image.
+- **Faster unfiltered queries, single-threaded:**
+  - SEMANTIC p50 is 1.11 against 2.03 ms on `medium`, and 1.71 against 2.15 ms on `large`;
+  - HYBRID is 1.8 against 5.9 ms on `medium`, and 5.5 against 7.3 ms on `large`.
+
+  With 8 workers, SEMANTIC is about 40% higher (1,680–1,757 qps).
+- **Bulk build is cheap:** COPY plus CREATE INDEX took 48 s and 90 CPU-seconds for 50k chunks,
+  against OpenSearch's 125 s and 156 CPU-seconds to load and merge.
+- **Recall is exact once tuned:** `ef_search` 512 gives 1.000 at k=5 and k=20 on both corpora.
+- ACID delete-and-replace; plain SQL; `pg_dump`; exact search as a plain query, which is how the
+  bench's own ground truth could be checked.
 
 **Cons**
-- No BM25 out of the box. `ts_rank` has no IDF or length normalization, so the lexical half of
-  HYBRID is weaker. Getting BM25 needs a third-party extension (ParadeDB `pg_search`,
-  VectorChord-bm25).
-- Hybrid fusion is hand-written SQL, not a pipeline setting.
-- HNSW pitfalls:
-  - post-filtering can return fewer than k rows unless `iterative_scan` (0.8+) is on;
-  - `ef_search` defaults to 40;
-  - index builds are slow and memory-hungry when the graph doesn't fit in
-    `maintenance_work_mem`;
-  - HNSW indexes are limited to 2,000 dimensions for `vector` (4,000 for `halfvec`).
-- The schema is fixed. The dimension is in the column type, so changing the embedding size means
-  a new table. A new filterable attribute either goes into jsonb, which needs casts for numeric
-  comparisons and has weaker statistics, or needs an `ALTER TABLE`.
-- No built-in UI matching Dashboards: the prefix-filter demonstration becomes SQL.
-- Tuning (`shared_buffers`, `work_mem`, autovacuum after heavy update churn) is on you, but the
-  defaults are fine at this scale.
+- **Bedrock's defaults cost recall:** `ef_search` 40 gives 0.964 at k=20 on `large`. Bedrock
+  cannot set it, so on AWS it is whatever the cluster's parameter group says.
+- **Bedrock's worst-first SEMANTIC order** drops MRR@10, read in the order returned, to 0.22–0.69. That comes
+  from AWS, not pgvector, but anyone choosing RDS on Bedrock gets it.
+- **Lexical search is all-or-nothing.** `plainto_tsquery` ANDs every word of the query:
+  - on the 20 natural-language questions, HYBRID added nothing, with MRR 0.81, the same as
+    SEMANTIC;
+  - on title queries it is excellent, 0.97–0.99.
 
-### Likely outcome
+  OR'ing the terms fixes quality (0.966–0.978 with min-max). On Bedrock's schema, though, it costs
+  6 s a query at 50k rows: the `simple` configuration keeps stop words, so every row matches, and
+  `ts_rank` re-tokenises each row's text, because no tsvector is stored. BM25 would need an
+  extension (ParadeDB `pg_search`, VectorChord-bm25).
+- Filtered queries use the GIN index and then sort exactly, not HNSW: 4.2 ms on `large`, and the
+  slowest under concurrency (985 qps). Iterative scan never engaged at 2% selectivity.
+- **Bedrock's write path is slow:** 215 chunks/s on `large` (5.4× OpenSearch), at 223
+  CPU-seconds. The fast path (COPY) is not what Bedrock runs.
+- 1.7× OpenSearch's disk, and CREATE INDEX peaks at about 850 MB RSS.
+- No Dashboards. `inspect.sql` and psql stand in.
 
-These are hypotheses for P7 to confirm or overturn:
+### Verdict
 
-- Quality ties on `sample`.
-- Postgres matches OpenSearch on SEMANTIC recall once `ef_search` is aligned, and loses some
-  HYBRID lexical precision.
-- Postgres uses about 10–30× less idle memory, has a much smaller disk footprint, and
-  ingests faster at `sample` and `medium` scale.
-- OpenSearch is the better *demonstration* store, because of Dashboards and BM25.
-- pgvector is the better *always-on dev* store: it uses little memory and costs nothing to
-  leave running next to a 9B LLM.
+How the §5 hypotheses held up:
+
+| Hypothesis | Result |
+|---|---|
+| Quality ties on `sample` | **Partly.** SEMANTIC ties exactly. HYBRID does not: 0.975 for OpenSearch against 0.814 for Bedrock's RDS hybrid. |
+| Postgres matches SEMANTIC recall once `ef_search` is aligned | **Yes.** It reaches 1.000 at ef 512. At Bedrock's likely default of 40 it is 0.964–0.986 at k=20. |
+| Postgres loses some HYBRID lexical precision | **It depends on the query.** It loses everything on questions and wins on titles. |
+| 10–30× less idle memory | **More:** about 100× at idle (27 MB against 2.7 GB) and about 11× loaded. |
+| Much smaller disk | **No.** The image is 4× smaller, but the data is 1.7× larger. |
+| Postgres ingests faster | **No.** Through Bedrock's write path it is 3.6–5.4× slower; only the bulk path (not Bedrock's) is faster. |
+| OpenSearch is the better demonstration store | **Yes.** Dashboards, and a hybrid that works on questions. |
+| pgvector is the better always-on dev store | **Yes.** It starts in 0.4 s, idles at 27 MB and serves SEMANTIC faster. |
+
+**Use OpenSearch** to study Bedrock's default store, to use HYBRID on natural-language
+questions, or for filtered search under load. **Use pgvector** when RAM is short, for example
+next to a 9B model in LM Studio. It is also the choice when the stack starts and stops often,
+or when you want to show that the vector store under Bedrock is replaceable, worst-first order
+and all. At this repo's scale (up to 50k chunks) both answer in single-digit milliseconds.
+Neither one's latency is the deciding factor.
 
 ## 6. Phases and order
 
@@ -645,6 +735,6 @@ These are hypotheses for P7 to confirm or overturn:
 | P4 ✅ | SEMANTIC (worst-first, distance score), filters → SQL, RRF HYBRID | the RDS fixtures' result sets, orders and filter chunk sets; ZX-4471 first under HYBRID |
 | P5 ✅ | serve/CLI/boto3 parity, smoke test, `inspect.sql`, tests parametrized over both stores | stock-boto3 lifecycle against an RDS knowledge base |
 | P6 ✅ | `local-kb bench`, vector cache, corpora loaders, resource sampler | reproducible JSON reports |
-| P7 | runs on sample/medium/large; README results and a pros/cons verdict with measured numbers | — |
+| P7 ✅ | isolated runs on sample/medium/large; relevance and fusion matrix; README results and a measured verdict (§3, §5) | done 2026-11-08 |
 
 Commit once per phase, as before.
